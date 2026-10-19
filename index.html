@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="COMMANDS — discover, share and remix small design commands." />
+  <title>COMMANDS — design tools, shared</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top"><span class="brandmark">⌘</span><span>COMMANDS</span></a>
+    <div class="search">
+      <span>⌕</span>
+      <input id="searchInput" placeholder="Search commands, creators, tags..." />
+      <kbd>⌘ K</kbd>
+    </div>
+    <nav>
+      <a href="#discover">Discover</a>
+      <button id="publishBtn" class="textbutton">Publish</button>
+      <a href="./COMMAND_SPEC.md">Docs</a>
+      <a href="https://github.com/bertrandno7/commands">GitHub</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">OPEN DESIGN TOOL LIBRARY</p>
+        <h1>Small tools.<br>Shared intelligence.</h1>
+        <p class="lede">Discover, install, share and remix useful commands made by designers. Rhino first. Open by default.</p>
+        <div class="actions">
+          <a class="button primary" href="#discover">Browse commands</a>
+          <button class="button secondary" id="heroPublish">Publish yours</button>
+        </div>
+        <div class="proof">
+          <span><b>15</b> seed commands</span>
+          <span><b>6</b> categories</span>
+          <span><b>0</b> paywalls</span>
+        </div>
+      </div>
+
+      <div class="terminal-card">
+        <div class="terminal-head"><span></span><span></span><span></span><b>Rhino</b></div>
+        <div class="terminal-body">
+          <p><strong>Command:</strong> SunCarve</p>
+          <p class="muted">Select massing objects</p>
+          <p>Objective <em>[FacadeSun / PerArea / PerVolume]</em>: FacadeSun</p>
+          <div class="progress"><i></i></div>
+          <p class="success">✓ +18.4% useful facade sun · −3.1% volume</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="manifest-band">
+      <span>GEOMETRY</span><i>+</i><span>ANALYSIS</span><i>+</i><span>OBJECTIVE</span><i>=</i><strong>OPERATIVE COMMAND</strong>
+    </section>
+
+    <section id="discover" class="discover">
+      <div class="section-title">
+        <div>
+          <p class="eyebrow">COMMUNITY LIBRARY</p>
+          <h2>Discover commands</h2>
+          <p>Seeded from a real Rhino/Python library. Ratings and installs are intentionally not faked.</p>
+        </div>
+        <div class="sort">
+          <label>Sort
+            <select id="sortSelect">
+              <option value="featured">Featured</option>
+              <option value="name">Name</option>
+              <option value="category">Category</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div id="filters" class="filters"></div>
+      <div id="resultMeta" class="result-meta"></div>
+      <div id="grid" class="grid"></div>
+    </section>
+
+    <section class="thesis">
+      <div>
+        <p class="eyebrow">THE IDEA</p>
+        <h2>Vibe coding made code abundant.<br>Distribution is the next problem.</h2>
+      </div>
+      <div class="thesis-copy">
+        <p>A command should be a small, inspectable package: manifest, source, README, dependencies and version.</p>
+        <p>Today it runs in Rhino. Tomorrow the same structured command can be called by a designer, another command, or an AI agent.</p>
+        <a href="./COMMAND_SPEC.md">Read the open package spec →</a>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="detailDialog">
+    <button class="close" id="closeDetail" aria-label="Close">×</button>
+    <div id="detailContent"></div>
+  </dialog>
+
+  <dialog id="publishDialog">
+    <button class="close" id="closePublish" aria-label="Close">×</button>
+    <div class="dialog-inner">
+      <p class="eyebrow">PUBLISH</p>
+      <h2>Bring your weird little tool.</h2>
+      <p>V0 is a preview. Next we connect publishing to GitHub releases and validate <code>command.json</code> packages.</p>
+      <pre>{
+  "name": "MyCommand",
+  "version": "0.1.0",
+  "host": "rhino",
+  "entry": "main.py"
+}</pre>
+      <a class="button primary" href="./COMMAND_SPEC.md">View package format</a>
+    </div>
+  </dialog>
+
+  <footer>
+    <div class="brand"><span class="brandmark">⌘</span><span>COMMANDS</span></div>
+    <p>Free & open for the community. Built one useful command at a time.</p>
+  </footer>
+
+  <script src="./app.js"></script>
+</body>
+</html>
