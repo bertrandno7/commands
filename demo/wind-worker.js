@@ -2,7 +2,7 @@
  * Background worker for COMMANDS WindScreen.
  * Solver runs completely off the UI thread, without remote services.
  */
-import { solveWindLBM } from "./wind-engine.js?v=1";
+import { solveWindLBM } from "./wind-engine.js?v=2";
 
 self.onmessage = event => {
   const {id,grid,steps}=event.data||{};
