@@ -1,0 +1,31 @@
+name: Test SunHours
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "demo/**"
+      - "tests/**"
+      - "package.json"
+      - ".github/workflows/test.yml"
+  pull_request:
+    paths:
+      - "demo/**"
+      - "tests/**"
+      - "package.json"
+      - ".github/workflows/test.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Run SunHours calculation and interaction tests
+        run: npm test
