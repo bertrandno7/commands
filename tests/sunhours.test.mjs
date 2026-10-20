@@ -5,7 +5,8 @@ import {
 } from "../demo/sunhours-engine.js";
 import { SunHoursViewer } from "../demo/sunhours-viewer.js";
 import {
-  quatRotate, quatNormalize, cameraAxes, freeOrbit, defaultCameraOrientation
+  quatRotate, quatNormalize, cameraAxes, freeOrbit,
+  rhinoWorldOrbit, defaultCameraOrientation
 } from "../demo/camera-rotation.js";
 
 const BASE={lat:51.92,lon:4.48,year:2026,step:60,grid:6};
@@ -409,4 +410,39 @@ test("Normal RMB orbit still uses the scene pivot without target drift",()=>{
   const target=[...v.target];
   for(let i=0;i<300;i++)v.orbitByScreen(6,4);
   assert.deepEqual(v.target,target);
+});
+
+test("Rhino world-axis orbit prevents unintended camera roll on diagonal drags",()=>{
+  const initial=defaultCameraOrientation();
+  let q=initial;
+  for(let i=0;i<1000;i++){
+    q=rhinoWorldOrbit(q,3,4);
+    const axes=cameraAxes(q);
+    // Right vector stays parallel to the world XY plane, even when upside
+    // down. The previous camera-local trackball drifted into sideways roll.
+    assert.ok(Math.abs(axes.right[2])<1e-9,"Rhino orbit maintains world-horizontal screen right");
+    assert.ok(Math.abs(Math.hypot(...q)-1)<1e-10);
+  }
+});
+
+test("Rhino orbit drag-back restores the exact same camera orientation",()=>{
+  let q=defaultCameraOrientation();
+  const start=cameraAxes(q);
+  for(let i=0;i<200;i++)q=rhinoWorldOrbit(q,3.5,2.7);
+  for(let i=0;i<200;i++)q=rhinoWorldOrbit(q,-3.5,-2.7);
+  const end=cameraAxes(q);
+  assert.ok(vecDist(start.up,end.up)<1e-8);
+  assert.ok(vecDist(start.right,end.right)<1e-8);
+  assert.ok(vecDist(start.forward,end.forward)<1e-8);
+});
+
+test("Rhino orbit sensitivity is controlled and anomalous mouse spikes limited",()=>{
+  const q=defaultCameraOrientation();
+  const before=cameraAxes(q);
+  const hundred=cameraAxes(rhinoWorldOrbit(q,100,0));
+  const angle=Math.acos(Math.max(-1,Math.min(1,vecDot(before.right,hundred.right))));
+  assert.ok(angle>=.29&&angle<=.31,"100px right-drag turns approx 17 degrees");
+  const jumped=cameraAxes(rhinoWorldOrbit(q,10000,0));
+  const safe=Math.acos(Math.max(-1,Math.min(1,vecDot(before.right,jumped.right))));
+  assert.ok(safe<.38,"A browser 10,000px pointer spike cannot spin several revolutions");
 });
