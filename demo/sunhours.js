@@ -4,7 +4,7 @@
  * orbiting / panning / pinching never recalculates the sun hours.
  */
 import {getScene, analyzeSunHours} from "./sunhours-engine.js?v=3";
-import {SunHoursViewer} from "./sunhours-viewer.js?v=6";
+import {SunHoursViewer} from "./sunhours-viewer.js?v=8";
 
 const $=s=>document.querySelector(s);
 const form=$("#analysisForm");
@@ -47,7 +47,7 @@ function updateNavigationHint(){
   $("#navHint").textContent=top
     ?"TOP · RMB pan · Ctrl+Shift+RMB rotate parallel · wheel zoom · touch: one-finger pan"
     :isPerspective
-      ?"PERSPECTIVE · RMB orbit · Shift+RMB pan · Ctrl+RMB / wheel zoom · touch: one-finger "+tool.toLowerCase()
+      ?"PERSPECTIVE · FREE 360° tumble · RMB orbit · Ctrl+Shift+RMB orbit object · Shift+RMB pan · Alt+RMB roll · wheel zoom · touch: one-finger "+tool.toLowerCase()
       :"PARALLEL · RMB pan · Ctrl+Shift+RMB orbit · wheel zoom · touch: one-finger "+tool.toLowerCase();
 }
 viewProjection.addEventListener("change",e=>viewer.setProjection(e.target.value));
