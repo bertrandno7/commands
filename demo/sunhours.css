@@ -86,3 +86,14 @@
   opacity:.5;
   cursor:not-allowed;
 }
+
+/* True pinhole Perspective lens selector; Top view remains parallel. */
+.view-lens{gap:4px;padding:0 5px}
+.view-lens span{font-size:10px;color:#8a8f89;font-weight:700;margin-left:3px}
+.view-lens select{padding:0 4px;width:auto}
+.view-lens:has(select:disabled){background:#f1f2ef;opacity:.52}
+.view-lens select:disabled{cursor:not-allowed}
+@media(max-width:760px){
+  .view-lens{flex:0 0 auto}
+  .view-lens select{max-width:68px!important}
+}
