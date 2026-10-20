@@ -126,10 +126,15 @@ async function openEveryPreview(page,mode,reg){
     c.listed!==false&&c.kind==="command"&&c.preview?.type==="web"
   );
   for(const command of live){
+    console.log("Opening live preview "+command.id+" "+command.name);
     const card=page.locator('.command-card[data-id="'+command.id+'"]');
     await card.click();
     await page.waitForURL("**/"+command.preview.entry,{timeout:20000});
-    await waitForPreview(page,command.preview);
+    try{
+      await waitForPreview(page,command.preview);
+    }catch(error){
+      throw new Error(command.id+" "+command.name+" preview did not become ready: "+error.message);
+    }
 
     await page.screenshot({
       path:"artifacts/market-"+mode+"-"+command.id.toLowerCase()+".png",

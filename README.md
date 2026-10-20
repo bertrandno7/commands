@@ -81,11 +81,14 @@ There is no hard-coded preview list.
 
 ### Current browser-runnable commands
 
-- **A001 SunHours**
-- **W001 WindScreen**
-- **M004 Pixelate**
+All **15 listed commands** now have live browser previews.
 
-The other Rhino-native scripts are registered automatically but still need browser adapters before they can honestly be called live previews. RhinoCommon code cannot execute inside GitHub Pages simply because the Python source has been loaded.
+- Analysis: **A001 SunHours, A002 SolarRadiation, W001 WindScreen, W002 WindComfort, M006 EmbodiedCarbon**
+- Massing / generative: **M003 Density, M004 Pixelate, M005 SunCarve, G001 VoxelGrowth, G005 BriefGrowth**
+- Facade / geometry: **F001 FacadePanels, F002 SunFacade, S001 SpiralStair**
+- Site / evaluation: **X000 SiteModel, E001 Scoreboard**
+
+The ports are deliberately honest about scope. Pure maths and browser-compatible solvers are executed directly; Rhino-only Brep/NURBS operations, external datasets, or desktop persistence are represented by deterministic browser adapters rather than being mislabeled as native Rhino execution. `G006 VoxelFacade` remains an internal helper module and is not a standalone marketplace command.
 
 ## Local development
 
