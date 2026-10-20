@@ -131,6 +131,7 @@ function openDetail(id){
           title="Interactive ${c.name} analysis"
           src="./${demo}?embed=1"
           loading="eager"
+          scrolling="no"
           referrerpolicy="same-origin"
         ></iframe>
       </div>
@@ -225,6 +226,22 @@ function closeDetail(){
   document.querySelector("#detailContent").replaceChildren();
   currentCommand=null;
 }
+
+// Same-origin embedded demos tell us their intrinsic content height.
+// The drawer scrolls once; we don't trap the user's touch gestures inside
+// a second 850px-tall scrolling iframe.
+window.addEventListener("message",event=>{
+  if(event.origin!==location.origin)return;
+  const data=event.data;
+  if(data?.type!=="commands:embed-height")return;
+  const frame=document.querySelector("#liveCommandFrame");
+  if(!frame || event.source!==frame.contentWindow)return;
+  const pixels=Number(data.height);
+  if(!Number.isFinite(pixels))return;
+  const height=Math.max(460,Math.min(3400,Math.ceil(pixels)+6));
+  const previous=Number.parseFloat(frame.style.height||"0");
+  if(Math.abs(previous-height)>5)frame.style.height=height+"px";
+});
 
 function openInstall(c){
   document.querySelector("#installTitle").textContent = `Install ${c.name}`;
