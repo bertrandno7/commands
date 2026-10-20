@@ -40,3 +40,43 @@
   }
   .viewer-footer span:last-child{text-align:right;max-width:42%;line-height:1.35}
 }
+
+
+/* Rhino-inspired viewport UI. Touch tool is explicitly selectable, while RMB
+   gestures remain Rhino-compatible independently of the chosen left-drag tool. */
+.viewer-bar{flex-wrap:wrap;row-gap:12px}
+.viewer-title{min-width:140px;flex:1}
+.view-actions{flex-wrap:wrap;justify-content:flex-end;align-items:center}
+.view-projection{display:flex;align-items:center;border:1px solid var(--line);
+  border-radius:4px;padding:0 2px;background:#fff}
+.view-projection select{height:34px;border:0;outline:0;background:transparent;
+  font-size:11px;font-weight:700;padding:0 7px;cursor:pointer;color:#343c35}
+.view-toolgroup{display:flex;align-items:center;padding:2px;border:1px solid var(--line);
+  background:#f2f4f0;border-radius:5px}
+.view-toolgroup button{background:transparent;border:0;padding:7px 10px;
+  color:#666;font-size:11px}
+.view-toolgroup button.active{background:#202920;color:#fff;
+  border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.view-toolgroup button:focus-visible,.view-projection select:focus-visible{
+  outline:2px solid #79bf41;outline-offset:2px}
+#navHint{letter-spacing:0;text-transform:none;line-height:1.45}
+@media(max-width:900px){
+  .viewer-title{flex-basis:100%}
+  .view-actions{width:100%;justify-content:flex-start}
+}
+@media(max-width:760px){
+  .viewer-bar{display:block}
+  .viewer-title{margin-bottom:10px}
+  .view-actions{gap:5px;justify-content:space-between}
+  .view-projection{flex:1}
+  .view-projection select{width:100%;max-width:140px}
+  .view-actions>button{font-size:10px;padding:8px}
+  .view-toolgroup button{font-size:10px;padding:7px}
+  .viewer-footer{align-items:flex-start}
+  .viewer-footer #navHint{max-width:58%}
+  .viewer-footer #viewStatus{max-width:40%}
+}
+@media(max-width:380px){
+  .view-toolgroup{order:2;width:100%;justify-content:space-around}
+  .view-toolgroup button{flex:1}
+}
