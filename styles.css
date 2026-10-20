@@ -187,3 +187,10 @@ h1{font-size:34px;letter-spacing:-.04em;margin:0 0 6px}
 .try-demo:hover{background:#c5e5a5}
 .demo-banner{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:18px 24px 0;padding:14px 16px;background:#e5f2d6;border:1px solid #c7dea9;border-radius:6px;font-weight:750;font-size:13px;color:#314a24}
 .demo-banner span{white-space:nowrap;font-size:11px}
+
+/* Real W001 preview thumbnail generated from computed browser LBM results. */
+.command-card[data-id="W001"] .card-visual{
+  background:#e9ece7 url("./assets/windscreen.svg") center /cover no-repeat;
+}
+.command-card[data-id="W001"] .card-visual:before,
+.command-card[data-id="W001"] .card-visual:after{display:none}
