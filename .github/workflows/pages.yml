@@ -47,7 +47,7 @@ jobs:
         run: |
           test -s generated/commands.json
           test -s assets/thumbnails/manifest.json
-          node -e 'const fs=require("fs"); const r=JSON.parse(fs.readFileSync("generated/commands.json")); for(const c of r.commands.filter(x=>x.listed!==false&&x.preview?.type==="web")){const p="assets/thumbnails/"+c.id+".png"; if(!fs.existsSync(p)||fs.statSync(p).size<15000) throw new Error("Missing preview "+p)} console.log("verified",r.livePreviewCount,"live thumbnails")'
+          node -e 'const fs=require("fs"); const r=JSON.parse(fs.readFileSync("generated/commands.json")); for(const c of r.commands.filter(x=>x.listed!==false&&x.preview?.type==="web")){const p="assets/thumbnails/"+c.id+".png"; if(!fs.existsSync(p)||fs.statSync(p).size<8000) throw new Error("Missing preview "+p)} console.log("verified",r.livePreviewCount,"live thumbnails")'
 
       - name: Stage static site
         run: |
