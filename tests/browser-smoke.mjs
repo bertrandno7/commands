@@ -46,6 +46,13 @@ async function checkPage(label,opts){
 
   if(hasGL){
     const element=page.locator("#view");
+    // True perspective must visibly change when the camera focal length changes.
+    const frame35=await element.evaluate(c=>c.toDataURL());
+    await page.locator("#viewLens").selectOption("24");
+    const frame24=await element.evaluate(c=>c.toDataURL());
+    assert.notEqual(frame24,frame35,"24mm lens must change perspective framing");
+    await element.screenshot({path:"artifacts/sunhours-"+label+"-perspective-24mm.png"});
+    await page.locator("#viewLens").selectOption("35");
     const bounds=await element.boundingBox();
     const x=bounds.x+bounds.width*.56, y=bounds.y+bounds.height*.5;
     const before=await element.evaluate(c=>c.toDataURL());
