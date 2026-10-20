@@ -111,7 +111,7 @@ Optional `prepare` actions can make deterministic thumbnails:
 
 ### Standard preview
 
-For an inferred command, `preview/index.html` is detected automatically. The page should:
+For any command package, `preview/index.html` is detected automatically unless `preview.disabled` is explicitly true. This works for both manifested and inferred commands. The page should:
 
 - mark the capture surface with `data-command-preview`;
 - set `body[data-preview-ready="true"]` after real computation finishes;
