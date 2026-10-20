@@ -35,6 +35,14 @@ const DEMOS=[
     capture:".wind-stage",
     done:"ready",
     metric:"#peak"
+  },
+  {
+    id:"M004",
+    name:"Pixelate",
+    path:"demo/pixel.html",
+    capture:".pixel-stage",
+    done:"complete",
+    metric:"#count"
   }
 ];
 
@@ -99,11 +107,16 @@ const captureStyle=`
     min-height:540px!important;
     max-height:540px!important;
   }
-  .wind-stage{
+  .wind-stage,
+  .pixel-stage{
     position:relative!important;
     flex:none!important;
     overflow:hidden!important;
+    width:960px!important;
+    height:540px!important;
+    min-height:540px!important;
   }
+  .pixel-stage>#view{width:960px!important;height:540px!important}
   #flowOverlay{width:960px!important;height:540px!important}
   .visual-panel>.legend{
     left:20px!important;
