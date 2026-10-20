@@ -3,6 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+if(new URLSearchParams(location.search).get("embed")==="1"){
+  document.documentElement.classList.add("embedded-demo");
+}
+</script>
 <link rel="icon" href="data:,">
 <meta name="theme-color" content="#f7f7f5">
 <meta name="description" content="COMMANDS WindScreen — live 2D lattice-Boltzmann pedestrian-height wind screening around architecture.">
