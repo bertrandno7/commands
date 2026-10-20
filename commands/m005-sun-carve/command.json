@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "0.2",
+  "id": "M005",
+  "slug": "sun-carve",
+  "name": "SunCarve",
+  "version": "0.1.0",
+  "summary": "Greedy planar and stepped cuts that improve useful facade sun while controlling volume loss.",
+  "kind": "command",
+  "listed": true,
+  "author": {
+    "name": "Bertrand Tan"
+  },
+  "runtime": {
+    "host": "rhino",
+    "rhino": "7 + 8",
+    "language": "python",
+    "entry": "main.py"
+  },
+  "category": "Massing",
+  "tags": [
+    "Solar",
+    "Optimization"
+  ],
+  "network": "none",
+  "preview": {
+    "type": "none"
+  },
+  "source": {
+    "origin": "Hark Python Library"
+  }
+}
