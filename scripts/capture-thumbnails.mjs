@@ -15,6 +15,7 @@ import {resolve,join} from "node:path";
 import {chromium} from "playwright-core";
 
 const ORIGIN=process.env.COMMANDS_PREVIEW_ORIGIN||"http://127.0.0.1:8765";
+const SITE_ORIGIN=ORIGIN.endsWith("/")?ORIGIN.slice(0,-1):ORIGIN;
 const OUTPUT=resolve(process.env.COMMANDS_THUMB_DIR||"assets/thumbnails");
 const FRAME={width:960,height:540};
 
@@ -124,7 +125,7 @@ try{
     const errors=[];
     page.on("pageerror",error=>errors.push(error.message));
     try{
-      const url=ORIGIN.replace(/\/$/,"")+"/"+demo.path;
+      const url=SITE_ORIGIN+"/"+demo.path;
       console.log("Capturing "+demo.id+" from "+url);
       await page.goto(url,{waitUntil:"domcontentloaded",timeout:30000});
       // Wait for a real completed numerical solve, not a skeleton loader.
@@ -201,7 +202,7 @@ try{
   const homepageErrors=[];
   marketplace.on("pageerror",err=>homepageErrors.push(err.message));
   try{
-    await marketplace.goto(ORIGIN.replace(/\\/$/,"")+"/",{
+    await marketplace.goto(SITE_ORIGIN+"/",{
       waitUntil:"domcontentloaded",timeout:30000
     });
     await marketplace.waitForFunction(
@@ -222,7 +223,7 @@ try{
       assert.ok(background.includes(demo.id+".png"),
         demo.id+" must use its computed screenshot as the card background");
       const image=await marketplace.request.get(
-        ORIGIN.replace(/\\/$/,"")+"/assets/thumbnails/"+demo.id+".png"
+        SITE_ORIGIN+"/assets/thumbnails/"+demo.id+".png"
       );
       assert.ok(image.ok(),demo.id+" card image must return HTTP 200");
       assert.equal((image.headers()["content-type"]||"").split(";")[0],
