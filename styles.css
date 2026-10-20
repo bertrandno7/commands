@@ -393,3 +393,12 @@ body.detail-is-open{overflow:hidden}
 @media(prefers-reduced-motion:reduce){
   .loading-orbit{animation:none}
 }
+
+/* M004 Pixelate thumbnail comes from its live geometry preview. */
+.command-card[data-id="M004"] .card-visual{
+ background-color:#e8ebe7;
+ background-image:url("./assets/thumbnails/M004.png");
+ background-position:center;background-size:cover;background-repeat:no-repeat;
+}
+.command-card[data-id="M004"] .card-visual:before,
+.command-card[data-id="M004"] .card-visual:after{display:none}
