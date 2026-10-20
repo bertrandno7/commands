@@ -2,6 +2,8 @@
  * COMMANDS / SunHours WebGL viewer.
  *
  * Native WebGL 1 with real GPU depth testing. No CDN or framework required.
+ * Perspective uses an actual pinhole projection (depth-dependent 1/w scaling).
+ * Rhino Top uses a separate parallel projection with north consistently up.
  * Rhino-inspired desktop navigation (Perspective):
  *   RMB orbit, Shift+RMB pan, Ctrl+RMB / wheel zoom, MMB pan.
  * Top view: RMB pan, Ctrl+Shift+RMB switches to Perspective orbit.
@@ -108,16 +110,36 @@ const VERTEX = `
   uniform vec3 uRight;
   uniform vec3 uUp;
   uniform vec3 uForward;
-  uniform vec3 uClip; // half width, half height, half depth
+  uniform vec3 uClip; // parallel viewport: half width, half height, half depth
+  uniform float uPerspective; // 1.0 for Perspective, 0.0 for Top/Parallel
+  uniform float uCameraDistance;
+  uniform float uFocalY; // cot(vertical fov / 2)
+  uniform float uAspect;
+  uniform vec2 uNearFar;
   varying vec3 vColor;
   void main() {
     vec3 p = aPosition - uTarget;
-    gl_Position = vec4(
-      dot(p,uRight)/uClip.x,
-      dot(p,uUp)/uClip.y,
-      dot(p,uForward)/uClip.z,
-      1.0
-    );
+    float px = dot(p,uRight);
+    float py = dot(p,uUp);
+    float pz = dot(p,uForward);
+    if (uPerspective > 0.5) {
+      // True perspective: a model point twice as far from the camera
+      // produces half the on-screen size. Clip.w varies with depth.
+      float depth = uCameraDistance + pz;
+      float n = uNearFar.x;
+      float f = uNearFar.y;
+      float clipZ = (f+n)/(f-n)*depth - 2.0*f*n/(f-n);
+      gl_Position = vec4(
+        px*uFocalY/uAspect,
+        py*uFocalY,
+        clipZ,
+        depth
+      );
+    } else {
+      // Top is true parallel/orthographic. A zero-Z camera frame is
+      // explicitly provided by the JS camera function.
+      gl_Position = vec4(px/uClip.x,py/uClip.y,pz/uClip.z,1.0);
+    }
     vColor = aColor;
   }
 `;
@@ -137,6 +159,8 @@ export class SunHoursViewer {
     this.zoom=1;
     this.target=[0,0,12];
     this.baseHalfHeight=60;
+    this.baseDistance=175;
+    this.lensMm=35; // architectural 35mm lens, changeable in UI
     this.pointers=new Map();
     this.gl=canvas.getContext("webgl",{
       antialias:true,alpha:false,depth:true,preserveDrawingBuffer:true,
@@ -171,7 +195,12 @@ export class SunHoursViewer {
         right:gl.getUniformLocation(program,"uRight"),
         up:gl.getUniformLocation(program,"uUp"),
         forward:gl.getUniformLocation(program,"uForward"),
-        clip:gl.getUniformLocation(program,"uClip")
+        clip:gl.getUniformLocation(program,"uClip"),
+        perspective:gl.getUniformLocation(program,"uPerspective"),
+        distance:gl.getUniformLocation(program,"uCameraDistance"),
+        focalY:gl.getUniformLocation(program,"uFocalY"),
+        aspect:gl.getUniformLocation(program,"uAspect"),
+        nearFar:gl.getUniformLocation(program,"uNearFar")
       };
       gl.enable(gl.DEPTH_TEST);
       gl.depthFunc(gl.LEQUAL);
@@ -209,6 +238,9 @@ export class SunHoursViewer {
       const h=Math.max(1,...this.scene.buildings.map(b=>b.h));
       this.target=[g.x+g.w/2,g.y+g.d/2,h*.28];
       this.baseHalfHeight=Math.max(22,Math.hypot(g.w,g.d,h)*.66);
+      // Fit at 35 mm. Lens changes now really change the field of view
+      // rather than silently dollying the camera to fake the same framing.
+      this.baseDistance=this.baseHalfHeight/(12/35);
     }
     this.draw();
   }
@@ -235,17 +267,57 @@ export class SunHoursViewer {
   }
 
   camera(){
-    const elev=this.projection==="top"?Math.PI/2:this.elevation;
-    const yaw=this.projection==="top"?0:this.yaw;
-    const ce=Math.cos(elev),se=Math.sin(elev);
-    const radial=[ce*Math.sin(yaw),-ce*Math.cos(yaw),se];
-    const forward=radial.map(x=>-x);
-    const right=normalized(cross(forward,[0,0,1]));
-    const up=normalized(cross(right,forward));
-    const h=this.baseHalfHeight/this.zoom;
+    const parallel=this.projection==="top";
+    let forward,right,up;
+    if(parallel){
+      // Looking vertically downward: east/right and north/up. The old
+      // cross(forward,worldUp) was zero here, collapsing the Top view.
+      forward=[0,0,-1];
+      right=[1,0,0];
+      up=[0,1,0];
+    }else{
+      const ce=Math.cos(this.elevation),se=Math.sin(this.elevation);
+      const radial=[ce*Math.sin(this.yaw),-ce*Math.cos(this.yaw),se];
+      forward=radial.map(x=>-x);
+      right=normalized(cross(forward,[0,0,1]));
+      up=normalized(cross(right,forward));
+    }
     const aspect=Math.max(.2,this.canvas.clientWidth/Math.max(1,this.canvas.clientHeight));
-    return {right,up,forward,halfHeight:h,halfWidth:h*aspect,
-      depthHalf:this.baseHalfHeight*3.4};
+    const tanHalf=12/this.lensMm; // 35mm-camera vertical sensor size: 24 mm
+    const distance=this.baseDistance/this.zoom;
+    const h=parallel?this.baseHalfHeight/this.zoom:distance*tanHalf;
+    const near=Math.max(0.03,distance*.001);
+    const far=Math.max(1000,distance+this.baseHalfHeight*12);
+    return {
+      right,up,forward,aspect,
+      halfHeight:h,halfWidth:h*aspect,depthHalf:this.baseHalfHeight*3.4,
+      distance,tanHalf,focalY:1/tanHalf,near,far,parallel
+    };
+  }
+
+  /** Verifiable screen projection. Used by tests and later object picking. */
+  projectWorld(point){
+    const cam=this.camera();
+    const p=sub(point,this.target);
+    const px=dot(p,cam.right),py=dot(p,cam.up);
+    const depth=cam.distance+dot(p,cam.forward);
+    if(!cam.parallel&&depth<=cam.near)return null;
+    const scale=cam.parallel
+      ?this.canvas.clientHeight/(2*cam.halfHeight)
+      :this.canvas.clientHeight*cam.focalY/(2*depth);
+    return [
+      this.canvas.clientWidth*.5+px*scale,
+      this.canvas.clientHeight*.5-py*scale,
+      depth
+    ];
+  }
+
+  /** Changing focal length adjusts field of view, not geometry or the camera target. */
+  setLens(value){
+    const lens=Number(value);
+    if(![24,35,50].includes(lens))throw new Error("Unsupported lens.");
+    this.lensMm=lens;
+    this.draw();
   }
 
   /** Sets the web-demo's single-pointer tool. RMB remains Rhino-standard. */
@@ -411,6 +483,11 @@ export class SunHoursViewer {
     gl.uniform3fv(this.uniforms.up,c.up);
     gl.uniform3fv(this.uniforms.forward,c.forward);
     gl.uniform3fv(this.uniforms.clip,[c.halfWidth,c.halfHeight,c.depthHalf]);
+    gl.uniform1f(this.uniforms.perspective,c.parallel?0:1);
+    gl.uniform1f(this.uniforms.distance,c.distance);
+    gl.uniform1f(this.uniforms.focalY,c.focalY);
+    gl.uniform1f(this.uniforms.aspect,c.aspect);
+    gl.uniform2fv(this.uniforms.nearFar,[c.near,c.far]);
 
     this.drawSet("base",gl.TRIANGLES);
     // Ground guide lines should sit below the results heatmap if painted,
