@@ -87,14 +87,11 @@ test("WebGL draws real depth-tested polygons, not painted backfaces", async()=>{
 
 
 function screenPosition(viewer,point){
+  return viewer.projectWorld(point).slice(0,2);
+}
+function targetPlanePoint(viewer,x=16,y=12){
   const cam=viewer.camera();
-  const p=point.map((n,i)=>n-viewer.target[i]);
-  const scale=viewer.canvas.clientHeight/(2*cam.halfHeight);
-  const dot=(a,b)=>a.reduce((sum,n,i)=>sum+n*b[i],0);
-  return [
-    viewer.canvas.clientWidth/2+dot(p,cam.right)*scale,
-    viewer.canvas.clientHeight/2-dot(p,cam.up)*scale
-  ];
+  return viewer.target.map((t,i)=>t+cam.right[i]*x+cam.up[i]*y);
 }
 function assertScreenFollows(viewer,point,before,dx,dy){
   const after=screenPosition(viewer,point);
@@ -122,7 +119,7 @@ test("Perspective: Shift+RMB pans geometry in screen-drag direction",()=>{
   const {canvas}=mockCanvas();
   const v=new SunHoursViewer(canvas);
   v.setData(getScene("courtyard"),null);
-  const point=[12,22,30],before=screenPosition(v,point);
+  const point=targetPlanePoint(v),before=screenPosition(v,point);
   const yaw=v.yaw,elevation=v.elevation;
   const mouse={pointerType:"mouse",button:2,shiftKey:true};
   v.pointerDown(ev(2,140,140,mouse));
@@ -137,7 +134,7 @@ test("Perspective: MMB pans while Ctrl+RMB zooms toward pointer",()=>{
   const {canvas}=mockCanvas();
   const v=new SunHoursViewer(canvas);
   v.setData(getScene("courtyard"),null);
-  const point=[-9,15,0],before=screenPosition(v,point);
+  const point=targetPlanePoint(v),before=screenPosition(v,point);
   const middle={pointerType:"mouse",button:1};
   v.pointerDown(ev(3,100,100,middle));
   v.pointerMove(ev(3,135,125,middle));
@@ -196,7 +193,7 @@ test("Touch: one-finger Orbit/Pan tool and two-finger screen-following pan",()=>
   assert.notEqual(v.yaw,yaw);
 
   v.setTool("pan");
-  const point=[20,20,16],before=screenPosition(v,point);
+  const point=targetPlanePoint(v),before=screenPosition(v,point);
   v.pointerDown(ev(2,100,100));
   v.pointerMove(ev(2,180,140));
   v.pointerUp(ev(2,180,140));
@@ -224,4 +221,62 @@ test("Touch: one-finger Orbit/Pan tool and two-finger screen-following pan",()=>
   v.reset();
   assert.equal(v.zoom,1);
   assert.equal(v.yaw,-0.72);
+});
+
+test("Perspective is true depth-dependent pinhole projection",()=>{
+  const {canvas}=mockCanvas();
+  const v=new SunHoursViewer(canvas);
+  v.setData(getScene("courtyard"),null);
+  const cam=v.camera();
+  assert.equal(cam.parallel,false);
+  assert.ok(Math.abs(cam.focalY-35/12)<1e-10);
+  const anchor=v.target;
+  const world=(depth,offset=15)=>anchor.map((t,i)=>
+    t+cam.forward[i]*depth+cam.right[i]*offset);
+  const near=v.projectWorld(world(-30));
+  const far=v.projectWorld(world(30));
+  const cx=canvas.clientWidth/2;
+  assert.ok(Math.abs(near[0]-cx)>Math.abs(far[0]-cx)*1.1,
+    "Same object width must project larger at nearer depth");
+  assert.ok(near[2]<far[2],"Camera depth must increase with distance");
+
+  const beforeLens=v.projectWorld(world(0));
+  v.setLens(50);
+  const afterLens=v.projectWorld(world(0));
+  assert.ok(Math.abs(afterLens[0]-cx)>Math.abs(beforeLens[0]-cx)*1.3,
+    "Changing from 35mm to 50mm must tighten true perspective framing");
+
+  v.setProjection("top");
+  const c=v.camera();
+  assert.equal(c.parallel,true);
+  assert.deepEqual(c.right,[1,0,0],"East must appear right in Top");
+  assert.deepEqual(c.up,[0,1,0],"North must appear up in Top");
+  const xy=v.target;
+  const p1=[xy[0]+20,xy[1]+15,0];
+  const p2=[xy[0]+20,xy[1]+15,100];
+  const a=v.projectWorld(p1);
+  const b=v.projectWorld(p2);
+  assert.ok(Math.abs(a[0]-b[0])<1e-8);
+  assert.ok(Math.abs(a[1]-b[1])<1e-8,
+    "Top must be parallel; height cannot change screen X/Y");
+  assert.ok(a[0]>canvas.clientWidth/2,"+X moves right");
+  assert.ok(a[1]<canvas.clientHeight/2,"+Y moves up");
+});
+
+test("Perspective zoom anchors its target-plane point under the cursor",()=>{
+  const {canvas}=mockCanvas();
+  const v=new SunHoursViewer(canvas);
+  v.setData(getScene("tower"),null);
+  const cam=v.camera(),pixel=[140,220],rect=canvas.getBoundingClientRect();
+  const px=pixel[0]-rect.left-canvas.clientWidth/2;
+  const py=pixel[1]-rect.top-canvas.clientHeight/2;
+  const scale=2*cam.halfHeight/canvas.clientHeight;
+  const anchor=v.target.map((t,i)=>
+    t+scale*(px*cam.right[i]-py*cam.up[i]));
+  const before=screenPosition(v,anchor);
+  v.zoomAt(1.75,...pixel);
+  assert.ok(v.zoom>1);
+  const after=screenPosition(v,anchor);
+  assert.ok(Math.abs(after[0]-before[0])<1e-7);
+  assert.ok(Math.abs(after[1]-before[1])<1e-7);
 });
