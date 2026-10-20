@@ -242,12 +242,18 @@ try{
       assert.equal((image.headers()["content-type"]||"").split(";")[0],
         "image/png");
       assert.ok((await image.body()).length>15000);
-      const tryLink=await card.locator(".try-demo").getAttribute("href");
-      assert.ok(tryLink?.includes(demo.path),
-        demo.id+" must link back to its runnable demo");
+      assert.equal(await card.locator(".try-demo").count(),0,
+        demo.id+" must not use a redundant live-demo button");
+      const target=await card.getAttribute("data-demo");
+      assert.equal(target,"./"+demo.path,
+        demo.id+" card itself must point directly to its full runnable demo");
     }
+    assert.equal(await marketplace.locator("#detailDrawer").count(),0,
+      "Marketplace must not include an intermediate detail drawer");
+    assert.equal(await marketplace.locator("#categoryStrip").count(),0,
+      "Category navigation belongs only in the sidebar");
     console.log("✔ Marketplace displays all "+manifest.length+
-      " computed thumbnail images and runnable-demo links");
+      " computed thumbnails and direct-to-command cards");
   }finally{
     await marketplace.close();
   }
