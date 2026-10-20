@@ -1,0 +1,179 @@
+{
+  "schemaVersion": "1.0",
+  "slug": "density",
+  "name": "Density",
+  "commandName": "Density",
+  "version": "0.1.0",
+  "summary": "Calculate architectural density, envelope, volume, and facade-orientation metrics.",
+  "description": "Slices floor plates and reports GFA, FSI, GSI, OSR, floor count, footprint, projected area, volume, envelope, form factor, and directional facade areas.",
+  "category": "Analysis",
+  "tags": [
+    "density",
+    "gfa",
+    "fsi",
+    "gsi",
+    "urban-metrics"
+  ],
+  "license": "LicenseRef-Pending",
+  "entrypoint": {
+    "file": "src/main.py",
+    "callable": "run_command"
+  },
+  "icon": "icon.svg",
+  "runtime": {
+    "host": "rhino",
+    "rhinoVersions": [
+      "7",
+      "8"
+    ],
+    "pythonEngine": "Rhino Python (engine unverified)"
+  },
+  "dependencies": {
+    "python": [],
+    "commands": [],
+    "rhinoPlugins": [],
+    "files": []
+  },
+  "permissions": [
+    "document.read"
+  ],
+  "interface": {
+    "inputs": [
+      {
+        "name": "Mass",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Plot",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Floor",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "First",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "North",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Units",
+        "type": "Rhino value",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "plates",
+        "type": "Rhino geometry / metric",
+        "required": false
+      },
+      {
+        "name": "levels",
+        "type": "Rhino geometry / metric",
+        "required": false
+      },
+      {
+        "name": "floor_gfa",
+        "type": "Rhino geometry / metric",
+        "required": false
+      },
+      {
+        "name": "gfa",
+        "type": "Rhino geometry / metric",
+        "required": false
+      },
+      {
+        "name": "fsi",
+        "type": "Rhino geometry / metric",
+        "required": false
+      },
+      {
+        "name": "gsi",
+        "type": "Rhino geometry / metric",
+        "required": false
+      },
+      {
+        "name": "osr",
+        "type": "Rhino geometry / metric",
+        "required": false
+      },
+      {
+        "name": "L",
+        "type": "Rhino geometry / metric",
+        "required": false
+      },
+      {
+        "name": "footprint",
+        "type": "Rhino geometry / metric",
+        "required": false
+      },
+      {
+        "name": "projected",
+        "type": "Rhino geometry / metric",
+        "required": false
+      },
+      {
+        "name": "plot_area",
+        "type": "Rhino geometry / metric",
+        "required": false
+      },
+      {
+        "name": "volume",
+        "type": "Rhino geometry / metric",
+        "required": false
+      },
+      {
+        "name": "envelope",
+        "type": "Rhino geometry / metric",
+        "required": false
+      },
+      {
+        "name": "form_factor",
+        "type": "Rhino geometry / metric",
+        "required": false
+      },
+      {
+        "name": "facade",
+        "type": "Rhino geometry / metric",
+        "required": false
+      },
+      {
+        "name": "roof",
+        "type": "Rhino geometry / metric",
+        "required": false
+      },
+      {
+        "name": "metrics",
+        "type": "Rhino geometry / metric",
+        "required": false
+      },
+      {
+        "name": "info",
+        "type": "Rhino geometry / metric",
+        "required": false
+      }
+    ]
+  },
+  "agent": {
+    "callable": false,
+    "description": "Calculate architectural density, envelope, volume, and facade-orientation metrics. Agent invocation is disabled until this imported draft is reviewed and packaged.",
+    "sideEffects": [
+      "document.read"
+    ]
+  },
+  "provenance": {
+    "status": "imported-draft",
+    "source": "GH Library snapshot — 2026-10-15 · source reconciled with COMMANDS 044050f — 2026-10-20",
+    "sourceFile": "M003_density_metrics.py",
+    "snapshotDate": "2026-10-15"
+  }
+}

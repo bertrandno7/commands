@@ -1,0 +1,126 @@
+{
+  "kind": "computed-preview",
+  "format": "png",
+  "demos": [
+    {
+      "id": "A001",
+      "name": "SunHours",
+      "image": "/assets/thumbnails/A001.png",
+      "from": "demo/sunhours.html",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "id": "W001",
+      "name": "WindScreen",
+      "image": "/assets/thumbnails/W001.png",
+      "from": "demo/wind.html",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "id": "M004",
+      "name": "Pixelate",
+      "image": "/assets/thumbnails/M004.png",
+      "from": "demo/pixel.html",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "id": "A002",
+      "name": "SolarRadiation",
+      "image": "/assets/thumbnails/A002.png",
+      "from": "commands/a002-solar-radiation/preview/index.html",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "id": "E001",
+      "name": "Scoreboard",
+      "image": "/assets/thumbnails/E001.png",
+      "from": "commands/e001-scoreboard/preview/index.html",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "id": "F001",
+      "name": "FacadePanels",
+      "image": "/assets/thumbnails/F001.png",
+      "from": "commands/f001-facade-panels/preview/index.html",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "id": "F002",
+      "name": "SunFacade",
+      "image": "/assets/thumbnails/F002.png",
+      "from": "commands/f002-sun-facade/preview/index.html",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "id": "G001",
+      "name": "VoxelGrowth",
+      "image": "/assets/thumbnails/G001.png",
+      "from": "commands/g001-voxel-growth/preview/index.html",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "id": "G005",
+      "name": "BriefGrowth",
+      "image": "/assets/thumbnails/G005.png",
+      "from": "commands/g005-brief-growth/preview/index.html",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "id": "M003",
+      "name": "Density",
+      "image": "/assets/thumbnails/M003.png",
+      "from": "commands/m003-density/preview/index.html",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "id": "M005",
+      "name": "SunCarve",
+      "image": "/assets/thumbnails/M005.png",
+      "from": "commands/m005-sun-carve/preview/index.html",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "id": "M006",
+      "name": "EmbodiedCarbon",
+      "image": "/assets/thumbnails/M006.png",
+      "from": "commands/m006-embodied-carbon/preview/index.html",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "id": "S001",
+      "name": "SpiralStair",
+      "image": "/assets/thumbnails/S001.png",
+      "from": "commands/s001-spiral-stair/preview/index.html",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "id": "W002",
+      "name": "WindComfort",
+      "image": "/assets/thumbnails/W002.png",
+      "from": "commands/w002-wind-comfort/preview/index.html",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "id": "X000",
+      "name": "SiteModel",
+      "image": "/assets/thumbnails/X000.png",
+      "from": "commands/x000-site-model/preview/index.html",
+      "width": 960,
+      "height": 540
+    }
+  ]
+}

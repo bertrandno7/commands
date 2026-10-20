@@ -1,0 +1,210 @@
+{
+  "schemaVersion": "1.0",
+  "slug": "sun-carve",
+  "name": "SunCarve",
+  "commandName": "SunCarve",
+  "version": "0.1.0",
+  "summary": "Carve massing to improve facade sun while limiting volume loss.",
+  "description": "Greedily evaluates planar or stepped cuts against own-facade sun gain, maximum volume loss, and optional neighboring benefit.",
+  "category": "Massing",
+  "tags": [
+    "solar",
+    "massing",
+    "optimization",
+    "carving"
+  ],
+  "license": "LicenseRef-Pending",
+  "entrypoint": {
+    "file": "src/main.py",
+    "callable": "run_command"
+  },
+  "icon": "icon.svg",
+  "runtime": {
+    "host": "rhino",
+    "rhinoVersions": [
+      "7",
+      "8"
+    ],
+    "pythonEngine": "Rhino Python (engine unverified)"
+  },
+  "dependencies": {
+    "python": [],
+    "commands": [],
+    "rhinoPlugins": [],
+    "files": []
+  },
+  "permissions": [
+    "document.read",
+    "document.write"
+  ],
+  "interface": {
+    "inputs": [
+      {
+        "name": "Mass",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Ctx",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Lat",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Lon",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "MaxCuts",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "MaxLoss",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Slopes",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Depths",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Stepped",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Floor",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Objective",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "MinGain",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Grid",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Step",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Units",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Month",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Day",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "MinSun",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Neighbours",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Reach",
+        "type": "Rhino value",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "carved",
+        "type": "Rhino geometry / optimization data",
+        "required": false
+      },
+      {
+        "name": "cutters",
+        "type": "Rhino geometry / optimization data",
+        "required": false
+      },
+      {
+        "name": "sun",
+        "type": "Rhino geometry / optimization data",
+        "required": false
+      },
+      {
+        "name": "before",
+        "type": "Rhino geometry / optimization data",
+        "required": false
+      },
+      {
+        "name": "nsun",
+        "type": "Rhino geometry / optimization data",
+        "required": false
+      },
+      {
+        "name": "gain",
+        "type": "Rhino geometry / optimization data",
+        "required": false
+      },
+      {
+        "name": "ngain",
+        "type": "Rhino geometry / optimization data",
+        "required": false
+      },
+      {
+        "name": "loss",
+        "type": "Rhino geometry / optimization data",
+        "required": false
+      },
+      {
+        "name": "log",
+        "type": "Rhino geometry / optimization data",
+        "required": false
+      },
+      {
+        "name": "info",
+        "type": "Rhino geometry / optimization data",
+        "required": false
+      }
+    ]
+  },
+  "agent": {
+    "callable": false,
+    "description": "Carve massing to improve facade sun while limiting volume loss. Agent invocation is disabled until this imported draft is reviewed and packaged.",
+    "sideEffects": [
+      "document.read",
+      "document.write"
+    ]
+  },
+  "provenance": {
+    "status": "imported-draft",
+    "source": "GH Library snapshot — 2026-10-15 · source reconciled with COMMANDS 044050f — 2026-10-20",
+    "sourceFile": "M005_sun_carve.py",
+    "snapshotDate": "2026-10-15"
+  }
+}

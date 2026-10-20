@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title id="title">Brief-driven Voxel Growth command icon</title>
+  <rect x="4" y="4" width="120" height="120" rx="24" fill="#F7F8F6" stroke="#D8DDD8" stroke-width="4"/>
+  <path d="M64 20 92 35 64 50 36 35Z" fill="#FFFFFF" stroke="#17211B" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M36 35 64 50v31L36 66Z" fill="#EDF0EC" stroke="#17211B" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M64 50 92 35v31L64 81Z" fill="#8B5CF6" stroke="#17211B" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M64 50v31" fill="none" stroke="#17211B" stroke-width="4" stroke-linecap="round"/>
+  <rect x="36" y="91" width="56" height="23" rx="11.5" fill="#8B5CF6"/>
+  <text x="64" y="108" text-anchor="middle" fill="#FFFFFF" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" letter-spacing="1">BG</text>
+</svg>

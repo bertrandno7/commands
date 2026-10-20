@@ -1,0 +1,121 @@
+{
+  "schemaVersion": "1.0",
+  "slug": "wind-screen",
+  "name": "WindScreen",
+  "commandName": "WindScreen",
+  "version": "0.1.0",
+  "summary": "Run fast 2D wind screening at pedestrian height around early massing.",
+  "description": "Adapts a D2Q9 lattice-Boltzmann solver for qualitative option comparison, reporting relative wind speed, shelter, and acceleration around building footprints.",
+  "category": "Analysis",
+  "tags": [
+    "wind",
+    "screening",
+    "microclimate",
+    "massing"
+  ],
+  "license": "LicenseRef-Pending",
+  "entrypoint": {
+    "file": "src/main.py",
+    "callable": "run_command"
+  },
+  "icon": "icon.svg",
+  "runtime": {
+    "host": "rhino",
+    "rhinoVersions": [
+      "8"
+    ],
+    "pythonEngine": "Rhino 8 CPython"
+  },
+  "dependencies": {
+    "python": [
+      "numpy"
+    ],
+    "commands": [],
+    "rhinoPlugins": [],
+    "files": []
+  },
+  "permissions": [
+    "document.read",
+    "document.write"
+  ],
+  "interface": {
+    "inputs": [
+      {
+        "name": "Geo",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "WindDir",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "WindSpeed",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Cell",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Steps",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Slice",
+        "type": "Rhino value",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "field",
+        "type": "Rhino geometry / analysis data",
+        "required": false
+      },
+      {
+        "name": "ratios",
+        "type": "Rhino geometry / analysis data",
+        "required": false
+      },
+      {
+        "name": "shelter",
+        "type": "Rhino geometry / analysis data",
+        "required": false
+      },
+      {
+        "name": "peak",
+        "type": "Rhino geometry / analysis data",
+        "required": false
+      },
+      {
+        "name": "mean",
+        "type": "Rhino geometry / analysis data",
+        "required": false
+      },
+      {
+        "name": "info",
+        "type": "Rhino geometry / analysis data",
+        "required": false
+      }
+    ]
+  },
+  "agent": {
+    "callable": false,
+    "description": "Run fast 2D wind screening at pedestrian height around early massing. Agent invocation is disabled until this imported draft is reviewed and packaged.",
+    "sideEffects": [
+      "document.read",
+      "document.write"
+    ]
+  },
+  "provenance": {
+    "status": "imported-draft",
+    "source": "COMMANDS repository source and tested live preview — commit 044050f",
+    "sourceFile": "W001_wind_screening.py",
+    "snapshotDate": "2026-10-15"
+  }
+}

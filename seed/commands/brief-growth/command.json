@@ -1,0 +1,206 @@
+{
+  "schemaVersion": "1.0",
+  "slug": "brief-growth",
+  "name": "BriefGrowth",
+  "commandName": "BriefGrowth",
+  "version": "0.1.0",
+  "summary": "Grow a whole spatial brief through an analysis field with hard area caps.",
+  "description": "Places and grows brief units through a G001 analysis field using area limits, adjacency, frontage, sun, and support criteria, with an optional facade skin.",
+  "category": "AI",
+  "tags": [
+    "generative-design",
+    "brief",
+    "growth",
+    "multi-objective"
+  ],
+  "license": "LicenseRef-Pending",
+  "entrypoint": {
+    "file": "src/main.py",
+    "callable": "run_command"
+  },
+  "icon": "icon.svg",
+  "runtime": {
+    "host": "rhino",
+    "rhinoVersions": [
+      "8"
+    ],
+    "pythonEngine": "Rhino 8 CPython"
+  },
+  "dependencies": {
+    "python": [
+      "numpy"
+    ],
+    "commands": [],
+    "rhinoPlugins": [],
+    "files": [
+      "src/G001_voxel_growth.py",
+      "src/G006_voxel_facade.py"
+    ]
+  },
+  "permissions": [
+    "document.read",
+    "document.write",
+    "filesystem.read"
+  ],
+  "interface": {
+    "inputs": [
+      {
+        "name": "Plot",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Brief",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Lat",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Lon",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "MaxHeight",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Cell",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Floor",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "MaxGSI",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Cantilever",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "WindDir",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Update",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Seed",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Context",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "LibPath",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Run",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Facade",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Fins",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Balconies",
+        "type": "Rhino value",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "boxes",
+        "type": "Rhino geometry / brief data",
+        "required": false
+      },
+      {
+        "name": "item",
+        "type": "Rhino geometry / brief data",
+        "required": false
+      },
+      {
+        "name": "colours",
+        "type": "Rhino geometry / brief data",
+        "required": false
+      },
+      {
+        "name": "labels",
+        "type": "Rhino geometry / brief data",
+        "required": false
+      },
+      {
+        "name": "report",
+        "type": "Rhino geometry / brief data",
+        "required": false
+      },
+      {
+        "name": "compliance",
+        "type": "Rhino geometry / brief data",
+        "required": false
+      },
+      {
+        "name": "metrics",
+        "type": "Rhino geometry / brief data",
+        "required": false
+      },
+      {
+        "name": "info",
+        "type": "Rhino geometry / brief data",
+        "required": false
+      },
+      {
+        "name": "facade",
+        "type": "Rhino geometry / brief data",
+        "required": false
+      },
+      {
+        "name": "facade_layer",
+        "type": "Rhino geometry / brief data",
+        "required": false
+      }
+    ]
+  },
+  "agent": {
+    "callable": false,
+    "description": "Grow a whole spatial brief through an analysis field with hard area caps. Agent invocation is disabled until this imported draft is reviewed and packaged.",
+    "sideEffects": [
+      "document.read",
+      "document.write",
+      "filesystem.read"
+    ]
+  },
+  "provenance": {
+    "status": "imported-draft",
+    "source": "GH Library snapshot — 2026-10-15 · source reconciled with COMMANDS 044050f — 2026-10-20",
+    "sourceFile": "G005_brief_growth.py",
+    "snapshotDate": "2026-10-15"
+  }
+}

@@ -1,0 +1,169 @@
+{
+  "schemaVersion": "1.0",
+  "slug": "scoreboard",
+  "name": "Scoreboard",
+  "commandName": "Scoreboard",
+  "version": "0.1.0",
+  "summary": "Compare design options with weighted metrics, targets, rankings, and Pareto fronts.",
+  "description": "Snapshots sticky option metrics, calculates weighted relative scores and targets, identifies the Pareto front, draws radar and score bars, persists JSON, and exports CSV.",
+  "category": "Analysis",
+  "tags": [
+    "optimization",
+    "options",
+    "pareto",
+    "decision-support"
+  ],
+  "license": "LicenseRef-Pending",
+  "entrypoint": {
+    "file": "src/main.py",
+    "callable": "run_command"
+  },
+  "icon": "icon.svg",
+  "runtime": {
+    "host": "rhino",
+    "rhinoVersions": [
+      "7",
+      "8"
+    ],
+    "pythonEngine": "Rhino Python (engine unverified)"
+  },
+  "dependencies": {
+    "python": [],
+    "commands": [],
+    "rhinoPlugins": [],
+    "files": []
+  },
+  "permissions": [
+    "document.read",
+    "document.write",
+    "filesystem.read",
+    "filesystem.write"
+  ],
+  "interface": {
+    "inputs": [
+      {
+        "name": "Name",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Save",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Metrics",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Remove",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Clear",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Weights",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Targets",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Origin",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Size",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Units",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "File",
+        "type": "Rhino value",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "names",
+        "type": "Rhino geometry / option data",
+        "required": false
+      },
+      {
+        "name": "scores",
+        "type": "Rhino geometry / option data",
+        "required": false
+      },
+      {
+        "name": "ranks",
+        "type": "Rhino geometry / option data",
+        "required": false
+      },
+      {
+        "name": "pareto",
+        "type": "Rhino geometry / option data",
+        "required": false
+      },
+      {
+        "name": "best",
+        "type": "Rhino geometry / option data",
+        "required": false
+      },
+      {
+        "name": "table",
+        "type": "Rhino geometry / option data",
+        "required": false
+      },
+      {
+        "name": "options",
+        "type": "Rhino geometry / option data",
+        "required": false
+      },
+      {
+        "name": "chart",
+        "type": "Rhino geometry / option data",
+        "required": false
+      },
+      {
+        "name": "text",
+        "type": "Rhino geometry / option data",
+        "required": false
+      },
+      {
+        "name": "info",
+        "type": "Rhino geometry / option data",
+        "required": false
+      }
+    ]
+  },
+  "agent": {
+    "callable": false,
+    "description": "Compare design options with weighted metrics, targets, rankings, and Pareto fronts. Agent invocation is disabled until this imported draft is reviewed and packaged.",
+    "sideEffects": [
+      "document.read",
+      "document.write",
+      "filesystem.read",
+      "filesystem.write"
+    ]
+  },
+  "provenance": {
+    "status": "imported-draft",
+    "source": "GH Library snapshot — 2026-10-15 · source reconciled with COMMANDS 044050f — 2026-10-20",
+    "sourceFile": "E001_option_scoreboard.py",
+    "snapshotDate": "2026-10-15"
+  }
+}

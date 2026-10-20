@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+if(new URLSearchParams(location.search).get("embed")==="1"){
+  document.documentElement.classList.add("embedded-demo");
+}
+</script>
+<link rel="icon" href="data:,">
+<meta name="theme-color" content="#f7f7f5">
+<meta name="description" content="COMMANDS WindScreen — live 2D lattice-Boltzmann pedestrian-height wind screening around architecture.">
+<title>WindScreen — Live Demo · Commands</title>
+<link rel="stylesheet" href="./sunhours.css?v=6">
+<link rel="stylesheet" href="./wind.css?v=3">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../"><span class="mark">◈</span>Commands<span class="brand-small"> / LAB</span></a>
+  <span class="live"><span class="pulse"></span> LIVE BROWSER DEMO</span>
+  <a class="back" href="../">← Marketplace</a>
+</header>
+<main class="page">
+  <section class="intro">
+    <div>
+      <div class="eyebrow">ENVIRONMENTAL ANALYSIS / W001 / LIVE COMMAND</div>
+      <h1>WindScreen<span class="period">.</span></h1>
+      <p>Explore how building footprints affect wind at pedestrian height. A real 2D lattice-Boltzmann screening solver, running entirely in your browser.</p>
+    </div>
+    <div class="intro-aside">
+      <span>SOLVER</span><strong>D2Q9 LBM + Smagorinsky</strong>
+      <span>ORIGIN</span><strong>Hark Python Library</strong>
+      <span>SLICE</span><strong>1.5 m · 2D approximation</strong>
+    </div>
+  </section>
+
+  <section class="workspace">
+    <aside class="control-panel">
+      <div class="panel-title"><span>01</span><h2>Wind setup</h2></div>
+      <form id="windForm">
+        <label class="field">MASSING SCENE
+          <select id="scene">
+            <option value="courtyard">Rotterdam courtyard</option>
+            <option value="tower">Tower + context</option>
+            <option value="canyon">Street canyon</option>
+          </select>
+        </label>
+
+        <div class="field field-wind-direction">
+          <div class="input-heading"><span>WIND FROM</span><strong id="directionLabel">240° · WSW</strong></div>
+          <input id="windDirection" type="range" min="0" max="345" step="15" value="240" aria-label="Wind from direction, clockwise from north">
+          <div class="range-ends"><span>0° NORTH</span><span>180° SOUTH</span><span>345°</span></div>
+        </div>
+        <div class="wind-presets" role="group" aria-label="Wind direction presets">
+          <button type="button" data-wind-from="0">N</button>
+          <button type="button" data-wind-from="90">E</button>
+          <button type="button" data-wind-from="180">S</button>
+          <button type="button" data-wind-from="240" class="selected">WSW</button>
+          <button type="button" data-wind-from="270">W</button>
+        </div>
+
+        <div class="field speed-field">
+          <div class="input-heading"><span>FREE WIND SPEED</span><strong id="speedLabel">6.0 m/s</strong></div>
+          <input id="windSpeed" type="range" min="1" max="15" step=".5" value="6" aria-label="Free-stream reference wind speed in metres per second">
+          <p class="field-caption">Scales the display in m/s; the solved speed ratio is independent of this input.</p>
+        </div>
+
+        <div class="field-row">
+          <label class="field">SOLVER RESOLUTION
+            <select id="quality">
+              <option value="5:650" selected>Preview · 5 m</option>
+              <option value="4:1150">Balanced · 4 m</option>
+              <option value="3:1900">Detailed · 3 m</option>
+            </select>
+          </label>
+          <div class="field static-field">
+            <span>ANALYSIS HEIGHT</span>
+            <div class="static-value">1.5 m</div>
+          </div>
+        </div>
+        <div class="solver-note" id="solverNote">650 steps · reduced-domain 2D screening</div>
+
+        <button id="run" class="run-button" type="submit"><span>▶</span> Run wind screening <span class="arrow">↗</span></button>
+        <button id="cancel" class="cancel-button" type="button" hidden>✕ Cancel simulation</button>
+        <div class="progress-wrap" id="progressWrap" hidden>
+          <div class="progress-bar"><div id="progress"></div></div>
+          <span id="progressLabel">Preparing wind field…</span>
+        </div>
+        <p class="hint">Colored field = local 2D mean speed / unobstructed reference speed. Blue indicates shelter; orange/red indicates acceleration. Direction is wind <strong>FROM</strong>, clockwise from north.</p>
+        <div class="panel-bottom"><span class="green-dot"></span> Web Worker · no cloud · no login</div>
+      </form>
+    </aside>
+
+    <div class="visual-panel">
+      <div class="viewer-bar">
+        <div class="viewer-title">
+          <strong id="sceneTitle">Rotterdam courtyard</strong>
+          <span id="sceneSubtitle">W001 · pedestrian wind at 1.5 m</span>
+        </div>
+        <div class="view-actions">
+          <label class="view-projection" title="Rhino-style projection mode">
+            <select id="viewProjection" aria-label="View projection">
+              <option value="perspective">Perspective</option>
+              <option value="top">Top</option>
+              <option value="parallel">Parallel (3D)</option>
+            </select>
+          </label>
+          <label class="view-projection view-lens" title="Perspective focal length">
+            <span>Lens</span>
+            <select id="viewLens" aria-label="Perspective lens">
+              <option value="24">24 mm</option>
+              <option value="35" selected>35 mm</option>
+              <option value="50">50 mm</option>
+            </select>
+          </label>
+          <div class="view-toolgroup" role="group" aria-label="Drag tool">
+            <button type="button" id="viewToolOrbit" class="active" aria-pressed="true">↻ Orbit</button>
+            <button type="button" id="viewToolPan" aria-pressed="false">✥ Pan</button>
+          </div>
+          <button type="button" id="viewReset">↺ Reset</button>
+          <button type="button" id="png">↓ PNG</button>
+        </div>
+      </div>
+      <div class="wind-stage">
+        <canvas id="view" width="1120" height="680" aria-label="3D site massing with a calculated 1.5-metre wind-speed ratio field"></canvas>
+        <canvas id="flowOverlay" width="1120" height="680" aria-hidden="true"></canvas>
+        <div class="wind-indicator">
+          <span>WIND FROM</span>
+          <div class="wind-arrow" id="windArrow">↑</div>
+          <strong id="compassLabel">240° WSW</strong>
+          <small id="towardsLabel">TO 60° ENE</small>
+        </div>
+        <div class="wind-legend">
+          <div class="legend-head"><b>SPEED RATIO (U / U∞)</b><span>0–1.5+</span></div>
+          <div class="wind-gradient"></div>
+          <div class="ticks"><span>0</span><span>0.5</span><span>1.0</span><span>1.5+</span></div>
+          <small>BLUE SHELTER · RED ACCELERATION</small>
+        </div>
+      </div>
+      <div class="viewer-footer">
+        <span id="navHint">PERSPECTIVE · RMB orbit · Shift+RMB pan · wheel zoom · touch: one-finger orbit</span>
+        <span id="viewStatus">Preparing flow field</span>
+      </div>
+      <div class="display-controls">
+        <label><input id="showArrows" type="checkbox" checked> Flow vectors</label>
+        <label><input id="showParticles" type="checkbox" checked> Animated tracers</label>
+        <span>Tracers visualize steady 2D velocity, not transient CFD</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="results">
+    <div class="results-heading">
+      <div><div class="eyebrow">02 / SCREENING RESULTS</div><h2>Relative wind performance</h2></div>
+      <span class="result-label" id="resultLabel">Awaiting first run</span>
+    </div>
+    <div class="metrics wind-metrics">
+      <article><span>AVERAGE RATIO</span><strong id="mean">—</strong><small>Outdoor sampled cells</small></article>
+      <article><span>PEAK SPEED RATIO</span><strong id="peak">—</strong><small>U / free wind</small></article>
+      <article><span>SHELTERED AREA</span><strong id="sheltered">—</strong><small>Ratio below 0.5×</small></article>
+      <article><span>ACCELERATED AREA</span><strong id="accelerated">—</strong><small>Ratio above 1.2×</small></article>
+      <article><span>SCALED PEAK WIND</span><strong id="scaled">—</strong><small>Illustrative m/s</small></article>
+    </div>
+    <div class="data-bar">
+      <span id="cellCount">— grid cells</span>
+      <span id="stepCount">— iterations</span>
+      <span id="duration">— duration</span>
+      <button id="csv" type="button" disabled>↓ Download CSV results</button>
+    </div>
+  </section>
+
+  <section class="about">
+    <div><div class="eyebrow">03 / ABOUT THE MODEL</div>
+      <h2>Flow physics,<br>not a generated picture.</h2></div>
+    <div>
+      <p>The solver is adapted from your <strong>W001_wind_screening.py</strong>: a D2Q9 lattice-Boltzmann model with obstacle bounce-back and Smagorinsky-style local viscosity. It samples a horizontal plane through the building footprints and calculates a relative mean velocity field.</p>
+      <p><strong>Important:</strong> the browser edition uses a smaller domain, fewer steps, and simplified inflow/outflow conditions for speed. It is suitable for early <strong>qualitative option comparison</strong>, not calibrated wind predictions. Geometry height is only used to determine whether a building intersects the 1.5 m slice.</p>
+      <p>This is not 3D CFD, does not account for downdrafts/downwash, vertical turbulence, weather statistics, or terrain roughness, and <strong>must not be treated as a NEN 8100 wind-comfort assessment</strong>. Your W002 command handles additional climate/sector screening separately.</p>
+      <a href="../">← Back to the command library</a>
+    </div>
+  </section>
+</main>
+<script defer src="./embed-resize.js?v=1"></script>
+<script type="module" src="./wind.js?v=3"></script>
+</body>
+</html>

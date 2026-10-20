@@ -1,0 +1,126 @@
+{
+  "schemaVersion": "1.0",
+  "slug": "voxel-growth",
+  "name": "VoxelGrowth",
+  "commandName": "VoxelGrowth",
+  "version": "0.1.0",
+  "summary": "Grow voxel massing through sun, density, support, and cantilever criteria.",
+  "description": "Uses an analysis field and hard geometric constraints to grow early massing one voxel at a time.",
+  "category": "AI",
+  "tags": [
+    "generative-design",
+    "voxel",
+    "massing",
+    "growth"
+  ],
+  "license": "LicenseRef-Pending",
+  "entrypoint": {
+    "file": "src/main.py",
+    "callable": "run_command"
+  },
+  "icon": "icon.svg",
+  "runtime": {
+    "host": "rhino",
+    "rhinoVersions": [
+      "8"
+    ],
+    "pythonEngine": "Rhino 8 CPython"
+  },
+  "dependencies": {
+    "python": [
+      "numpy"
+    ],
+    "commands": [],
+    "rhinoPlugins": [],
+    "files": []
+  },
+  "permissions": [
+    "document.read",
+    "document.write"
+  ],
+  "interface": {
+    "inputs": [
+      {
+        "name": "Plot",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Field",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Target",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Cell",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "MaxHeight",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "MaxGSI",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Cantilever",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Seed",
+        "type": "Rhino value",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "voxels",
+        "type": "Rhino geometry / growth data",
+        "required": false
+      },
+      {
+        "name": "score",
+        "type": "Rhino geometry / growth data",
+        "required": false
+      },
+      {
+        "name": "metrics",
+        "type": "Rhino geometry / growth data",
+        "required": false
+      },
+      {
+        "name": "history",
+        "type": "Rhino geometry / growth data",
+        "required": false
+      },
+      {
+        "name": "info",
+        "type": "Rhino geometry / growth data",
+        "required": false
+      }
+    ]
+  },
+  "agent": {
+    "callable": false,
+    "description": "Grow voxel massing through sun, density, support, and cantilever criteria. Agent invocation is disabled until this imported draft is reviewed and packaged.",
+    "sideEffects": [
+      "document.read",
+      "document.write"
+    ]
+  },
+  "provenance": {
+    "status": "imported-draft",
+    "source": "GH Library G001 source reconciled with COMMANDS commit 044050f",
+    "sourceFile": "G001_voxel_growth.py",
+    "snapshotDate": "2026-10-15"
+  }
+}

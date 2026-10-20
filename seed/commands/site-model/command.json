@@ -1,0 +1,165 @@
+{
+  "schemaVersion": "1.0",
+  "slug": "site-model",
+  "name": "SiteModel",
+  "commandName": "SiteModel",
+  "version": "0.1.0",
+  "summary": "Build a layered urban context model from 3D BAG or OpenStreetMap data.",
+  "description": "Fetches 3D BAG data in the Netherlands or OpenStreetMap elsewhere and builds buildings, roads, paths, rail, water, green space, trees, stops, and labels with a temporary JSON cache.",
+  "category": "Utilities",
+  "tags": [
+    "site",
+    "context",
+    "openstreetmap",
+    "3d-bag",
+    "gis"
+  ],
+  "license": "LicenseRef-Pending",
+  "entrypoint": {
+    "file": "src/main.py",
+    "callable": "run_command"
+  },
+  "icon": "icon.svg",
+  "runtime": {
+    "host": "rhino",
+    "rhinoVersions": [
+      "7",
+      "8"
+    ],
+    "pythonEngine": "Rhino Python (engine unverified)"
+  },
+  "dependencies": {
+    "python": [],
+    "commands": [],
+    "rhinoPlugins": [],
+    "files": []
+  },
+  "permissions": [
+    "document.write",
+    "network",
+    "filesystem.read",
+    "filesystem.write"
+  ],
+  "interface": {
+    "inputs": [
+      {
+        "name": "Lat",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Lon",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Radius",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "LoD",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Source",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "TransitR",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Refresh",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Labels",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Run",
+        "type": "Rhino value",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "buildings",
+        "type": "Rhino geometry / site data",
+        "required": false
+      },
+      {
+        "name": "roads",
+        "type": "Rhino geometry / site data",
+        "required": false
+      },
+      {
+        "name": "paths",
+        "type": "Rhino geometry / site data",
+        "required": false
+      },
+      {
+        "name": "rail",
+        "type": "Rhino geometry / site data",
+        "required": false
+      },
+      {
+        "name": "water",
+        "type": "Rhino geometry / site data",
+        "required": false
+      },
+      {
+        "name": "green",
+        "type": "Rhino geometry / site data",
+        "required": false
+      },
+      {
+        "name": "trees",
+        "type": "Rhino geometry / site data",
+        "required": false
+      },
+      {
+        "name": "stops",
+        "type": "Rhino geometry / site data",
+        "required": false
+      },
+      {
+        "name": "labels",
+        "type": "Rhino geometry / site data",
+        "required": false
+      },
+      {
+        "name": "site",
+        "type": "Rhino geometry / site data",
+        "required": false
+      },
+      {
+        "name": "info",
+        "type": "Rhino geometry / site data",
+        "required": false
+      }
+    ]
+  },
+  "agent": {
+    "callable": false,
+    "description": "Build a layered urban context model from 3D BAG or OpenStreetMap data. Agent invocation is disabled until this imported draft is reviewed and packaged.",
+    "sideEffects": [
+      "document.write",
+      "network",
+      "filesystem.read",
+      "filesystem.write"
+    ]
+  },
+  "provenance": {
+    "status": "imported-draft",
+    "source": "GH Library snapshot — 2026-10-15 · source reconciled with COMMANDS 044050f — 2026-10-20",
+    "sourceFile": "X000_site_model.py",
+    "snapshotDate": "2026-10-15"
+  }
+}

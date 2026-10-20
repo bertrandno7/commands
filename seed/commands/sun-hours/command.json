@@ -1,0 +1,150 @@
+{
+  "schemaVersion": "1.0",
+  "slug": "sun-hours",
+  "name": "SunHours",
+  "commandName": "SunHours",
+  "version": "0.1.0",
+  "summary": "Compute shading-aware direct sun hours for a selected day.",
+  "description": "Uses a NOAA solar-position calculation to sample direct sun hours on geometry, including context shading, a colored mesh, legend, and sun path.",
+  "category": "Analysis",
+  "tags": [
+    "solar",
+    "sun-hours",
+    "environmental",
+    "mesh-analysis"
+  ],
+  "license": "LicenseRef-Pending",
+  "entrypoint": {
+    "file": "src/main.py",
+    "callable": "run_command"
+  },
+  "icon": "icon.svg",
+  "runtime": {
+    "host": "rhino",
+    "rhinoVersions": [
+      "7",
+      "8"
+    ],
+    "pythonEngine": "Rhino Python (engine unverified)"
+  },
+  "dependencies": {
+    "python": [],
+    "commands": [],
+    "rhinoPlugins": [],
+    "files": []
+  },
+  "permissions": [
+    "document.read",
+    "document.write"
+  ],
+  "interface": {
+    "inputs": [
+      {
+        "name": "Geo",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Ctx",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Lat",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Lon",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Month",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Day",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "H0",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "H1",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Step",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Grid",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "North",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "TZ",
+        "type": "Rhino value",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "mesh",
+        "type": "Rhino geometry / analysis data",
+        "required": false
+      },
+      {
+        "name": "hours",
+        "type": "Rhino geometry / analysis data",
+        "required": false
+      },
+      {
+        "name": "sun",
+        "type": "Rhino geometry / analysis data",
+        "required": false
+      },
+      {
+        "name": "info",
+        "type": "Rhino geometry / analysis data",
+        "required": false
+      },
+      {
+        "name": "sunpath",
+        "type": "Rhino geometry / analysis data",
+        "required": false
+      },
+      {
+        "name": "legend",
+        "type": "Rhino geometry / analysis data",
+        "required": false
+      }
+    ]
+  },
+  "agent": {
+    "callable": false,
+    "description": "Compute shading-aware direct sun hours for a selected day. Agent invocation is disabled until this imported draft is reviewed and packaged.",
+    "sideEffects": [
+      "document.read",
+      "document.write"
+    ]
+  },
+  "provenance": {
+    "status": "imported-draft",
+    "source": "GH Library snapshot — 2026-10-15 · source reconciled with COMMANDS 044050f — 2026-10-20",
+    "sourceFile": "A001_sun_hours.py",
+    "snapshotDate": "2026-10-15"
+  }
+}

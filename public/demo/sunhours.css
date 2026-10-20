@@ -1,0 +1,188 @@
+:root{--ink:#161718;--muted:#8e918f;--line:#e0e1df;--paper:#f7f7f5;--soft:#eceeeb;--lime:#b8e978}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}button,input,select{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}
+.topbar{height:66px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,4vw,70px)}
+.brand{font-size:21px;font-weight:750;letter-spacing:-.04em;display:flex;align-items:center;gap:10px}.mark{background:#151617;color:#fff;width:30px;height:30px;display:grid;place-items:center;border-radius:6px;font-size:20px}.brand-small{font-size:10px;letter-spacing:.14em;color:#aaa;margin-left:-5px}.live{font-size:10px;font-weight:800;letter-spacing:.14em;color:#606a55}.pulse,.green-dot{width:7px;height:7px;background:#79bf41;border-radius:50%;display:inline-block;margin-right:8px}.back{font-size:12px;font-weight:600}
+.page{max-width:1510px;margin:auto;padding:42px clamp(18px,4vw,70px) 80px}
+.eyebrow{font-size:10px;font-weight:800;letter-spacing:.16em;color:#7d847a;margin-bottom:16px}
+.intro{display:flex;justify-content:space-between;gap:35px;align-items:end;padding:14px 0 35px}
+.intro h1{font-size:clamp(52px,6.6vw,108px);letter-spacing:-.085em;line-height:1;margin:0 0 16px;font-weight:780}.period{color:#94bf70}.intro p{color:#686d69;line-height:1.55;font-size:14px;max-width:640px;margin:0}.intro-aside{display:grid;grid-template-columns:auto auto;gap:6px 16px;min-width:250px;font-size:10px;align-items:center}.intro-aside span{letter-spacing:.08em;color:#aaa}.intro-aside strong{font-size:11px;text-align:right}
+.workspace{display:grid;grid-template-columns:310px minmax(0,1fr);gap:14px;min-height:600px}
+.control-panel,.visual-panel{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.control-panel{padding:24px;display:flex;flex-direction:column}.panel-title{display:flex;align-items:center;gap:10px;margin-bottom:27px}.panel-title span{font-family:monospace;color:#9b9f9a;font-size:12px}.panel-title h2{font-size:19px;letter-spacing:-.035em;margin:0}.field{font-size:10px;font-weight:700;letter-spacing:.1em;color:#828682;display:flex;flex-direction:column;gap:8px;margin-bottom:19px}.field input,.field select{height:40px;border:1px solid #dcdfdc;border-radius:5px;background:#fbfbf9;color:#252826;padding:0 10px;width:100%;font-size:13px;font-weight:500;letter-spacing:0;min-width:0}.field input:focus,.field select:focus{outline:2px solid #b8e978}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.presets{display:flex;gap:6px;margin:0 0 18px}.presets button{border:1px solid var(--line);border-radius:5px;background:white;font-size:11px;padding:9px;flex:1}.presets button.selected{background:#1a1b1a;color:white;border-color:#1a1b1a}
+.run-button{width:100%;background:#1b1d1b;border:0;border-radius:5px;color:#fff;padding:14px;display:flex;align-items:center;gap:14px;font-weight:700;font-size:12px}.run-button .arrow{margin-left:auto;font-size:16px}.run-button:disabled{opacity:.5;cursor:wait}
+.hint{color:#929792;font-size:11px;line-height:1.55;margin:15px 0 30px}.panel-bottom{margin-top:auto;border-top:1px solid var(--line);padding-top:17px;color:#939993;font-size:10px}
+.progress-wrap{padding:12px 0 3px;font-size:11px;color:#929792}.progress-bar{height:4px;background:#eee;border-radius:10px;overflow:hidden;margin-bottom:8px}.progress-bar div{height:100%;background:#85bb58;width:0;transition:width .12s}
+.visual-panel{position:relative;display:flex;flex-direction:column;background:#edeeec}.viewer-bar{padding:16px 20px;background:#fff;display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--line)}.viewer-bar strong{font-size:13px;display:block}.viewer-bar span{font-size:10px;color:#9a9f9a;margin-top:4px;display:block}.view-actions{display:flex;gap:6px}.view-actions button{background:#fff;border:1px solid var(--line);border-radius:4px;padding:9px 12px;font-size:11px}
+#view{display:block;width:100%;height:clamp(360px,42vw,620px);touch-action:pan-y;cursor:grab}#view.dragging{cursor:grabbing;touch-action:none}
+.viewer-footer{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid #dadfda;color:#8d958d;font-size:10px;letter-spacing:.06em}
+.legend{position:absolute;left:18px;bottom:58px;background:rgba(255,255,255,.93);border:1px solid #deded8;padding:13px 14px;width:205px;backdrop-filter:blur(10px);border-radius:5px}.legend-head{display:flex;justify-content:space-between;font-size:9px;letter-spacing:.07em;margin-bottom:10px}.legend-head span{color:#999}.gradient{height:9px;background:linear-gradient(90deg,rgb(40,60,160),rgb(60,170,200) 33%,rgb(245,210,60) 66%,rgb(215,50,40));border-radius:2px}.ticks{display:flex;justify-content:space-between;color:#9a9a9a;font-size:8px;margin-top:6px}
+.results{margin-top:48px}.results-heading{display:flex;align-items:end;justify-content:space-between;margin-bottom:18px}.results-heading h2,.about h2{font-size:clamp(24px,3.4vw,42px);letter-spacing:-.05em;margin:0}.result-label{color:#919892;font-size:11px}.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.metrics article{background:#fff;border:1px solid var(--line);padding:19px 16px 17px;min-height:127px}.metrics article span{display:block;color:#9a9d97;font-size:9px;letter-spacing:.08em;font-weight:800}.metrics strong{display:block;font-size:clamp(27px,3.5vw,44px);letter-spacing:-.05em;margin-top:13px}.metrics small{font-size:10px;color:#989d96}.data-bar{display:flex;gap:22px;align-items:center;flex-wrap:wrap;margin-top:10px;font-size:10px;color:#929892}.data-bar button{margin-left:auto;border:1px solid var(--line);background:white;border-radius:4px;padding:10px 14px;color:#343735}.data-bar button:disabled{opacity:.4}
+.about{display:grid;grid-template-columns:1fr 1fr;gap:60px;padding:70px 0 0;margin-top:55px;border-top:1px solid var(--line)}.about p{font-size:13px;color:#686e67;line-height:1.7;margin:0 0 16px}.about a{font-size:13px;font-weight:700;text-decoration:underline}
+@media(max-width:1080px){.workspace{grid-template-columns:275px minmax(0,1fr)}.metrics{grid-template-columns:repeat(3,1fr)}.intro-aside{display:none}}
+@media(max-width:760px){.page{padding:25px 12px 55px}.topbar{padding:0 14px}.live{display:none}.brand{font-size:18px}.intro{padding:8px 5px 26px}.workspace{grid-template-columns:1fr}.control-panel{padding:19px}.panel-title{margin-bottom:18px}.field{margin-bottom:14px}.hint{margin-bottom:14px}.visual-panel{min-height:470px}#view{height:410px}.legend{left:10px;bottom:55px;width:170px;padding:10px}.viewer-footer{font-size:8px}.metrics{grid-template-columns:repeat(2,1fr);gap:8px}.metrics article{min-height:112px}.metrics article span{font-size:8px}.data-bar button{width:100%;margin-left:0}.about{grid-template-columns:1fr;gap:25px;padding-top:45px}.results{margin-top:36px}.result-label{max-width:90px;text-align:right}.viewer-bar{padding:12px}.view-actions button{font-size:10px;padding:8px}}
+
+/* WebGL orbit controls: touch-action must be disabled before gestures start. */
+#view{
+  touch-action:none!important;
+  -webkit-user-select:none;
+  user-select:none;
+  cursor:grab;
+  overscroll-behavior:contain;
+}
+#view.dragging{cursor:grabbing}
+@media(max-width:760px){
+  .viewer-footer span:first-child{
+    font-size:9px;
+    letter-spacing:0;
+    max-width:58%;
+    line-height:1.35
+  }
+  .viewer-footer span:last-child{text-align:right;max-width:42%;line-height:1.35}
+}
+
+
+/* Rhino-inspired viewport UI. Touch tool is explicitly selectable, while RMB
+   gestures remain Rhino-compatible independently of the chosen left-drag tool. */
+.viewer-bar{flex-wrap:wrap;row-gap:12px}
+.viewer-title{min-width:140px;flex:1}
+.view-actions{flex-wrap:wrap;justify-content:flex-end;align-items:center}
+.view-projection{display:flex;align-items:center;border:1px solid var(--line);
+  border-radius:4px;padding:0 2px;background:#fff}
+.view-projection select{height:34px;border:0;outline:0;background:transparent;
+  font-size:11px;font-weight:700;padding:0 7px;cursor:pointer;color:#343c35}
+.view-toolgroup{display:flex;align-items:center;padding:2px;border:1px solid var(--line);
+  background:#f2f4f0;border-radius:5px}
+.view-toolgroup button{background:transparent;border:0;padding:7px 10px;
+  color:#666;font-size:11px}
+.view-toolgroup button.active{background:#202920;color:#fff;
+  border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.view-toolgroup button:focus-visible,.view-projection select:focus-visible{
+  outline:2px solid #79bf41;outline-offset:2px}
+#navHint{letter-spacing:0;text-transform:none;line-height:1.45}
+@media(max-width:900px){
+  .viewer-title{flex-basis:100%}
+  .view-actions{width:100%;justify-content:flex-start}
+}
+@media(max-width:760px){
+  .viewer-bar{display:block}
+  .viewer-title{margin-bottom:10px}
+  .view-actions{gap:5px;justify-content:space-between}
+  .view-projection{flex:1}
+  .view-projection select{width:100%;max-width:140px}
+  .view-actions>button{font-size:10px;padding:8px}
+  .view-toolgroup button{font-size:10px;padding:7px}
+  .viewer-footer{align-items:flex-start}
+  .viewer-footer #navHint{max-width:58%}
+  .viewer-footer #viewStatus{max-width:40%}
+}
+@media(max-width:380px){
+  .view-toolgroup{order:2;width:100%;justify-content:space-around}
+  .view-toolgroup button{flex:1}
+}
+
+.view-toolgroup button:disabled{
+  color:#adb3ab;
+  opacity:.5;
+  cursor:not-allowed;
+}
+
+/* True pinhole Perspective lens selector; Top view remains parallel. */
+.view-lens{gap:4px;padding:0 5px}
+.view-lens span{font-size:10px;color:#8a8f89;font-weight:700;margin-left:3px}
+.view-lens select{padding:0 4px;width:auto}
+.view-lens:has(select:disabled){background:#f1f2ef;opacity:.52}
+.view-lens select:disabled{cursor:not-allowed}
+@media(max-width:760px){
+  .view-lens{flex:0 0 auto}
+  .view-lens select{max-width:68px!important}
+}
+
+
+/* Embedded COMMANDS details mode. This is the SAME live simulation with a
+   more compact presentation, not a replacement screenshot or second engine. */
+html.embedded-demo{
+  overflow-x:hidden;
+  color-scheme:light;
+}
+.embedded-demo body{background:#fff;overflow-x:hidden}
+.embedded-demo .topbar,
+.embedded-demo .intro,
+.embedded-demo .about{
+  display:none!important;
+}
+.embedded-demo .page{
+  padding:0;
+  margin:0;
+  width:100%;
+  max-width:none;
+}
+.embedded-demo .workspace{
+  display:grid;
+  grid-template-columns:minmax(230px,27%) minmax(0,1fr);
+  min-height:0;
+  gap:8px;
+  align-items:stretch;
+}
+.embedded-demo .control-panel,
+.embedded-demo .visual-panel{
+  border-radius:7px;
+  min-width:0;
+}
+.embedded-demo .control-panel{
+  padding:15px;
+}
+.embedded-demo .panel-title{margin-bottom:14px}
+.embedded-demo .panel-title h2{font-size:16px}
+.embedded-demo .field{margin-bottom:11px;font-size:9px;gap:5px}
+.embedded-demo .field input,
+.embedded-demo .field select{height:34px;font-size:12px}
+.embedded-demo .presets{margin-bottom:10px}
+.embedded-demo .presets button{padding:7px 3px;font-size:10px}
+.embedded-demo .run-button{padding:12px;font-size:11px}
+.embedded-demo .hint{margin:12px 0;font-size:10px;line-height:1.45}
+.embedded-demo .panel-bottom{font-size:9px;padding-top:10px}
+.embedded-demo .viewer-bar{padding:10px 12px;gap:6px}
+.embedded-demo .viewer-bar strong{font-size:11px}
+.embedded-demo .viewer-bar span{font-size:9px}
+.embedded-demo .view-actions{gap:4px}
+.embedded-demo .view-actions button{padding:6px 8px;font-size:10px}
+.embedded-demo .view-projection select{height:28px;font-size:10px}
+.embedded-demo .view-toolgroup button{padding:6px}
+.embedded-demo #view{height:475px;min-height:0}
+.embedded-demo .visual-panel{min-height:0}
+.embedded-demo .viewer-footer{padding:8px 10px}
+.embedded-demo .viewer-footer span{font-size:9px;line-height:1.3}
+.embedded-demo .results{margin-top:12px}
+.embedded-demo .results-heading{display:none}
+.embedded-demo .metrics{
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:6px;
+}
+.embedded-demo .metrics article{
+  min-height:93px;
+  padding:11px 10px;
+}
+.embedded-demo .metrics article span{font-size:8px}
+.embedded-demo .metrics strong{
+  font-size:clamp(18px,2.6vw,28px);
+  margin-top:10px;
+}
+.embedded-demo .metrics small{font-size:9px}
+.embedded-demo .data-bar{padding:3px 2px 12px;margin-top:8px;gap:8px 16px}
+.embedded-demo .data-bar button{padding:8px 12px}
+@media (max-width:720px){
+  .embedded-demo .workspace{grid-template-columns:1fr;gap:7px}
+  .embedded-demo .visual-panel{grid-row:1}
+  .embedded-demo .control-panel{grid-row:2}
+  .embedded-demo .viewer-title{display:none}
+  .embedded-demo .view-actions{justify-content:space-between}
+  .embedded-demo .view-toolgroup{order:0;width:auto}
+  .embedded-demo #view{height:330px}
+  .embedded-demo .hint{display:none}
+  .embedded-demo .panel-bottom{display:none}
+  .embedded-demo .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .embedded-demo .metrics article{min-height:80px}
+  .embedded-demo .metrics strong{font-size:23px}
+  .embedded-demo .viewer-footer #navHint{font-size:8px}
+}

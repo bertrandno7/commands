@@ -41,7 +41,7 @@ test("every listed command now has a real browser preview entry",()=>{
 });
 
 test("marketplace JavaScript contains no hand-maintained command catalogue",()=>{
-  const app=readFileSync("app.js","utf8");
+  const app=readFileSync("legacy/static-v0/app.js","utf8");
   assert.ok(!app.includes("const commands = ["));
   assert.ok(app.includes("generated/commands.json"));
   assert.ok(!app.includes("liveDemoPaths"));
