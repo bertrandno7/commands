@@ -2,6 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+if(new URLSearchParams(location.search).get("embed")==="1"){
+  document.documentElement.classList.add("embedded-demo");
+}
+</script>
 <meta name="theme-color" content="#f7f7f5">
 <title>SunHours — Live Demo · Commands</title>
 <link rel="stylesheet" href="./sunhours.css?v=5">
