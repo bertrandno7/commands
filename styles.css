@@ -225,3 +225,171 @@ h1{font-size:34px;letter-spacing:-.04em;margin:0 0 6px}
 .command-card[data-id="W001"] .card-visual:after{
   display:none;
 }
+
+
+/* The detail panel itself is the app: demo commands mount the actual browser
+   renderer and solver in an iframe, not a decorative placeholder. */
+body.detail-is-open{overflow:hidden}
+.detail-drawer.has-live-demo{
+  width:min(1120px,calc(100vw - 36px));
+}
+.detail-drawer.has-live-demo .detail-wrap{
+  padding:24px 24px 38px;
+}
+.detail-drawer.has-live-demo .detail-head{
+  grid-template-columns:80px minmax(0,1fr);
+}
+.detail-name-row{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.detail-name-row h2{margin:0}
+.detail-runtime-badge{
+  background:#e8f3df;
+  border:1px solid #d0e6c3;
+  border-radius:4px;
+  color:#38582e;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.07em;
+  padding:5px 7px;
+}
+.detail-thumb-live{
+  background-position:center;
+  background-size:cover;
+  background-repeat:no-repeat;
+  background-color:#e9ece6;
+  border:1px solid #e1e4dd;
+}
+.detail-live{
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  min-width:0;
+}
+.detail-live-heading{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px 16px;
+  align-items:center;
+  padding:11px 14px;
+  background:#f7f9f6;
+  border:1px solid #dce5d7;
+  border-radius:7px 7px 0 0;
+}
+.live-status{
+  color:#48623a;
+  white-space:nowrap;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.09em;
+}
+.live-dot{
+  display:inline-block;
+  width:7px;
+  height:7px;
+  background:#7dc856;
+  border-radius:100%;
+  margin-right:6px;
+  box-shadow:0 0 0 3px #e4f0da;
+}
+.live-instruction{
+  color:#8b9589;
+  font-size:11px;
+}
+.detail-expand{
+  margin-left:auto;
+  color:#263c26;
+  font-size:11px;
+  font-weight:750;
+  white-space:nowrap;
+  text-decoration:underline;
+  text-underline-offset:3px;
+}
+.detail-expand:hover{color:#679847}
+.detail-frame-wrap{
+  width:100%;
+  position:relative;
+  background:#eef0ec;
+  border:1px solid #dfe4dc;
+  border-top:0;
+  border-radius:0 0 7px 7px;
+  overflow:hidden;
+}
+.detail-live-iframe{
+  display:block;
+  width:100%;
+  height:820px;
+  border:0;
+  background:#fff;
+}
+.detail-frame-loading{
+  position:absolute;
+  z-index:2;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:14px;
+  background:#f5f7f3;
+  color:#687666;
+  font-size:13px;
+  text-align:center;
+  pointer-events:none;
+}
+.detail-frame-loading[hidden]{display:none}
+.loading-orbit{
+  display:block;
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  border:3px solid #d6e4ce;
+  border-top-color:#78ad60;
+  animation:command-spin .75s linear infinite;
+}
+@keyframes command-spin{to{transform:rotate(360deg)}}
+.detail-live-caption{
+  margin:9px 1px 4px;
+  color:#8f9890;
+  font-size:11px;
+  line-height:1.45;
+}
+.detail-drawer.has-live-demo .detail-columns{
+  margin-top:23px;
+  padding-top:20px;
+  border-top:1px solid #e6ebe4;
+}
+@media(max-width:900px){
+  .detail-drawer.has-live-demo{width:100vw}
+  .detail-drawer.has-live-demo .detail-wrap{
+    padding:15px 12px 35px;
+  }
+  .detail-live-iframe{height:840px}
+  .detail-live-heading{gap:8px}
+  .live-instruction{display:none}
+}
+@media(max-width:720px){
+  .detail-live-iframe{height:1150px}
+  .detail-drawer.has-live-demo .detail-head{
+    grid-template-columns:62px minmax(0,1fr);
+    gap:10px;
+  }
+  .detail-drawer.has-live-demo .detail-thumb{
+    width:62px;
+    height:62px;
+  }
+  .detail-drawer.has-live-demo .detail-head h2{font-size:23px}
+  .detail-drawer.has-live-demo .detail-columns{
+    grid-template-columns:1fr;
+  }
+  .detail-live-heading{padding:11px}
+  .live-status{font-size:9px}
+  .detail-expand{font-size:10px}
+  .detail-live-caption{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  .loading-orbit{animation:none}
+}
