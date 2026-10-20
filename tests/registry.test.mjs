@@ -23,9 +23,13 @@ test("every registry package points to real Python source",()=>{
   }
 });
 
-test("all declared web previews point to real browser files",()=>{
-  assert.equal(registry.livePreviewCount,3);
-  assert.deepEqual(live.map(c=>c.id).sort(),["A001","M004","W001"]);
+test("every listed command now has a real browser preview entry",()=>{
+  assert.equal(registry.livePreviewCount,registry.listedCount);
+  assert.equal(live.length,listed.length);
+  assert.deepEqual(
+    live.map(c=>c.id).sort(),
+    listed.map(c=>c.id).sort()
+  );
   for(const command of live){
     assert.ok(existsSync(command.preview.entry),command.id+" preview entry");
     assert.ok(command.preview.capture);
