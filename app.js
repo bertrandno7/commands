@@ -1,7 +1,7 @@
 const commands = [
   {id:"M005",name:"SunCarve",cat:"Massing",desc:"Greedy planar and stepped cuts that improve useful facade sun while controlling volume loss.",rhino:"7 + 8",network:"No",tags:["Solar","Optimization"],creator:"Bertrand Tan",version:"0.1.0"},
   {id:"A001",name:"SunHours",cat:"Analysis",desc:"Shading-aware sun-hours analysis using solar positions and context geometry.",rhino:"7 + 8",network:"No",tags:["Solar","Environmental"],creator:"Bertrand Tan",version:"0.1.0"},
-  {id:"W001",name:"WindScreen",cat:"Analysis",desc:"Fast 2D lattice-Boltzmann wind screening at pedestrian height.",rhino:"8",network:"Optional",tags:["Wind","Screening"],creator:"Bertrand Tan",version:"0.1.0"}
+  {id:"W001",name:"WindScreen",cat:"Analysis",desc:"Fast 2D lattice-Boltzmann wind screening at pedestrian height.",rhino:"8",network:"Optional",tags:["Wind","Screening"],creator:"Bertrand Tan",version:"0.1.0"},
   {id:"A002",name:"SolarRadiation",cat:"Analysis",desc:"Cumulative solar radiation and PV estimate with context shading and weather data.",rhino:"7 + 8",network:"Yes",tags:["Solar","PV"],creator:"Bertrand Tan",version:"0.1.0"},
   {id:"W002",name:"WindComfort",cat:"Analysis",desc:"NEN 8100 wind comfort screening across multiple wind sectors.",rhino:"8",network:"Yes",tags:["Wind","Comfort"],creator:"Bertrand Tan",version:"0.1.0"},
   {id:"X000",name:"SiteModel",cat:"Site",desc:"Generate 3D site context from latitude and longitude using BAG and OSM sources.",rhino:"7 + 8",network:"Yes",tags:["Context","OSM"],creator:"Bertrand Tan",version:"0.1.0"},
