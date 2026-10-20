@@ -427,7 +427,7 @@ export class SunHoursViewer {
     return rayOrigin.map((v,i)=>v+best*rayDirection[i]);
   }
 
-  /** Optional full camera roll: Alt+right drag in Perspective or Parallel. */
+  /** Deliberate camera roll: Shift+Alt+right drag (Rhino TiltView). */
   rollByScreen(dx){
     if(this.projection==="top")return;
     this.orientation=rollView(this.orientation,dx);
@@ -493,7 +493,9 @@ export class SunHoursViewer {
         return "orbit";
       }
       if(e.ctrlKey && !e.shiftKey)return "zoom";
-      if(e.altKey&&!e.ctrlKey&&!e.shiftKey&&this.projection!=="top")
+      // Rhino TiltView shortcut: Shift+Alt+RMB. Plain Alt must never
+      // accidentally roll the camera during ordinary navigation.
+      if(e.altKey&&e.shiftKey&&!e.ctrlKey&&this.projection!=="top")
         return "roll";
       if(e.shiftKey || this.projection!=="perspective")return "pan";
       return "orbit";
