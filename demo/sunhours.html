@@ -56,6 +56,7 @@
           <select id="viewProjection" aria-label="View projection">
             <option value="perspective">Perspective</option>
             <option value="top">Top</option>
+            <option value="parallel">Parallel (3D)</option>
           </select>
         </label>
         <label class="view-projection view-lens" title="Real camera focal length in Perspective">
@@ -95,6 +96,6 @@
 </section>
 <section class="about"><div><div class="eyebrow">03 / ABOUT THE METHOD</div><h2>Real computation.<br>Not an AI-generated heatmap.</h2></div><div><p>This browser implementation ports the sun-position equations and sampling logic from <strong>A001_sun_hours.py</strong>. It shoots rays toward the sun from sampled roof, facade and ground points, and counts unblocked direct-sun intervals.</p><p><strong>Current scope:</strong> box-shaped massing presets, local dates, fixed sample intervals and simplified geometry. It is not a replacement for the full Rhino tool, detailed daylight simulation, annual radiation or climate-based compliance studies.</p><p>Results are numerical estimates for design exploration. Accuracy depends on geometry detail, sample resolution, orientation and weather-independent direct sun assumptions.</p><a href="../">← Back to the command library</a></div></section>
 </main>
-<script type="module" src="./sunhours.js?v=5"></script>
+<script type="module" src="./sunhours.js?v=6"></script>
 </body>
 </html>
