@@ -94,7 +94,7 @@ function render(){
         <div class="tags"><span class="tag">${c.cat}</span>${c.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
         <div class="card-footer">
           <span class="card-stats">${c.id} · Rhino ${c.rhino}</span>
-          <button class="install-mini" data-install="${c.id}">Install</button>
+          <div class="card-actions">${c.id==="A001"?'<a class="try-demo" href="./demo/sunhours.html">▶ Try live demo</a>':""}<button class="install-mini" data-install="${c.id}">Install</button></div>
         </div>
       </div>
     </article>`).join("");
@@ -107,7 +107,7 @@ function openDetail(id){
   const isSaved = saved.has(c.id);
   document.querySelector("#saveCommand").textContent = isSaved ? "♥ Saved" : "♡ Save";
   document.querySelector("#detailContent").innerHTML = `
-    <div class="detail-wrap">
+    ${c.id==="A001"?'<a class="demo-banner" href="./demo/sunhours.html">☀ Run SunHours in your browser <span>Live demo ↗</span></a>':""}<div class="detail-wrap">
       <div class="detail-head">
         <div class="detail-thumb"></div>
         <div>
