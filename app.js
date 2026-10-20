@@ -1,6 +1,7 @@
 const commands = [
   {id:"M005",name:"SunCarve",cat:"Massing",desc:"Greedy planar and stepped cuts that improve useful facade sun while controlling volume loss.",rhino:"7 + 8",network:"No",tags:["Solar","Optimization"],creator:"Bertrand Tan",version:"0.1.0"},
   {id:"A001",name:"SunHours",cat:"Analysis",desc:"Shading-aware sun-hours analysis using solar positions and context geometry.",rhino:"7 + 8",network:"No",tags:["Solar","Environmental"],creator:"Bertrand Tan",version:"0.1.0"},
+  {id:"W001",name:"WindScreen",cat:"Analysis",desc:"Fast 2D lattice-Boltzmann wind screening at pedestrian height.",rhino:"8",network:"Optional",tags:["Wind","Screening"],creator:"Bertrand Tan",version:"0.1.0"}
   {id:"A002",name:"SolarRadiation",cat:"Analysis",desc:"Cumulative solar radiation and PV estimate with context shading and weather data.",rhino:"7 + 8",network:"Yes",tags:["Solar","PV"],creator:"Bertrand Tan",version:"0.1.0"},
   {id:"W002",name:"WindComfort",cat:"Analysis",desc:"NEN 8100 wind comfort screening across multiple wind sectors.",rhino:"8",network:"Yes",tags:["Wind","Comfort"],creator:"Bertrand Tan",version:"0.1.0"},
   {id:"X000",name:"SiteModel",cat:"Site",desc:"Generate 3D site context from latitude and longitude using BAG and OSM sources.",rhino:"7 + 8",network:"Yes",tags:["Context","OSM"],creator:"Bertrand Tan",version:"0.1.0"},
@@ -13,7 +14,6 @@ const commands = [
   {id:"F001",name:"FacadePanels",cat:"Facade",desc:"Panelize facade surfaces and evaluate flat versus warped panels.",rhino:"7 + 8",network:"No",tags:["Panels","Geometry"],creator:"Bertrand Tan",version:"0.1.0"},
   {id:"F002",name:"SunFacade",cat:"Facade",desc:"Sun-responsive facade grid where annual exposure controls opening size.",rhino:"7 + 8",network:"No",tags:["Solar","Facade"],creator:"Bertrand Tan",version:"0.1.0"},
   {id:"S001",name:"SpiralStair",cat:"Geometry",desc:"Generate a configurable spiral stair with treads, column, rail and balusters.",rhino:"7 + 8",network:"No",tags:["Stairs","Generator"],creator:"Bertrand Tan",version:"0.1.0"},
-  {id:"W001",name:"WindScreen",cat:"Analysis",desc:"Fast 2D lattice-Boltzmann wind screening at pedestrian height.",rhino:"8",network:"Optional",tags:["Wind","Screening"],creator:"Bertrand Tan",version:"0.1.0"}
 ];
 
 const categoryInfo = {
@@ -94,7 +94,7 @@ function render(){
         <div class="tags"><span class="tag">${c.cat}</span>${c.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
         <div class="card-footer">
           <span class="card-stats">${c.id} · Rhino ${c.rhino}</span>
-          <div class="card-actions">${c.id==="A001"?'<a class="try-demo" href="./demo/sunhours.html">▶ Try live demo</a>':""}<button class="install-mini" data-install="${c.id}">Install</button></div>
+          <div class="card-actions">${c.id==="A001"?'<a class="try-demo" href="./demo/sunhours.html">▶ Try live demo</a>':c.id==="W001"?'<a class="try-demo" href="./demo/wind.html">▶ Try live demo</a>':""}<button class="install-mini" data-install="${c.id}">Install</button></div>
         </div>
       </div>
     </article>`).join("");
@@ -107,7 +107,7 @@ function openDetail(id){
   const isSaved = saved.has(c.id);
   document.querySelector("#saveCommand").textContent = isSaved ? "♥ Saved" : "♡ Save";
   document.querySelector("#detailContent").innerHTML = `
-    ${c.id==="A001"?'<a class="demo-banner" href="./demo/sunhours.html">☀ Run SunHours in your browser <span>Live demo ↗</span></a>':""}<div class="detail-wrap">
+    ${c.id==="A001"?'<a class="demo-banner" href="./demo/sunhours.html">☀ Run SunHours in your browser <span>Live demo ↗</span></a>':c.id==="W001"?'<a class="demo-banner" href="./demo/wind.html">↝ Run WindScreen LBM in your browser <span>Live demo ↗</span></a>':""}<div class="detail-wrap">
       <div class="detail-head">
         <div class="detail-thumb"></div>
         <div>
