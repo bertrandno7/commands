@@ -4,8 +4,9 @@
  * Native WebGL 1 with real GPU depth testing. No CDN or framework required.
  * Perspective uses an actual pinhole projection (depth-dependent 1/w scaling).
  * Rhino Top uses a separate parallel projection with north consistently up.
- * Orbit uses camera-relative quaternions, enabling unlimited rotations
- * through both poles and underneath geometry without clipping angles.
+ * Default Rhino-style orbit: yaw around fixed world Z, pitch around camera
+ * right. It is slower, predictable and never introduces accidental roll;
+ * vertical rotation can still pass both poles without artificial clamping.
  * Rhino-inspired desktop navigation (Perspective):
  *   RMB orbit, Shift+RMB pan, Ctrl+RMB / wheel zoom, MMB pan.
  * Top view: RMB pan, Ctrl+Shift+RMB rotates as a parallel view.
@@ -16,9 +17,9 @@
  */
 import { hoursColor } from "./sunhours-engine.js?v=3";
 import {
-  defaultCameraOrientation, cameraAxes, freeOrbit, rollView,
+  defaultCameraOrientation, cameraAxes, rhinoWorldOrbit, rollView,
   quatMultiply, quatConjugate, quatRotate
-} from "./camera-rotation.js?v=2";
+} from "./camera-rotation.js?v=3";
 
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 const dot = (a,b) => a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
@@ -348,7 +349,7 @@ export class SunHoursViewer {
   orbitByScreen(dx,dy,pivot=null){
     if(this.projection==="top")return;
     const previous=[...this.orientation];
-    const next=freeOrbit(previous,dx,dy);
+    const next=rhinoWorldOrbit(previous,dx,dy);
 
     if(pivot){
       const cam=this.camera();
