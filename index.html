@@ -6,7 +6,7 @@
   <meta name="description" content="Commands — discover, download, share and remix small design commands." />
   <title>Commands — Discover. Download. Share. Remix.</title>
   <link rel="preconnect" href="https://images.unsplash.com">
-  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./styles.css?v=4" />
 </head>
 <body>
   <div class="app">
@@ -77,14 +77,138 @@
         </div>
       </section>
 
-      <section id="categoryStrip" class="category-strip"></section>
+      <section id="categoryStrip" class="category-strip">
+  <button class="category-card"><span class="category-icon">◫</span><strong>Analysis</strong><small>5</small><p>Environmental and spatial analysis</p></button>
+  <button class="category-card"><span class="category-icon">▱</span><strong>Massing</strong><small>3</small><p>Urban form and volumetrics</p></button>
+  <button class="category-card"><span class="category-icon">▦</span><strong>Facade</strong><small>2</small><p>Panels, systems and envelopes</p></button>
+  <button class="category-card"><span class="category-icon">✦</span><strong>Generative</strong><small>2</small><p>Form finding and rule-based growth</p></button>
+  <button class="category-card"><span class="category-icon">◇</span><strong>Geometry</strong><small>1</small><p>Modelling tools and generators</p></button>
+  <button class="category-card"><span class="category-icon">⌖</span><strong>Site</strong><small>1</small><p>Context, mapping and site data</p></button>
+</section>
 
       <div class="result-row">
-        <span id="resultMeta"></span>
+        <span id="resultMeta">15 commands</span>
         <span class="seed-note">Seed library · Hark / GH Python Library</span>
       </div>
 
-      <section id="commandGrid" class="command-grid"></section>
+      <section id="commandGrid" class="command-grid">
+  <article class="command-card" data-id="M005" data-cat="Massing">
+    <div class="card-visual"></div>
+    <div class="card-body">
+      <div class="card-title-row">
+        <div class="card-name"><span class="card-icon">SU</span><h3>SunCarve</h3></div>
+        <span class="version">v0.1.0</span>
+      </div>
+      <p>Greedy cuts that improve useful facade sun while controlling volume loss.</p>
+      <div class="creator"><span class="creator-avatar"></span><span>Bertrand Tan</span></div>
+      <div class="tags"><span class="tag">Massing</span><span class="tag">Solar</span><span class="tag">Optimization</span></div>
+      <div class="card-footer"><span class="card-stats">M005 · Rhino</span><button class="install-mini">Install</button></div>
+    </div>
+  </article>
+  <article class="command-card" data-id="A001" data-cat="Analysis">
+    <div class="card-visual"></div>
+    <div class="card-body">
+      <div class="card-title-row">
+        <div class="card-name"><span class="card-icon">SU</span><h3>SunHours</h3></div>
+        <span class="version">v0.1.0</span>
+      </div>
+      <p>Shading-aware sun-hours analysis using solar positions and context geometry.</p>
+      <div class="creator"><span class="creator-avatar"></span><span>Bertrand Tan</span></div>
+      <div class="tags"><span class="tag">Analysis</span><span class="tag">Solar</span><span class="tag">Environmental</span></div>
+      <div class="card-footer"><span class="card-stats">A001 · Rhino</span><button class="install-mini">Install</button></div>
+    </div>
+  </article>
+  <article class="command-card" data-id="A002" data-cat="Analysis">
+    <div class="card-visual"></div>
+    <div class="card-body">
+      <div class="card-title-row">
+        <div class="card-name"><span class="card-icon">SO</span><h3>SolarRadiation</h3></div>
+        <span class="version">v0.1.0</span>
+      </div>
+      <p>Cumulative solar radiation and PV estimate with weather and context shading.</p>
+      <div class="creator"><span class="creator-avatar"></span><span>Bertrand Tan</span></div>
+      <div class="tags"><span class="tag">Analysis</span><span class="tag">Solar</span><span class="tag">PV</span></div>
+      <div class="card-footer"><span class="card-stats">A002 · Rhino</span><button class="install-mini">Install</button></div>
+    </div>
+  </article>
+  <article class="command-card" data-id="W002" data-cat="Analysis">
+    <div class="card-visual"></div>
+    <div class="card-body">
+      <div class="card-title-row">
+        <div class="card-name"><span class="card-icon">WI</span><h3>WindComfort</h3></div>
+        <span class="version">v0.1.0</span>
+      </div>
+      <p>NEN 8100 wind comfort screening across multiple wind sectors.</p>
+      <div class="creator"><span class="creator-avatar"></span><span>Bertrand Tan</span></div>
+      <div class="tags"><span class="tag">Analysis</span><span class="tag">Wind</span><span class="tag">Comfort</span></div>
+      <div class="card-footer"><span class="card-stats">W002 · Rhino</span><button class="install-mini">Install</button></div>
+    </div>
+  </article>
+  <article class="command-card" data-id="X000" data-cat="Site">
+    <div class="card-visual"></div>
+    <div class="card-body">
+      <div class="card-title-row">
+        <div class="card-name"><span class="card-icon">SI</span><h3>SiteModel</h3></div>
+        <span class="version">v0.1.0</span>
+      </div>
+      <p>Generate 3D context from latitude and longitude using BAG and OSM sources.</p>
+      <div class="creator"><span class="creator-avatar"></span><span>Bertrand Tan</span></div>
+      <div class="tags"><span class="tag">Site</span><span class="tag">Context</span><span class="tag">OSM</span></div>
+      <div class="card-footer"><span class="card-stats">X000 · Rhino</span><button class="install-mini">Install</button></div>
+    </div>
+  </article>
+  <article class="command-card" data-id="M003" data-cat="Massing">
+    <div class="card-visual"></div>
+    <div class="card-body">
+      <div class="card-title-row">
+        <div class="card-name"><span class="card-icon">DE</span><h3>Density</h3></div>
+        <span class="version">v0.1.0</span>
+      </div>
+      <p>GFA, FSI, GSI, OSR, envelope and orientation metrics.</p>
+      <div class="creator"><span class="creator-avatar"></span><span>Bertrand Tan</span></div>
+      <div class="tags"><span class="tag">Massing</span><span class="tag">Metrics</span><span class="tag">Spacemate</span></div>
+      <div class="card-footer"><span class="card-stats">M003 · Rhino</span><button class="install-mini">Install</button></div>
+    </div>
+  </article>
+  <article class="command-card" data-id="M004" data-cat="Massing">
+    <div class="card-visual"></div>
+    <div class="card-body">
+      <div class="card-title-row">
+        <div class="card-name"><span class="card-icon">PI</span><h3>Pixelate</h3></div>
+        <span class="version">v0.1.0</span>
+      </div>
+      <p>Pixelate massing into cubes, tetrahedra or staggered cells.</p>
+      <div class="creator"><span class="creator-avatar"></span><span>Bertrand Tan</span></div>
+      <div class="tags"><span class="tag">Massing</span><span class="tag">Geometry</span><span class="tag">Voxel</span></div>
+      <div class="card-footer"><span class="card-stats">M004 · Rhino</span><button class="install-mini">Install</button></div>
+    </div>
+  </article>
+  <article class="command-card" data-id="M006" data-cat="Analysis">
+    <div class="card-visual"></div>
+    <div class="card-body">
+      <div class="card-title-row">
+        <div class="card-name"><span class="card-icon">EM</span><h3>EmbodiedCarbon</h3></div>
+        <span class="version">v0.1.0</span>
+      </div>
+      <p>Estimate embodied carbon by structure, facade, reuse and new construction.</p>
+      <div class="creator"><span class="creator-avatar"></span><span>Bertrand Tan</span></div>
+      <div class="tags"><span class="tag">Analysis</span><span class="tag">Carbon</span><span class="tag">LCA</span></div>
+      <div class="card-footer"><span class="card-stats">M006 · Rhino</span><button class="install-mini">Install</button></div>
+    </div>
+  </article>
+  <article class="command-card" data-id="E001" data-cat="Evaluation">
+    <div class="card-visual"></div>
+    <div class="card-body">
+      <div class="card-title-row">
+        <div class="card-name"><span class="card-icon">SC</span><h3>Scoreboard</h3></div>
+        <span class="version">v0.1.0</span>
+      </div>
+      <p>Snapshot, weight, rank and compare design options with Pareto scoring.</p>
+      <div class="creator"><span class="creator-avatar"></span><span>Bertrand Tan</span></div>
+      <div class="tags"><span class="tag">Evaluation</span><span class="tag">Options</span><span class="tag">Pareto</span></div>
+      <div class="card-footer"><span class="card-stats">E001 · Rhino</span><button class="install-mini">Install</button></div>
+    </div>
+  </article></section>
       <section id="emptyState" class="empty-state" hidden>
         <div>⌁</div>
         <h2>No commands found</h2>
@@ -133,6 +257,6 @@
     </div>
   </dialog>
 
-  <script src="./app.js"></script>
+  <script src="./app.js?v=4"></script>
 </body>
 </html>
