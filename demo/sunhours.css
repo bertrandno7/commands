@@ -80,3 +80,9 @@
   .view-toolgroup{order:2;width:100%;justify-content:space-around}
   .view-toolgroup button{flex:1}
 }
+
+.view-toolgroup button:disabled{
+  color:#adb3ab;
+  opacity:.5;
+  cursor:not-allowed;
+}
