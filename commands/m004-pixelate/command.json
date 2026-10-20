@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "0.2",
+  "id": "M004",
+  "slug": "pixelate",
+  "name": "Pixelate",
+  "version": "0.1.0",
+  "summary": "Pixelate massing into cubes, tetrahedra or staggered triangular cells.",
+  "kind": "command",
+  "listed": true,
+  "author": {
+    "name": "Bertrand Tan"
+  },
+  "runtime": {
+    "host": "rhino",
+    "rhino": "7 + 8",
+    "language": "python",
+    "entry": "main.py"
+  },
+  "category": "Massing",
+  "tags": [
+    "Geometry",
+    "Voxel"
+  ],
+  "network": "none",
+  "preview": {
+    "type": "web",
+    "entry": "demo/pixel.html",
+    "capture": ".pixel-stage",
+    "ready": {
+      "selector": "#progressLabel",
+      "includes": "complete",
+      "metric": "#count"
+    }
+  },
+  "source": {
+    "origin": "Hark Python Library"
+  }
+}
