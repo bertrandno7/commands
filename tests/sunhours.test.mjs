@@ -4,6 +4,9 @@ import {
   getScene, sunSamples, sunPosition, analyzeSunHours, rayHitsBox
 } from "../demo/sunhours-engine.js";
 import { SunHoursViewer } from "../demo/sunhours-viewer.js";
+import {
+  quatRotate, quatNormalize, cameraAxes, freeOrbit, defaultCameraOrientation
+} from "../demo/camera-rotation.js";
 
 const BASE={lat:51.92,lon:4.48,year:2026,step:60,grid:6};
 
@@ -105,14 +108,13 @@ test("Perspective: RMB orbits without panning (Rhino default)",()=>{
   const {canvas}=mockCanvas();
   const v=new SunHoursViewer(canvas);
   v.setData(getScene("courtyard"),null);
-  const yaw=v.yaw,elevation=v.elevation,target=[...v.target];
+  const pose=[...v.orientation],target=[...v.target];
   const mouse={pointerType:"mouse",button:2};
   v.pointerDown(ev(1,100,100,mouse));
   v.pointerMove(ev(1,155,130,mouse));
   v.pointerUp(ev(1,155,130,mouse));
-  assert.notEqual(v.yaw,yaw);
-  assert.notEqual(v.elevation,elevation);
-  assert.deepEqual(v.target,target);
+  assert.notDeepEqual(v.orientation,pose,"RMB must tumble the camera");
+  assert.deepEqual(v.target,target,"Normal orbit must preserve its pivot");
 });
 
 test("Perspective: Shift+RMB pans geometry in screen-drag direction",()=>{
@@ -120,14 +122,13 @@ test("Perspective: Shift+RMB pans geometry in screen-drag direction",()=>{
   const v=new SunHoursViewer(canvas);
   v.setData(getScene("courtyard"),null);
   const point=targetPlanePoint(v),before=screenPosition(v,point);
-  const yaw=v.yaw,elevation=v.elevation;
+  const pose=[...v.orientation];
   const mouse={pointerType:"mouse",button:2,shiftKey:true};
   v.pointerDown(ev(2,140,140,mouse));
   v.pointerMove(ev(2,220,195,mouse));
   v.pointerUp(ev(2,220,195,mouse));
   assertScreenFollows(v,point,before,80,55);
-  assert.equal(v.yaw,yaw);
-  assert.equal(v.elevation,elevation);
+  assert.deepEqual(v.orientation,pose,"Panning must not alter camera orientation");
 });
 
 test("Perspective: MMB pans while Ctrl+RMB zooms toward pointer",()=>{
@@ -177,10 +178,10 @@ test("Top: RMB pans; Ctrl+Shift+RMB rotates while remaining parallel",()=>{
   v.pointerDown(ev(6,110,150,forceRotate));
   assert.equal(v.projection,"parallel");
   assert.equal(v.camera().parallel,true,"Ctrl+Shift+RMB must stay orthographic");
-  const yaw=v.yaw;
+  const pose=[...v.orientation];
   v.pointerMove(ev(6,140,150,forceRotate));
   v.pointerUp(ev(6,140,150,forceRotate));
-  assert.notEqual(v.yaw,yaw);
+  assert.notDeepEqual(v.orientation,pose);
   assert.equal(v.camera().parallel,true);
   const parallelPoint=targetPlanePoint(v);
   const beforeParallel=screenPosition(v,parallelPoint);
@@ -194,11 +195,11 @@ test("Touch: one-finger Orbit/Pan tool and two-finger screen-following pan",()=>
   const {canvas}=mockCanvas();
   const v=new SunHoursViewer(canvas);
   v.setData(getScene("courtyard"),null);
-  const yaw=v.yaw;
+  const pose=[...v.orientation];
   v.pointerDown(ev(1,100,110));
   v.pointerMove(ev(1,145,110));
   v.pointerUp(ev(1,145,110));
-  assert.notEqual(v.yaw,yaw);
+  assert.notDeepEqual(v.orientation,pose);
 
   v.setTool("pan");
   const point=targetPlanePoint(v),before=screenPosition(v,point);
@@ -228,7 +229,7 @@ test("Touch: one-finger Orbit/Pan tool and two-finger screen-following pan",()=>
 
   v.reset();
   assert.equal(v.zoom,1);
-  assert.equal(v.yaw,-0.72);
+  assert.deepEqual(v.orientation,v.defaultOrientation);
 });
 
 test("Perspective is true depth-dependent pinhole projection",()=>{
@@ -287,4 +288,87 @@ test("Perspective zoom anchors its target-plane point under the cursor",()=>{
   const after=screenPosition(v,anchor);
   assert.ok(Math.abs(after[0]-before[0])<1e-7);
   assert.ok(Math.abs(after[1]-before[1])<1e-7);
+});
+
+function vecDot(a,b){return a.reduce((sum,v,i)=>sum+v*b[i],0);}
+function vecDist(a,b){return Math.hypot(...a.map((v,i)=>v-b[i]));}
+function near(a,b,tol=1e-9){return Math.abs(a-b)<tol;}
+
+/**
+ * This regression catches the exact reported bug: the old camera
+ * clamped elevation to [0.08,1.50], so objects could never be viewed from
+ * below. Camera-local quaternion tumbling must travel through zenith/nadir.
+ */
+test("Free orbit crosses both poles, goes underneath and never hits a clamp",()=>{
+  const {canvas}=mockCanvas();
+  const v=new SunHoursViewer(canvas);
+  v.setData(getScene("courtyard"),null);
+  const initial=v.camera().forward;
+  let minZ=1,maxZ=-1;
+  let crossedPole=false,downwardFrames=0;
+  for(let i=0;i<1000;i++){
+    v.orbitByScreen(0,18);
+    const cam=v.camera();
+    // Forward is camera -> pivot; looking downward means forward.z<0.
+    minZ=Math.min(minZ,cam.forward[2]);
+    maxZ=Math.max(maxZ,cam.forward[2]);
+    if(cam.forward[2]>.90)crossedPole=true;
+    if(cam.forward[2]<-.90)downwardFrames++;
+    assert.ok(Number.isFinite(cam.right[0]));
+    assert.ok(near(Math.hypot(...v.orientation),1,1e-10));
+    assert.ok(near(Math.hypot(...cam.up),1,1e-10));
+    assert.ok(near(vecDot(cam.right,cam.up),0,1e-10));
+    assert.ok(near(vecDot(cam.right,cam.forward),0,1e-10));
+  }
+  assert.ok(maxZ>.95,"Can look upward from underneath the buildings");
+  assert.ok(minZ<-.95,"Can look straight down from above");
+  assert.ok(crossedPole&&downwardFrames>0);
+  assert.ok(vecDist(v.camera().forward,initial)>.1);
+
+});
+
+test("Unbounded orbit supports multiple revolutions with stable orientation",()=>{
+  const q0=defaultCameraOrientation();
+  // 2pi for ~966.64 px at .0065rad/px. Three loops must bring the
+  // camera back close to the start without accumulating Euler drift.
+  const oneLoop=2*Math.PI/.0065;
+  const q1=freeOrbit(q0,oneLoop,0);
+  const q3=freeOrbit(q0,oneLoop*3,0);
+  const a=cameraAxes(q0),b=cameraAxes(q1),c=cameraAxes(q3);
+  assert.ok(vecDist(a.forward,b.forward)<1e-8);
+  assert.ok(vecDist(a.up,b.up)<1e-8);
+  assert.ok(vecDist(a.forward,c.forward)<1e-8);
+  assert.ok(vecDist(a.right,c.right)<1e-8);
+
+  // Near a pole, sideways orbit should still respond smoothly.
+  const up=q0;
+  const pole=freeOrbit(up,0,(Math.PI/2)/.0065);
+  const sideways=freeOrbit(pole,80,0);
+  assert.ok(vecDist(cameraAxes(pole).forward,cameraAxes(sideways).forward)>.01);
+});
+
+test("Alt+RMB rolls view around its optical axis, without losing view direction",()=>{
+  const {canvas}=mockCanvas();
+  const v=new SunHoursViewer(canvas);
+  v.setData(getScene("courtyard"),null);
+  const before=v.camera();
+  const roll={pointerType:"mouse",button:2,altKey:true};
+  v.pointerDown(ev(22,180,155,roll));
+  v.pointerMove(ev(22,330,155,roll));
+  v.pointerUp(ev(22,330,155,roll));
+  const after=v.camera();
+  assert.ok(vecDist(before.forward,after.forward)<1e-8,"Rolling should not change viewing direction");
+  assert.ok(vecDist(before.up,after.up)>.1,"Horizon should visibly roll");
+});
+
+test("Top view orientation restores correctly after leaving and returning",()=>{
+  const {canvas}=mockCanvas();
+  const v=new SunHoursViewer(canvas);
+  v.setData(getScene("tower"),null);
+  v.orbitByScreen(130,80);
+  const pose=[...v.orientation];
+  v.setProjection("top");
+  assert.deepEqual(v.camera().up,[0,1,0]);
+  v.setProjection("perspective");
+  assert.ok(vecDist(v.orientation,pose)<1e-10,"Restore prior free camera view");
 });
