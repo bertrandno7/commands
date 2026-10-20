@@ -8,13 +8,12 @@
   let pending=false;
   function sendHeight(){
     pending=false;
-    const body=document.body;
-    if(!body)return;
-    const height=Math.ceil(Math.max(
-      body.getBoundingClientRect().height,
-      body.scrollHeight,
-      document.documentElement.scrollHeight
-    ));
+    // Measure intrinsic content, not documentElement.scrollHeight.
+    // The latter can equal the frame's current viewport height and cause
+    // an endless iframe grows -> resize -> grows feedback loop.
+    const page=document.querySelector(".page");
+    if(!page)return;
+    const height=Math.ceil(page.getBoundingClientRect().height);
     if(!Number.isFinite(height)||height<100)return;
     if(Math.abs(height-lastHeight)<=3)return;
     lastHeight=height;
