@@ -15,6 +15,11 @@ export function quatNormalize(q){
   return q.map(v=>v/n);
 }
 
+/** Unit-quaternion inverse; rotation helpers always normalize their results. */
+export function quatConjugate(q){
+  return [-q[0],-q[1],-q[2],q[3]];
+}
+
 export function quatMultiply(a,b){
   const [ax,ay,az,aw]=a,[bx,by,bz,bw]=b;
   return [
