@@ -31,7 +31,7 @@ const CATEGORY_BY_PREFIX={
 
 function posix(path){return path.split(sep).join("/");}
 function titleCase(value){
-  return value
+  return basename(value)
     .replace(/^[A-Za-z]\d{3}[_-]?/,"")
     .replace(/\.py$/i,"")
     .split(/[_\-\s]+/)
@@ -129,7 +129,14 @@ function normalizeManifest(raw,packageDir,entryPath){
   if(!existsSync(runtimeFile))
     throw new Error(id+": runtime entry does not exist: "+posix(relative(ROOT,runtimeFile)));
 
-  const preview=validatePreview(raw.preview||standardPreview(packageDir),id);
+  const detectedPreview=standardPreview(packageDir);
+  const declaredPreview=raw.preview;
+  const previewSource=declaredPreview?.type==="web"
+    ?declaredPreview
+    :(detectedPreview.type==="web"&&!declaredPreview?.disabled
+      ?detectedPreview
+      :(declaredPreview||detectedPreview));
+  const preview=validatePreview(previewSource,id);
   return {
     schemaVersion:String(raw.schemaVersion||"0.2"),
     id,
