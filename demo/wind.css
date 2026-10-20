@@ -94,3 +94,38 @@
   .display-controls{padding:10px}
   .viewer-footer{padding:9px}
 }
+
+
+/* In detail panel, keep real D2Q9 physics and resize only the workspace. */
+.embedded-demo .wind-stage{min-height:0}
+.embedded-demo .wind-stage #view{
+  height:475px;
+  min-height:0;
+}
+.embedded-demo .display-controls{
+  padding:8px 10px;
+  gap:8px 11px;
+  font-size:9px;
+}
+.embedded-demo .display-controls>span{
+  margin-left:0;
+  flex-basis:100%;
+  font-size:8px;
+}
+.embedded-demo .wind-presets{margin:0 0 12px}
+.embedded-demo .wind-presets button{padding:6px 2px}
+.embedded-demo .field-wind-direction{margin-bottom:9px}
+.embedded-demo .speed-field{margin-bottom:9px}
+.embedded-demo .field-caption{font-size:9px}
+.embedded-demo .static-field .static-value{height:34px;padding:9px}
+.embedded-demo .solver-note{margin-bottom:12px;padding:7px 9px}
+.embedded-demo .wind-indicator{top:9px;left:9px;width:92px;padding:8px}
+.embedded-demo .wind-arrow{height:37px;width:37px;font-size:22px}
+.embedded-demo .wind-legend{left:9px;bottom:9px;width:206px;padding:10px}
+.embedded-demo .wind-metrics strong{font-size:22px}
+@media(max-width:720px){
+  .embedded-demo .wind-stage #view{height:330px;min-height:0}
+  .embedded-demo .wind-metrics strong{font-size:23px}
+  .embedded-demo .field-caption{display:none}
+  .embedded-demo .wind-presets{margin-bottom:9px}
+}
