@@ -68,7 +68,7 @@
           </select>
         </label>
         <div class="view-toolgroup" role="group" aria-label="Left drag or one-finger tool">
-          <button type="button" id="viewToolOrbit" class="active" aria-pressed="true" title="Unrestricted 360° tumble through poles and under the model">↻ Orbit</button>
+          <button type="button" id="viewToolOrbit" class="active" aria-pressed="true" title="Rhino-style orbit around world axes, stable horizon and measured speed">↻ Orbit</button>
           <button type="button" id="viewToolPan" aria-pressed="false" title="Drag to pan (model follows pointer)">✥ Pan</button>
         </div>
         <button type="button" id="viewReset" title="Reset view">↺ Reset</button>
@@ -96,6 +96,6 @@
 </section>
 <section class="about"><div><div class="eyebrow">03 / ABOUT THE METHOD</div><h2>Real computation.<br>Not an AI-generated heatmap.</h2></div><div><p>This browser implementation ports the sun-position equations and sampling logic from <strong>A001_sun_hours.py</strong>. It shoots rays toward the sun from sampled roof, facade and ground points, and counts unblocked direct-sun intervals.</p><p><strong>Current scope:</strong> box-shaped massing presets, local dates, fixed sample intervals and simplified geometry. It is not a replacement for the full Rhino tool, detailed daylight simulation, annual radiation or climate-based compliance studies.</p><p>Results are numerical estimates for design exploration. Accuracy depends on geometry detail, sample resolution, orientation and weather-independent direct sun assumptions.</p><a href="../">← Back to the command library</a></div></section>
 </main>
-<script type="module" src="./sunhours.js?v=8"></script>
+<script type="module" src="./sunhours.js?v=9"></script>
 </body>
 </html>
