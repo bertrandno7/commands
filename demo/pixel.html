@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<script>if(new URLSearchParams(location.search).get("embed")==="1")document.documentElement.classList.add("embedded-demo");</script>
+<link rel="icon" href="data:,">
+<meta name="description" content="M004 Pixelate — five-mode geometry pixelation live browser demo">
+<title>Pixelate — Live Demo · Commands</title>
+<link rel="stylesheet" href="./sunhours.css?v=6">
+<link rel="stylesheet" href="./pixel.css?v=1">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../"><span class="mark">◈</span>Commands<span class="brand-small"> / LAB</span></a>
+  <span class="live"><span class="pulse"></span> LIVE GEOMETRY DEMO</span>
+  <a class="back" href="../">← Marketplace</a>
+</header>
+<main class="page">
+  <section class="intro">
+    <div>
+      <div class="eyebrow">MASSING / M004 / GEOMETRY OPERATIONS</div>
+      <h1>Pixelate<span class="period">.</span></h1>
+      <p>Turn architectural volumes into buildable-looking discrete geometric units using the five original Hark pixelation patterns.</p>
+    </div>
+    <div class="intro-aside">
+      <span>INPUT</span><strong>Slab + rotated tower + sphere</strong>
+      <span>GRID</span><strong>World-aligned, metres</strong>
+      <span>OUTPUT</span><strong>True polygon mesh · OBJ export</strong>
+    </div>
+  </section>
+  <section class="workspace">
+    <aside class="control-panel">
+      <div class="panel-title"><span>01</span><h2>Pixelation setup</h2></div>
+      <form id="pixelForm">
+        <label class="field">SOURCE MASSING
+          <select id="sourceShape">
+            <option value="all" selected>Slab + tower + sphere</option>
+            <option value="slab">Slab only</option>
+            <option value="tower">Rotated tower only</option>
+            <option value="dome">Sphere only</option>
+          </select>
+        </label>
+        <label class="field">PIXEL GEOMETRY
+          <select id="mode">
+            <option value="0" selected>Cube · orthogonal voxel</option>
+            <option value="1">Tetra · 6 tetrahedra/cube</option>
+            <option value="2">Tri · triangular prism</option>
+            <option value="3">Stagger · ABC triangular stacking</option>
+            <option value="4">CubeStagger · shifted floor cubes</option>
+          </select>
+        </label>
+        <div class="mode-presets" role="group" aria-label="Pixelation modes">
+          <button type="button" data-mode="0" class="selected">Cube</button>
+          <button type="button" data-mode="1">Tetra</button>
+          <button type="button" data-mode="2">Tri</button>
+          <button type="button" data-mode="3">Stagger</button>
+          <button type="button" data-mode="4">Cube<br>Stagger</button>
+        </div>
+        <div class="field">
+          <div class="pixel-heading"><span>PIXEL SIZE</span><strong id="sizeLabel">3.5 m</strong></div>
+          <input id="size" type="range" min="2.5" max="8" step=".5" value="3.5">
+          <div class="range-ends"><span>2.5 m · fine</span><span>8 m · coarse</span></div>
+        </div>
+        <div class="field-row">
+          <label class="field">FLOOR HEIGHT (m)
+            <input id="height" type="number" min="0" max="25" step=".5" value="0" title="0 means same as pixel size">
+          </label>
+          <label class="field">PIXEL GAP
+            <input id="gap" type="number" min=".1" max="1" step=".05" value=".92">
+          </label>
+        </div>
+        <div class="field-caption">Height 0 = same as pixel size. Gap 1 creates touching pixels; lower values separate them.</div>
+        <label class="pixel-check"><input id="colour" type="checkbox" checked> Colour by height <span class="height-ramp" aria-hidden="true"></span></label>
+        <button id="run" type="submit" class="run-button"><span>◆</span> Generate pixels <span class="arrow">↗</span></button>
+        <div class="progress-wrap" id="progressWrap" hidden>
+          <div class="progress-bar"><div id="progress"></div></div>
+          <span id="progressLabel">Building world-grid cells…</span>
+        </div>
+        <p class="hint">Pixels are kept when their geometric centers lie inside the union of the source masses. The browser demo uses analytic sample solids; Rhino M004 also accepts arbitrary closed Breps and meshes.</p>
+        <div class="panel-bottom"><span class="green-dot"></span> Procedural geometry · local browser only</div>
+      </form>
+    </aside>
+    <div class="visual-panel">
+      <div class="viewer-bar">
+        <div class="viewer-title"><strong id="sceneTitle">M004 · Pixelate massing</strong><span id="sceneSubtitle">Centre-in-solid voxel sampling</span></div>
+        <div class="view-actions">
+          <label class="view-projection"><select id="viewProjection" aria-label="Projection">
+            <option value="perspective">Perspective</option><option value="top">Top</option>
+            <option value="parallel">Parallel (3D)</option>
+          </select></label>
+          <label class="view-projection view-lens"><span>Lens</span>
+            <select id="viewLens" aria-label="Lens"><option value="24">24 mm</option><option value="35" selected>35 mm</option><option value="50">50 mm</option></select>
+          </label>
+          <div class="view-toolgroup" role="group" aria-label="Navigation tools">
+            <button id="viewToolOrbit" type="button" class="active" aria-pressed="true">↻ Orbit</button>
+            <button id="viewToolPan" type="button" aria-pressed="false">✥ Pan</button>
+          </div>
+          <button id="viewReset" type="button">↺ Reset</button>
+          <button id="png" type="button">↓ PNG</button>
+        </div>
+      </div>
+      <div class="pixel-stage">
+        <canvas id="view" width="1120" height="680" aria-label="True WebGL 3D pixelated mesh of architectural massing"></canvas>
+        <div class="pixel-stage-label"><span>MODE</span><strong id="modeLabel">CUBE</strong><small id="viewCount">Ready</small></div>
+        <div class="pixel-gradient" id="pixelLegend" aria-label="Colour by height"><span>LOW</span><div></div><span>HIGH</span></div>
+      </div>
+      <div class="viewer-footer">
+        <span id="navHint">PERSPECTIVE · RMB orbit · Shift+RMB pan · wheel zoom</span>
+        <span id="viewStatus">Preparing geometry</span>
+      </div>
+    </div>
+  </section>
+  <section class="results">
+    <div class="results-heading">
+      <div><div class="eyebrow">02 / GEOMETRY RESULTS</div><h2>Discrete geometry</h2></div>
+      <span class="result-label" id="resultLabel">Awaiting generation</span>
+    </div>
+    <div class="metrics pixel-metrics">
+      <article><span>PIXEL COUNT</span><strong id="count">—</strong><small>Discrete units</small></article>
+      <article><span>PIXELATED VOLUME</span><strong id="volume">—</strong><small>m³ · after gap scaling</small></article>
+      <article><span>FACE COUNT</span><strong id="faces">—</strong><small>Exposed polygon faces</small></article>
+      <article><span>GENERATED TRIANGLES</span><strong id="triangles">—</strong><small>Export mesh triangles</small></article>
+      <article><span>COMPUTE TIME</span><strong id="duration">—</strong><small>milliseconds · browser</small></article>
+    </div>
+    <div class="data-bar">
+      <span id="cellInfo">World-grid centered</span>
+      <span id="meshInfo">Source union</span>
+      <button id="obj" type="button" disabled>↓ Export generated OBJ</button>
+    </div>
+  </section>
+  <section class="about">
+    <div><div class="eyebrow">03 / ABOUT THE COMMAND</div><h2>Geometry is<br>the output.</h2></div>
+    <div>
+      <p>Derived directly from <strong>M004_pixelate.py</strong> in Hark. Cube pixels are aligned to a global Cartesian grid. Tetra uses six conforming Kuhn tetrahedra per world-grid cube. Tri uses equilateral triangular prisms; Stagger uses ABC triangular-prism stacking; CubeStagger shifts every other cubic floor by half a cell in X and Y.</p>
+      <p>Unlike an image-effect preview, the demo generates actual triangle geometry and provides an OBJ download. Gap = 1 removes internal faces for the conforming modes; smaller gaps keep separate units.</p>
+      <p>The original Rhino command accepts closed Breps, extrusions and meshes. This browser preview currently samples only the analytic slab, rotated tower and spherical test massing; arbitrary Rhino/Brep import is a separate milestone.</p>
+      <a href="../">← Back to command library</a>
+    </div>
+  </section>
+</main>
+<script defer src="./embed-resize.js?v=1"></script>
+<script type="module" src="./pixel.js?v=1"></script>
+</body>
+</html>
