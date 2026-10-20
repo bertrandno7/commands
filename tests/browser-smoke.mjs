@@ -50,12 +50,51 @@ async function checkPage(label,opts){
     const x=bounds.x+bounds.width*.56, y=bounds.y+bounds.height*.5;
     const before=await element.evaluate(c=>c.toDataURL());
     await page.mouse.move(x,y);
-    await page.mouse.down();
+    await page.mouse.down({button:"right"});
     await page.mouse.move(x+110,y-58,{steps:8});
-    await page.mouse.up();
+    await page.mouse.up({button:"right"});
     const after=await element.evaluate(c=>c.toDataURL());
     assert.notEqual(after,before,"Orbit must move model image");
     await element.screenshot({path:"artifacts/sunhours-"+label+"-orbit.png"});
+
+    if(label==="desktop"){
+      const beforePan=await element.evaluate(c=>c.toDataURL());
+      await page.mouse.move(x,y);
+      await page.keyboard.down("Shift");
+      await page.mouse.down({button:"right"});
+      await page.mouse.move(x+75,y+35,{steps:6});
+      await page.mouse.up({button:"right"});
+      await page.keyboard.up("Shift");
+      const afterPan=await element.evaluate(c=>c.toDataURL());
+      assert.notEqual(afterPan,beforePan,"Rhino Shift+RMB pan must move the view");
+      await element.screenshot({path:"artifacts/sunhours-desktop-pan.png"});
+    }
+
+    // Rhino Top: right drag pans; Perspective: right drag orbits.
+    await page.locator("#viewProjection").selectOption("top");
+    assert.ok((await page.locator("#navHint").textContent()).includes("RMB pan"));
+    await element.screenshot({path:"artifacts/sunhours-"+label+"-top.png"});
+    await page.locator("#viewProjection").selectOption("perspective");
+
+    if(label==="mobile"){
+      await page.locator("#viewToolPan").click();
+      assert.equal(await page.locator("#viewToolPan").getAttribute("aria-pressed"),"true");
+      assert.ok((await page.locator("#navHint").textContent()).includes("1 finger pan"));
+      const beforePan=await element.evaluate(c=>c.toDataURL());
+      await element.evaluate(c=>{
+        const p=(type,x,y)=>c.dispatchEvent(new PointerEvent(type,{
+          bubbles:true,cancelable:true,pointerId:10,pointerType:"touch",
+          clientX:x,clientY:y,button:0,isPrimary:true
+        }));
+        p("pointerdown",180,240);
+        p("pointermove",225,285);
+        p("pointerup",225,285);
+      });
+      const afterPan=await element.evaluate(c=>c.toDataURL());
+      assert.notEqual(afterPan,beforePan,"Touch Pan mode must move the model");
+      await element.screenshot({path:"artifacts/sunhours-mobile-pan.png"});
+    }
+
 
     if(label==="mobile"){
       // Dispatch two-finger pointer events directly to test gesture handling.
