@@ -1,24 +1,30 @@
-name: Test COMMANDS Live Demos
+name: Test COMMANDS Registry and Live Demos
 
 on:
   push:
     branches: ["main"]
     paths:
+      - "commands/**"
       - "demo/**"
+      - "scripts/**"
       - "tests/**"
       - "package.json"
       - "app.js"
       - "index.html"
       - "styles.css"
+      - "COMMAND_SPEC.md"
       - ".github/workflows/test.yml"
   pull_request:
     paths:
+      - "commands/**"
       - "demo/**"
+      - "scripts/**"
       - "tests/**"
       - "package.json"
       - "app.js"
       - "index.html"
       - "styles.css"
+      - "COMMAND_SPEC.md"
       - ".github/workflows/test.yml"
   workflow_dispatch:
 
@@ -30,23 +36,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Run solar, wind and viewport unit tests
+
+      - name: Install test dependencies
+        run: npm install --no-package-lock --ignore-scripts
+
+      - name: Build filesystem command registry
+        run: npm run registry
+
+      - name: Run registry, solar, wind and viewport unit tests
         run: npm test
-      - name: Install browser smoke dependency
-        run: npm install --no-save --no-package-lock playwright-core@1.55.1
+
       - name: Serve static site
         run: |
           python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/commands-server.log 2>&1 &
           sleep 2
+
       - name: Verify SunHours in desktop/mobile Chrome
         run: node tests/browser-smoke.mjs
+
       - name: Verify WindScreen in desktop/mobile Chrome
         run: node tests/wind-browser.mjs
-      - name: Verify auto-running marketplace detail demos
+
+      - name: Verify registry-driven marketplace and direct previews
         run: node tests/marketplace-browser.mjs
+
       - name: Save viewport screenshots
         if: always()
         uses: actions/upload-artifact@v4
