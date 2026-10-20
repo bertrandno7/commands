@@ -4,7 +4,7 @@
  * orbiting / panning / pinching never recalculates the sun hours.
  */
 import {getScene, analyzeSunHours} from "./sunhours-engine.js?v=3";
-import {SunHoursViewer} from "./sunhours-viewer.js?v=5";
+import {SunHoursViewer} from "./sunhours-viewer.js?v=6";
 
 const $=s=>document.querySelector(s);
 const form=$("#analysisForm");
@@ -36,16 +36,19 @@ function setGestureTool(mode){
 }
 function updateNavigationHint(){
   const top=viewer.projection==="top";
+  const isPerspective=viewer.projection==="perspective";
   const tool=top?"Pan":viewer.activeTool==="pan"?"Pan":"Orbit";
   orbitButton.disabled=top;
-  viewLens.disabled=top;
+  viewLens.disabled=!isPerspective;
   orbitButton.classList.toggle("active",!top && viewer.activeTool==="orbit");
   panButton.classList.toggle("active",top || viewer.activeTool==="pan");
   orbitButton.setAttribute("aria-pressed",String(!top && viewer.activeTool==="orbit"));
   panButton.setAttribute("aria-pressed",String(top || viewer.activeTool==="pan"));
   $("#navHint").textContent=top
-    ?"TOP · RMB pan · wheel zoom · touch: 1 finger pan, 2 fingers pan/pinch"
-    :"PERSPECTIVE · RMB orbit · Shift+RMB pan · Ctrl+RMB / wheel zoom · touch: 1 finger "+tool.toLowerCase()+", 2 fingers pan/pinch";
+    ?"TOP · RMB pan · Ctrl+Shift+RMB rotate parallel · wheel zoom · touch: one-finger pan"
+    :isPerspective
+      ?"PERSPECTIVE · RMB orbit · Shift+RMB pan · Ctrl+RMB / wheel zoom · touch: one-finger "+tool.toLowerCase()
+      :"PARALLEL · RMB pan · Ctrl+Shift+RMB orbit · wheel zoom · touch: one-finger "+tool.toLowerCase();
 }
 viewProjection.addEventListener("change",e=>viewer.setProjection(e.target.value));
 viewLens.addEventListener("change",e=>viewer.setLens(e.target.value));
