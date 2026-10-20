@@ -16,8 +16,9 @@
  */
 import { hoursColor } from "./sunhours-engine.js?v=3";
 import {
-  defaultCameraOrientation, cameraAxes, freeOrbit, rollView
-} from "./camera-rotation.js?v=1";
+  defaultCameraOrientation, cameraAxes, freeOrbit, rollView,
+  quatMultiply, quatConjugate, quatRotate
+} from "./camera-rotation.js?v=2";
 
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 const dot = (a,b) => a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
@@ -339,10 +340,90 @@ export class SunHoursViewer {
     if(typeof this.onProjectionChange==="function")this.onProjectionChange(mode);
   }
 
-  /** Unrestricted camera-relative tumble around the current view target. */
-  orbitByScreen(dx,dy){
+  /**
+   * Free orbit around a pivot. If the pivot was picked on a face under the
+   * pointer (Ctrl+Shift+RMB), preserve its exact screen position throughout
+   * the rotation rather than snapping the model into the viewport center.
+   */
+  orbitByScreen(dx,dy,pivot=null){
     if(this.projection==="top")return;
-    this.orientation=freeOrbit(this.orientation,dx,dy);
+    const previous=[...this.orientation];
+    const next=freeOrbit(previous,dx,dy);
+
+    if(pivot){
+      const cam=this.camera();
+      const eye=this.target.map((t,i)=>t-cam.forward[i]*cam.distance);
+      const delta=quatMultiply(next,quatConjugate(previous));
+      const rotated=quatRotate(delta,sub(eye,pivot));
+      const newEye=pivot.map((p,i)=>p+rotated[i]);
+      const newBack=cameraAxes(next).back;
+      this.target=newEye.map((p,i)=>p-newBack[i]*cam.distance);
+    }
+    this.orientation=next;
+  }
+
+  /**
+   * Pick the nearest visible building face (or ground plane) beneath the
+   * pointer. Scene consists of axis-aligned blocks, so we can intersect
+   * analytically instead of requiring a second WebGL picking render pass.
+   */
+  pickOrbitPivot(clientX,clientY){
+    if(!this.scene)return null;
+    const cam=this.camera();
+    const rect=this.canvas.getBoundingClientRect?.()||{
+      left:0,top:0,width:this.canvas.clientWidth,height:this.canvas.clientHeight
+    };
+    const width=Math.max(1,this.canvas.clientWidth);
+    const height=Math.max(1,this.canvas.clientHeight);
+    const x=(clientX-rect.left-width/2)*2/height;
+    const y=(height/2-(clientY-rect.top))*2/height;
+    const origin=this.target.map((v,i)=>v-cam.forward[i]*cam.distance);
+    let rayOrigin,rayDirection;
+    if(cam.parallel){
+      rayOrigin=origin.map((v,i)=>
+        v+(x*cam.halfHeight)*cam.right[i]+(y*cam.halfHeight)*cam.up[i]);
+      rayDirection=[...cam.forward];
+    }else{
+      const dir=cam.forward.map((v,i)=>v+
+        x/cam.focalY*cam.right[i]+y/cam.focalY*cam.up[i]);
+      const mag=Math.hypot(...dir);
+      rayDirection=dir.map(v=>v/mag);
+      rayOrigin=origin;
+    }
+    let best=Infinity;
+    for(const b of this.scene.buildings){
+      const low=[b.x,b.y,0],high=[b.x+b.w,b.y+b.d,b.h];
+      let tmin=-Infinity,tmax=Infinity,valid=true;
+      for(let i=0;i<3;i++){
+        const d=rayDirection[i],p=rayOrigin[i];
+        if(Math.abs(d)<1e-12){
+          if(p<low[i]||p>high[i]){valid=false;break;}
+          continue;
+        }
+        let ta=(low[i]-p)/d,tb=(high[i]-p)/d;
+        if(ta>tb)[ta,tb]=[tb,ta];
+        tmin=Math.max(tmin,ta);
+        tmax=Math.min(tmax,tb);
+        if(tmax<tmin){valid=false;break;}
+      }
+      if(valid){
+        const t=tmin>1e-4?tmin:tmax>1e-4?tmax:null;
+        if(t!==null&&t<best)best=t;
+      }
+    }
+    // Ground is a plane, rather than a thick solid.
+    if(Math.abs(rayDirection[2])>1e-9){
+      const t=-rayOrigin[2]/rayDirection[2];
+      if(t>1e-4&&t<best){
+        const gx=rayOrigin[0]+rayDirection[0]*t;
+        const gy=rayOrigin[1]+rayDirection[1]*t;
+        const g=this.scene.ground;
+        if(gx>=g.x&&gx<=g.x+g.w&&gy>=g.y&&gy<=g.y+g.d)
+          best=t;
+      }
+    }
+    if(!Number.isFinite(best))return null;
+    return rayOrigin.map((v,i)=>v+best*rayDirection[i]);
   }
 
   /** Optional full camera roll: Alt+right drag in Perspective or Parallel. */
@@ -398,6 +479,8 @@ export class SunHoursViewer {
 
     if(e.button===1)return "pan"; // middle mouse (optional Rhino-style mapping)
     if(e.button===2){
+      if(this.projection==="perspective" && e.ctrlKey && e.shiftKey)
+        return "orbit-object";
       if(this.projection!=="perspective" && e.ctrlKey && e.shiftKey){
         if(this.projection==="top"){
           // Rotating a Top viewport begins from a plan orientation, without
@@ -426,7 +509,8 @@ export class SunHoursViewer {
     const mode=this.pointerMode(e);
     this.pointers.set(e.pointerId,{
       x:e.clientX,y:e.clientY,
-      startX:e.clientX,startY:e.clientY,mode
+      startX:e.clientX,startY:e.clientY,mode,
+      pivot:mode==="orbit-object"?this.pickOrbitPivot(e.clientX,e.clientY):null
     });
     this.canvas.classList.add("dragging");
     try{this.canvas.setPointerCapture(e.pointerId);}catch(_){}
@@ -446,8 +530,8 @@ export class SunHoursViewer {
         this.panByScreen(dx,dy);
       }else if(last.mode==="zoom"){
         this.zoomAt(Math.exp(-dy*.012),last.startX,last.startY);
-      }else if(last.mode==="orbit"){
-        this.orbitByScreen(dx,dy);
+      }else if(last.mode==="orbit"||last.mode==="orbit-object"){
+        this.orbitByScreen(dx,dy,last.pivot);
       }else if(last.mode==="roll"){
         this.rollByScreen(dx);
       }
