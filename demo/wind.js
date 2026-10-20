@@ -3,8 +3,8 @@
  * All physics is executed by wind-worker.js, keeping 3D navigation responsive.
  */
 import {getScene} from "./sunhours-engine.js?v=3";
-import {createWindGrid,flowAxes} from "./wind-engine.js?v=1";
-import {WindViewer} from "./wind-viewer.js?v=1";
+import {createWindGrid,WIND_PALETTE} from "./wind-engine.js?v=2";
+import {WindViewer} from "./wind-viewer.js?v=2";
 
 const $=s=>document.querySelector(s);
 const labels=[
@@ -14,6 +14,12 @@ const labels=[
 const dirName=degrees=>labels[Math.round(((degrees%360)+360)%360/22.5)%16];
 const number=n=>Number(n);
 const fmtArea=m2=>m2>=1000?(m2/1000).toFixed(1)+"k m²":Math.round(m2)+" m²";
+
+// Generate the legend from the SAME numeric stops used by WebGL.
+const gradientStops=WIND_PALETTE.map(([ratio,color])=>
+  "rgb("+color.join(",")+") "+(ratio/1.5*100).toFixed(2)+"%"
+).join(", ");
+$(".wind-gradient").style.background="linear-gradient(90deg, "+gradientStops+")";
 
 const viewer=new WindViewer($("#view"),$("#flowOverlay"));
 let scene=getScene("courtyard");
@@ -175,7 +181,7 @@ function runWind(){
   const job=++runId;
   let worker;
   try{
-    worker=new Worker("./wind-worker.js?v=1",{type:"module"});
+    worker=new Worker("./wind-worker.js?v=2",{type:"module"});
   }catch(err){
     $("#run").disabled=false;
     $("#cancel").hidden=true;
