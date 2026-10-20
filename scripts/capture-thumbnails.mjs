@@ -150,6 +150,10 @@ try{
         // Keep flow vectors but turn off moving tracers, so reruns make a
         // stable image from the finished numerical solution.
         await page.locator("#showParticles").uncheck();
+      }else if(demo.id==="A001"){
+        // Frame the result tightly for small cards. The live demo still
+        // defaults to 35 mm; only its thumbnail uses this 50 mm view.
+        await page.locator("#viewLens").selectOption("50");
       }
 
       await page.addStyleTag({content:captureStyle});
@@ -178,7 +182,7 @@ try{
       manifest.push({
         id:demo.id,
         name:demo.name,
-        image:"/assets/thumbnails/"+demo.id+".png",
+        image:"assets/thumbnails/"+demo.id+".png",
         from:demo.path,
         width:FRAME.width,
         height:FRAME.height
@@ -190,6 +194,49 @@ try{
   writeFileSync(join(OUTPUT,"manifest.json"),
     JSON.stringify({kind:"computed-preview",format:"png",demos:manifest},null,2)+"\n");
   console.log("Generated "+manifest.length+" live-command thumbnails");
+
+  // Verify that the actual homepage uses the generated screenshots. This
+  // catches a broken card script or stale CSS before GitHub Pages deploys.
+  const marketplace=await browser.newPage({viewport:{width:1450,height:950}});
+  const homepageErrors=[];
+  marketplace.on("pageerror",err=>homepageErrors.push(err.message));
+  try{
+    await marketplace.goto(ORIGIN.replace(/\\/$/,"")+"/",{
+      waitUntil:"domcontentloaded",timeout:30000
+    });
+    await marketplace.waitForFunction(
+      ()=>document.querySelectorAll(".command-card").length>=15,
+      null,{timeout:15000}
+    );
+    assert.deepEqual(homepageErrors,[],
+      "Marketplace must render without JavaScript errors");
+
+    for(const demo of DEMOS){
+      const card=marketplace.locator(
+        '.command-card[data-id="'+demo.id+'"]'
+      );
+      assert.equal(await card.count(),1,demo.id+" must have a card");
+      const background=await card.locator(".card-visual").evaluate(
+        el=>getComputedStyle(el).backgroundImage
+      );
+      assert.ok(background.includes(demo.id+".png"),
+        demo.id+" must use its computed screenshot as the card background");
+      const image=await marketplace.request.get(
+        ORIGIN.replace(/\\/$/,"")+"/assets/thumbnails/"+demo.id+".png"
+      );
+      assert.ok(image.ok(),demo.id+" card image must return HTTP 200");
+      assert.equal((image.headers()["content-type"]||"").split(";")[0],
+        "image/png");
+      assert.ok((await image.body()).length>15000);
+      const tryLink=await card.locator(".try-demo").getAttribute("href");
+      assert.ok(tryLink?.includes(demo.path),
+        demo.id+" must link back to its runnable demo");
+    }
+    console.log("✔ Marketplace displays all "+manifest.length+
+      " computed thumbnail images and runnable-demo links");
+  }finally{
+    await marketplace.close();
+  }
 }finally{
   await browser.close();
 }
