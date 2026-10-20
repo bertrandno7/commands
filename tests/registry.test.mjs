@@ -45,7 +45,7 @@ test("marketplace JavaScript contains no hand-maintained command catalogue",()=>
 
 test("registry builder has a loose-script auto-discovery path",()=>{
   const builder=readFileSync("scripts/build-registry.mjs","utf8");
-  assert.ok(builder.includes("Auto-discover loose scripts"));
+  assert.ok(builder.includes("A loose .py file anywhere below commands/"));
   assert.ok(builder.includes('endsWith(".py")'));
   assert.ok(builder.includes('preview","index.html'));
 });
