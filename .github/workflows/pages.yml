@@ -44,6 +44,7 @@ jobs:
         run: |
           test -s assets/thumbnails/A001.png
           test -s assets/thumbnails/W001.png
+          test -s assets/thumbnails/M004.png
           test -s assets/thumbnails/manifest.json
 
       - name: Stage frontend and demo assets only
@@ -53,6 +54,7 @@ jobs:
           cp -R demo assets _site/
           test -s _site/assets/thumbnails/A001.png
           test -s _site/assets/thumbnails/W001.png
+          test -s _site/assets/thumbnails/M004.png
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
