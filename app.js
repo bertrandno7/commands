@@ -41,7 +41,8 @@ const backdrop = document.querySelector("#drawerBackdrop");
 let currentCommand = null;
 const liveDemoPaths=Object.freeze({
   A001:"demo/sunhours.html",
-  W001:"demo/wind.html"
+  W001:"demo/wind.html",
+  M004:"demo/pixel.html"
 });
 
 function categories() {
@@ -98,7 +99,7 @@ function render(){
         <div class="tags"><span class="tag">${c.cat}</span>${c.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
         <div class="card-footer">
           <span class="card-stats">${c.id} · Rhino ${c.rhino}</span>
-          <div class="card-actions">${c.id==="A001"?'<a class="try-demo" href="./demo/sunhours.html">▶ Try live demo</a>':c.id==="W001"?'<a class="try-demo" href="./demo/wind.html">▶ Try live demo</a>':""}<button class="install-mini" data-install="${c.id}">Install</button></div>
+          <div class="card-actions">${liveDemoPaths[c.id]?`<a class="try-demo" href="./${liveDemoPaths[c.id]}">▶ Try live demo</a>`:""}<button class="install-mini" data-install="${c.id}">Install</button></div>
         </div>
       </div>
     </article>`).join("");
