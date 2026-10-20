@@ -46,15 +46,23 @@ jobs:
           test -s assets/thumbnails/W001.png
           test -s assets/thumbnails/manifest.json
 
+      - name: Stage frontend and demo assets only
+        run: |
+          mkdir -p _site
+          cp index.html styles.css app.js README.md COMMAND_SPEC.md _site/
+          cp -R demo assets _site/
+          test -s _site/assets/thumbnails/A001.png
+          test -s _site/assets/thumbnails/W001.png
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
           enablement: true
 
-      - name: Upload site with fresh screenshots
+      - name: Upload clean site with fresh screenshots
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
 
       - name: Deploy
         id: deployment
