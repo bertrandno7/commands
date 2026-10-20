@@ -430,24 +430,16 @@ h1{
 .empty-state h2{margin-bottom:6px;color:#3f413e;font-size:18px}
 .empty-state p{font-size:11px}
 
-/* Computed previews: created automatically from each finished live command. */
-.command-card[data-id="A001"] .card-visual,
-.command-card[data-id="W001"] .card-visual,
-.command-card[data-id="M004"] .card-visual{
+/* Live-preview cards receive their screenshot URL from generated/commands.json.
+   No command ID is hard-coded in the stylesheet. */
+.command-card.has-demo .card-visual{
   background-color:#e6e9e4;
   background-position:center;
   background-size:cover;
   background-repeat:no-repeat;
 }
-.command-card[data-id="A001"] .card-visual{background-image:url("./assets/thumbnails/A001.png")}
-.command-card[data-id="W001"] .card-visual{background-image:url("./assets/thumbnails/W001.png"),url("./assets/windscreen.svg")}
-.command-card[data-id="M004"] .card-visual{background-image:url("./assets/thumbnails/M004.png")}
-.command-card[data-id="A001"] .card-visual:before,
-.command-card[data-id="A001"] .card-visual:after,
-.command-card[data-id="W001"] .card-visual:before,
-.command-card[data-id="W001"] .card-visual:after,
-.command-card[data-id="M004"] .card-visual:before,
-.command-card[data-id="M004"] .card-visual:after{display:none}
+.command-card.has-demo .card-visual:before,
+.command-card.has-demo .card-visual:after{display:none}
 
 /* Lightweight dialogs only; command details never use an intermediate panel. */
 .publish-dialog{

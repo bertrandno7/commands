@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Free design command marketplace with runnable analysis demos and automated preview thumbnails",
+  "description": "Filesystem-driven design command marketplace with runnable browser previews and automated thumbnails",
   "scripts": {
     "test": "node --test tests/*.test.mjs",
-    "thumbnails": "node scripts/capture-thumbnails.mjs"
+    "thumbnails": "node scripts/capture-thumbnails.mjs",
+    "registry": "node scripts/build-registry.mjs",
+    "registry:check": "node scripts/build-registry.mjs"
   },
   "engines": {
     "node": ">=20"

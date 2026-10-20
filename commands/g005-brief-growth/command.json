@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "0.2",
+  "id": "G005",
+  "slug": "brief-growth",
+  "name": "BriefGrowth",
+  "version": "0.1.0",
+  "summary": "Brief-driven voxel growth that matches programme requirements.",
+  "kind": "command",
+  "listed": true,
+  "author": {
+    "name": "Bertrand Tan"
+  },
+  "runtime": {
+    "host": "rhino",
+    "rhino": "8",
+    "language": "python",
+    "entry": "main.py"
+  },
+  "category": "Generative",
+  "tags": [
+    "Brief",
+    "Generative"
+  ],
+  "network": "none",
+  "preview": {
+    "type": "none"
+  },
+  "source": {
+    "origin": "Hark Python Library"
+  }
+}

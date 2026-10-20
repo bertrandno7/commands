@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "0.2",
+  "id": "A002",
+  "slug": "solar-radiation",
+  "name": "SolarRadiation",
+  "version": "0.1.0",
+  "summary": "Cumulative solar radiation and PV estimate with weather and context shading.",
+  "kind": "command",
+  "listed": true,
+  "author": {
+    "name": "Bertrand Tan"
+  },
+  "runtime": {
+    "host": "rhino",
+    "rhino": "7 + 8",
+    "language": "python",
+    "entry": "main.py"
+  },
+  "category": "Analysis",
+  "tags": [
+    "Solar",
+    "PV"
+  ],
+  "network": "required",
+  "preview": {
+    "type": "none"
+  },
+  "source": {
+    "origin": "Hark Python Library"
+  }
+}

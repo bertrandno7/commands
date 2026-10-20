@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "0.2",
+  "id": "G006",
+  "slug": "voxel-facade",
+  "name": "VoxelFacade",
+  "version": "0.1.0",
+  "summary": "Programme-specific facade skins for voxel massing, including typology and sun-responsive modes.",
+  "kind": "module",
+  "listed": false,
+  "author": {
+    "name": "Bertrand Tan"
+  },
+  "runtime": {
+    "host": "python-module",
+    "rhino": "8",
+    "language": "python",
+    "entry": "main.py"
+  },
+  "category": "Facade",
+  "tags": [
+    "Facade",
+    "Voxel"
+  ],
+  "network": "none",
+  "preview": {
+    "type": "none"
+  },
+  "source": {
+    "origin": "Hark Python Library"
+  }
+}

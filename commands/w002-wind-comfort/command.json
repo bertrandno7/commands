@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "0.2",
+  "id": "W002",
+  "slug": "wind-comfort",
+  "name": "WindComfort",
+  "version": "0.1.0",
+  "summary": "NEN 8100 wind comfort screening across multiple wind sectors.",
+  "kind": "command",
+  "listed": true,
+  "author": {
+    "name": "Bertrand Tan"
+  },
+  "runtime": {
+    "host": "rhino",
+    "rhino": "8",
+    "language": "python",
+    "entry": "main.py"
+  },
+  "category": "Analysis",
+  "tags": [
+    "Wind",
+    "Comfort"
+  ],
+  "network": "required",
+  "preview": {
+    "type": "none"
+  },
+  "source": {
+    "origin": "Hark Python Library"
+  }
+}

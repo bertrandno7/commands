@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "0.2",
+  "id": "A001",
+  "slug": "sunhours",
+  "name": "SunHours",
+  "version": "0.1.0",
+  "summary": "Shading-aware sun-hours analysis using solar positions and context geometry.",
+  "kind": "command",
+  "listed": true,
+  "author": {
+    "name": "Bertrand Tan"
+  },
+  "runtime": {
+    "host": "rhino",
+    "rhino": "7 + 8",
+    "language": "python",
+    "entry": "main.py"
+  },
+  "category": "Analysis",
+  "tags": [
+    "Solar",
+    "Environmental"
+  ],
+  "network": "none",
+  "preview": {
+    "type": "web",
+    "entry": "demo/sunhours.html",
+    "capture": ".visual-panel",
+    "ready": {
+      "selector": "#progressLabel",
+      "includes": "complete",
+      "metric": "#mean"
+    },
+    "prepare": {
+      "select": {
+        "#viewLens": "50"
+      }
+    }
+  },
+  "source": {
+    "origin": "Hark Python Library"
+  }
+}

@@ -4,3 +4,4 @@ assets/thumbnails/
 artifacts/
 *.log
 .DS_Store
+generated/

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "0.2",
+  "id": "M003",
+  "slug": "density",
+  "name": "Density",
+  "version": "0.1.0",
+  "summary": "Floor plates, GFA, FSI, GSI, OSR, envelope and orientation metrics.",
+  "kind": "command",
+  "listed": true,
+  "author": {
+    "name": "Bertrand Tan"
+  },
+  "runtime": {
+    "host": "rhino",
+    "rhino": "7 + 8",
+    "language": "python",
+    "entry": "main.py"
+  },
+  "category": "Massing",
+  "tags": [
+    "Metrics",
+    "Spacemate"
+  ],
+  "network": "none",
+  "preview": {
+    "type": "none"
+  },
+  "source": {
+    "origin": "Hark Python Library"
+  }
+}

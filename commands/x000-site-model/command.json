@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "0.2",
+  "id": "X000",
+  "slug": "site-model",
+  "name": "SiteModel",
+  "version": "0.1.0",
+  "summary": "Generate 3D site context from latitude and longitude using BAG and OSM sources.",
+  "kind": "command",
+  "listed": true,
+  "author": {
+    "name": "Bertrand Tan"
+  },
+  "runtime": {
+    "host": "rhino",
+    "rhino": "7 + 8",
+    "language": "python",
+    "entry": "main.py"
+  },
+  "category": "Site",
+  "tags": [
+    "Context",
+    "OSM"
+  ],
+  "network": "required",
+  "preview": {
+    "type": "none"
+  },
+  "source": {
+    "origin": "Hark Python Library"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "0.2",
+  "id": "E001",
+  "slug": "scoreboard",
+  "name": "Scoreboard",
+  "version": "0.1.0",
+  "summary": "Snapshot, weight, rank and compare design options with Pareto scoring.",
+  "kind": "command",
+  "listed": true,
+  "author": {
+    "name": "Bertrand Tan"
+  },
+  "runtime": {
+    "host": "rhino",
+    "rhino": "7 + 8",
+    "language": "python",
+    "entry": "main.py"
+  },
+  "category": "Evaluation",
+  "tags": [
+    "Options",
+    "Pareto"
+  ],
+  "network": "none",
+  "preview": {
+    "type": "none"
+  },
+  "source": {
+    "origin": "Hark Python Library"
+  }
+}

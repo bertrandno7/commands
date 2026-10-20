@@ -24,44 +24,43 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Node for automated demo screenshots
+      - name: Node for registry and preview capture
         uses: actions/setup-node@v4
         with:
           node-version: "22"
 
-      - name: Install headless-browser dependency
+      - name: Install build dependencies
         run: npm install --no-package-lock --ignore-scripts
 
-      - name: Start local static site for screenshot capture
+      - name: Build command registry from filesystem
+        run: npm run registry
+
+      - name: Start local static site for preview capture
         run: |
           python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/commands-preview-http.log 2>&1 &
           sleep 2
 
-      - name: Capture real SunHours and WindScreen thumbnails
+      - name: Capture every registered live preview
         run: npm run thumbnails
 
-      - name: Verify generated images
+      - name: Verify registry and generated thumbnails
         run: |
-          test -s assets/thumbnails/A001.png
-          test -s assets/thumbnails/W001.png
-          test -s assets/thumbnails/M004.png
+          test -s generated/commands.json
           test -s assets/thumbnails/manifest.json
+          node -e 'const fs=require("fs"); const r=JSON.parse(fs.readFileSync("generated/commands.json")); for(const c of r.commands.filter(x=>x.listed!==false&&x.preview?.type==="web")){const p="assets/thumbnails/"+c.id+".png"; if(!fs.existsSync(p)||fs.statSync(p).size<15000) throw new Error("Missing preview "+p)} console.log("verified",r.livePreviewCount,"live thumbnails")'
 
-      - name: Stage frontend and demo assets only
+      - name: Stage static site
         run: |
           mkdir -p _site
           cp index.html styles.css app.js README.md COMMAND_SPEC.md _site/
-          cp -R demo assets _site/
-          test -s _site/assets/thumbnails/A001.png
-          test -s _site/assets/thumbnails/W001.png
-          test -s _site/assets/thumbnails/M004.png
+          cp -R demo assets generated commands _site/
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
           enablement: true
 
-      - name: Upload clean site with fresh screenshots
+      - name: Upload clean site
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site
