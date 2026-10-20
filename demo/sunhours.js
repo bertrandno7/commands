@@ -4,7 +4,7 @@
  * orbiting / panning / pinching never recalculates the sun hours.
  */
 import {getScene, analyzeSunHours} from "./sunhours-engine.js?v=3";
-import {SunHoursViewer} from "./sunhours-viewer.js?v=3";
+import {SunHoursViewer} from "./sunhours-viewer.js?v=4";
 
 const $=s=>document.querySelector(s);
 const form=$("#analysisForm");
@@ -17,6 +17,37 @@ let pending=false;
 let rerunRequested=false;
 
 viewer.setData(scene,null);
+
+// Rhino-style gesture mapping:
+// Perspective RMB orbit; Shift+RMB pan; Ctrl+RMB or wheel zoom.
+// Top RMB pan. Left-drag/one finger uses the chosen web-demo tool.
+const viewProjection=$("#viewProjection");
+const orbitButton=$("#viewToolOrbit");
+const panButton=$("#viewToolPan");
+
+function setGestureTool(mode){
+  viewer.setTool(mode);
+  orbitButton.classList.toggle("active",mode==="orbit");
+  panButton.classList.toggle("active",mode==="pan");
+  orbitButton.setAttribute("aria-pressed",String(mode==="orbit"));
+  panButton.setAttribute("aria-pressed",String(mode==="pan"));
+  updateNavigationHint();
+}
+function updateNavigationHint(){
+  const top=viewer.projection==="top";
+  const tool=top?"Pan":viewer.activeTool==="pan"?"Pan":"Orbit";
+  $("#navHint").textContent=top
+    ?"TOP · RMB pan · wheel zoom · touch: 1 finger pan, 2 fingers pan/pinch"
+    :"PERSPECTIVE · RMB orbit · Shift+RMB pan · Ctrl+RMB / wheel zoom · touch: 1 finger "+tool.toLowerCase()+", 2 fingers pan/pinch";
+}
+viewProjection.addEventListener("change",e=>viewer.setProjection(e.target.value));
+viewer.onProjectionChange=(mode)=>{
+  viewProjection.value=mode;
+  updateNavigationHint();
+};
+orbitButton.addEventListener("click",()=>setGestureTool("orbit"));
+panButton.addEventListener("click",()=>setGestureTool("pan"));
+setGestureTool("orbit");
 
 const fmt=v=>v.toFixed(1)+" h";
 
