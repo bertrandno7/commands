@@ -161,7 +161,7 @@ test("Perspective: MMB pans while Ctrl+RMB zooms toward pointer",()=>{
   assert.ok(Math.abs(after[1]-expected[1])<1e-7);
 });
 
-test("Top view: RMB pans; Ctrl+Shift+RMB breaks into Perspective orbit",()=>{
+test("Top: RMB pans; Ctrl+Shift+RMB rotates while remaining parallel",()=>{
   const {canvas}=mockCanvas();
   const v=new SunHoursViewer(canvas);
   v.setData(getScene("tower"),null);
@@ -175,11 +175,19 @@ test("Top view: RMB pans; Ctrl+Shift+RMB breaks into Perspective orbit",()=>{
   assertScreenFollows(v,[18,12,0],before,60,-30);
   const forceRotate={pointerType:"mouse",button:2,ctrlKey:true,shiftKey:true};
   v.pointerDown(ev(6,110,150,forceRotate));
-  assert.equal(v.projection,"perspective");
+  assert.equal(v.projection,"parallel");
+  assert.equal(v.camera().parallel,true,"Ctrl+Shift+RMB must stay orthographic");
   const yaw=v.yaw;
   v.pointerMove(ev(6,140,150,forceRotate));
   v.pointerUp(ev(6,140,150,forceRotate));
   assert.notEqual(v.yaw,yaw);
+  assert.equal(v.camera().parallel,true);
+  const parallelPoint=targetPlanePoint(v);
+  const beforeParallel=screenPosition(v,parallelPoint);
+  v.pointerDown(ev(7,100,100,pan));
+  v.pointerMove(ev(7,120,145,pan));
+  v.pointerUp(ev(7,120,145,pan));
+  assertScreenFollows(v,parallelPoint,beforeParallel,20,45);
 });
 
 test("Touch: one-finger Orbit/Pan tool and two-finger screen-following pan",()=>{
