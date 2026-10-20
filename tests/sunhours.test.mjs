@@ -212,7 +212,7 @@ test("Touch: one-finger Orbit/Pan tool and two-finger screen-following pan",()=>
   v.pointerUp(ev(7,120,190));
   v.pointerUp(ev(8,220,190));
   assertScreenFollows(v,point,again,20,20);
-  assert.equal(v.zoom,z);
+  assert.ok(Math.abs(v.zoom-z)<1e-10,"Two-finger pure translation does not zoom");
 
   v.pointerDown(ev(9,120,170));
   v.pointerDown(ev(10,220,170));
