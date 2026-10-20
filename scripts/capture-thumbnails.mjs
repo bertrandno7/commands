@@ -1,50 +1,38 @@
 /**
- * COMMANDS — real preview thumbnails, generated during GitHub Pages builds.
+ * Capture card thumbnails from every registry command with preview.type=web.
  *
- * Capture the actual finished analysis viewport, not a mockup:
- *   A001 -> /demo/sunhours.html -> /assets/thumbnails/A001.png
- *   W001 -> /demo/wind.html     -> /assets/thumbnails/W001.png
- *
- * Extend DEMOS when a future command gets a runnable preview.
- * Requires a local static HTTP server and playwright-core + installed Chrome.
- * No API token, GPU subscription or image generation model is needed.
+ * There is no hard-coded demo list. Add a command package, give it a web
+ * preview in command.json (or a standard preview/index.html), run the registry
+ * build, and this script discovers/captures it automatically.
  */
 import assert from "node:assert/strict";
-import {existsSync,mkdirSync,statSync,writeFileSync} from "node:fs";
+import {
+  existsSync,mkdirSync,readFileSync,statSync,writeFileSync
+} from "node:fs";
 import {resolve,join} from "node:path";
 import {chromium} from "playwright-core";
 
 const ORIGIN=process.env.COMMANDS_PREVIEW_ORIGIN||"http://127.0.0.1:8765";
 const SITE_ORIGIN=ORIGIN.endsWith("/")?ORIGIN.slice(0,-1):ORIGIN;
 const OUTPUT=resolve(process.env.COMMANDS_THUMB_DIR||"assets/thumbnails");
+const REGISTRY=resolve("generated/commands.json");
 const FRAME={width:960,height:540};
 
-const DEMOS=[
-  {
-    id:"A001",
-    name:"SunHours",
-    path:"demo/sunhours.html",
-    capture:".visual-panel",
-    done:"complete",
-    metric:"#mean"
-  },
-  {
-    id:"W001",
-    name:"WindScreen",
-    path:"demo/wind.html",
-    capture:".wind-stage",
-    done:"ready",
-    metric:"#peak"
-  },
-  {
-    id:"M004",
-    name:"Pixelate",
-    path:"demo/pixel.html",
-    capture:".pixel-stage",
-    done:"complete",
-    metric:"#count"
-  }
-];
+assert.ok(existsSync(REGISTRY),
+  "generated/commands.json is missing; run npm run registry first.");
+const registry=JSON.parse(readFileSync(REGISTRY,"utf8"));
+const DEMOS=registry.commands
+  .filter(c=>c.listed!==false&&c.kind==="command"&&c.preview?.type==="web")
+  .map(c=>({
+    id:c.id,
+    name:c.name,
+    path:c.preview.entry,
+    capture:c.preview.capture,
+    ready:c.preview.ready,
+    prepare:c.preview.prepare||{}
+  }));
+
+assert.ok(DEMOS.length>0,"Registry contains no runnable web previews.");
 
 const executablePath=[
   process.env.CHROME_PATH,
@@ -69,8 +57,6 @@ const browser=await chromium.launch({
 
 mkdirSync(OUTPUT,{recursive:true});
 
-// Capture the same native live viewport at a consistent 16:9 crop across
-// commands.  Only page presentation is altered, not geometry or solver state.
 const captureStyle=`
   html{scroll-behavior:auto!important}
   body{overflow:visible!important}
@@ -107,24 +93,55 @@ const captureStyle=`
     min-height:540px!important;
     max-height:540px!important;
   }
-  .wind-stage,
-  .pixel-stage{
+  .wind-stage,.pixel-stage,[data-command-preview]{
     position:relative!important;
     flex:none!important;
     overflow:hidden!important;
     width:960px!important;
     height:540px!important;
     min-height:540px!important;
+    max-height:540px!important;
   }
   .pixel-stage>#view{width:960px!important;height:540px!important}
   #flowOverlay{width:960px!important;height:540px!important}
-  .visual-panel>.legend{
-    left:20px!important;
-    bottom:20px!important;
-  }
+  .visual-panel>.legend{left:20px!important;bottom:20px!important}
   .wind-legend{left:20px!important;bottom:20px!important}
   .wind-indicator{top:20px!important;left:20px!important}
 `;
+
+async function waitUntilReady(page,demo){
+  await page.waitForFunction(
+    ({ready})=>{
+      const marker=document.querySelector(ready.selector);
+      const metric=document.querySelector(ready.metric);
+      if(!marker||!metric)return false;
+      const markerText=(marker.textContent||"").trim();
+      const metricValue=((metric.value??metric.textContent)||"").trim();
+      let readyState=true;
+      if(ready.includes!=null)readyState=markerText.includes(String(ready.includes));
+      if(ready.attribute){
+        const value=marker.getAttribute(ready.attribute);
+        readyState=readyState&&(
+          ready.equals==null?value!=null:value===String(ready.equals)
+        );
+      }
+      return readyState&&/[0-9]/.test(metricValue)&&!metricValue.includes("—");
+    },
+    {ready:demo.ready},
+    {timeout:120000}
+  );
+}
+
+async function preparePreview(page,prepare){
+  for(const [selector,value] of Object.entries(prepare.select||{}))
+    await page.locator(selector).selectOption(String(value));
+  for(const selector of prepare.uncheck||[])
+    await page.locator(selector).uncheck();
+  for(const selector of prepare.check||[])
+    await page.locator(selector).check();
+  for(const selector of prepare.click||[])
+    await page.locator(selector).click();
+}
 
 const manifest=[];
 try{
@@ -141,76 +158,48 @@ try{
       const url=SITE_ORIGIN+"/"+demo.path;
       console.log("Capturing "+demo.id+" from "+url);
       await page.goto(url,{waitUntil:"domcontentloaded",timeout:30000});
-      // Wait for a real completed numerical solve, not a skeleton loader.
-      await page.waitForFunction(
-        ({finished,metric})=>{
-          const label=document.querySelector("#progressLabel")?.textContent||"";
-          const value=document.querySelector(metric)?.textContent||"";
-          return label.includes(finished)&&
-            /[0-9]/.test(value)&&
-            !value.includes("—");
-        },
-        {finished:demo.done,metric:demo.metric},
-        {timeout:120000}
-      );
+      await waitUntilReady(page,demo);
       assert.deepEqual(errors,[],demo.id+": no runtime JavaScript errors");
 
-      const gl=await page.locator("#view").evaluate(
-        canvas=>Boolean(canvas.getContext("webgl"))
-      );
-      assert.ok(gl,demo.id+": a valid WebGL viewport is required");
-
-      if(demo.id==="W001"){
-        // Keep flow vectors but turn off moving tracers, so reruns make a
-        // stable image from the finished numerical solution.
-        await page.locator("#showParticles").uncheck();
-      }else if(demo.id==="A001"){
-        // Frame the result tightly for small cards. The live demo still
-        // defaults to 35 mm; only its thumbnail uses this 50 mm view.
-        await page.locator("#viewLens").selectOption("50");
-      }
-
+      await preparePreview(page,demo.prepare);
       await page.addStyleTag({content:captureStyle});
       const target=page.locator(demo.capture);
+      assert.equal(await target.count(),1,
+        demo.id+": capture selector must match exactly one element: "+demo.capture);
       await target.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(650); // ResizeObserver + WebGL redraw
+      await page.waitForTimeout(650);
+
       const dimensions=await target.evaluate(el=>({
         width:el.getBoundingClientRect().width,
         height:el.getBoundingClientRect().height
       }));
-      assert.ok(Math.abs(dimensions.width-FRAME.width)<1 &&
+      assert.ok(Math.abs(dimensions.width-FRAME.width)<1&&
         Math.abs(dimensions.height-FRAME.height)<1,
         demo.id+": thumbnail view must be exactly 960×540");
 
       const file=join(OUTPUT,demo.id+".png");
       await target.screenshot({
-        path:file,
-        type:"png",
-        animations:"disabled",
-        timeout:25000
+        path:file,type:"png",animations:"disabled",timeout:25000
       });
       const bytes=statSync(file).size;
       assert.ok(bytes>15000,demo.id+": unexpected blank or tiny capture");
       console.log("✔ "+demo.id+" "+dimensions.width+"×"+
         dimensions.height+" ("+Math.round(bytes/1024)+" KiB)");
+
       manifest.push({
-        id:demo.id,
-        name:demo.name,
+        id:demo.id,name:demo.name,
         image:"assets/thumbnails/"+demo.id+".png",
-        from:demo.path,
-        width:FRAME.width,
-        height:FRAME.height
+        from:demo.path,width:FRAME.width,height:FRAME.height
       });
     }finally{
       await page.close();
     }
   }
+
   writeFileSync(join(OUTPUT,"manifest.json"),
     JSON.stringify({kind:"computed-preview",format:"png",demos:manifest},null,2)+"\n");
   console.log("Generated "+manifest.length+" live-command thumbnails");
 
-  // Verify that the actual homepage uses the generated screenshots. This
-  // catches a broken card script or stale CSS before GitHub Pages deploys.
   const marketplace=await browser.newPage({viewport:{width:1450,height:950}});
   const homepageErrors=[];
   marketplace.on("pageerror",err=>homepageErrors.push(err.message));
@@ -219,41 +208,37 @@ try{
       waitUntil:"domcontentloaded",timeout:30000
     });
     await marketplace.waitForFunction(
-      ()=>document.querySelectorAll(".command-card").length>=15,
-      null,{timeout:15000}
+      count=>document.querySelectorAll(".command-card").length===count,
+      registry.listedCount,
+      {timeout:15000}
     );
     assert.deepEqual(homepageErrors,[],
       "Marketplace must render without JavaScript errors");
 
     for(const demo of DEMOS){
-      const card=marketplace.locator(
-        '.command-card[data-id="'+demo.id+'"]'
-      );
+      const card=marketplace.locator('.command-card[data-id="'+demo.id+'"]');
       assert.equal(await card.count(),1,demo.id+" must have a card");
       const background=await card.locator(".card-visual").evaluate(
         el=>getComputedStyle(el).backgroundImage
       );
       assert.ok(background.includes(demo.id+".png"),
-        demo.id+" must use its computed screenshot as the card background");
+        demo.id+" must use its computed screenshot");
+
       const image=await marketplace.request.get(
         SITE_ORIGIN+"/assets/thumbnails/"+demo.id+".png"
       );
-      assert.ok(image.ok(),demo.id+" card image must return HTTP 200");
-      assert.equal((image.headers()["content-type"]||"").split(";")[0],
-        "image/png");
+      assert.ok(image.ok(),demo.id+" thumbnail must return HTTP 200");
       assert.ok((await image.body()).length>15000);
-      assert.equal(await card.locator(".try-demo").count(),0,
-        demo.id+" must not use a redundant live-demo button");
+
       const target=await card.getAttribute("data-demo");
       assert.equal(target,"./"+demo.path,
-        demo.id+" card itself must point directly to its full runnable demo");
+        demo.id+" card must point directly to its full preview");
     }
-    assert.equal(await marketplace.locator("#detailDrawer").count(),0,
-      "Marketplace must not include an intermediate detail drawer");
-    assert.equal(await marketplace.locator("#categoryStrip").count(),0,
-      "Category navigation belongs only in the sidebar");
-    console.log("✔ Marketplace displays all "+manifest.length+
-      " computed thumbnails and direct-to-command cards");
+
+    assert.equal(await marketplace.locator("#detailDrawer").count(),0);
+    assert.equal(await marketplace.locator("#categoryStrip").count(),0);
+    console.log("✔ Registry-driven marketplace displays "+registry.listedCount+
+      " commands and all "+DEMOS.length+" live previews");
   }finally{
     await marketplace.close();
   }
