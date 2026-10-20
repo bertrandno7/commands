@@ -16,7 +16,7 @@
 import {
   existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync
 } from "node:fs";
-import {dirname,join,relative,resolve,sep} from "node:path";
+import {basename,dirname,join,relative,resolve,sep} from "node:path";
 import {createHash} from "node:crypto";
 
 const ROOT=resolve(process.cwd());
@@ -192,8 +192,8 @@ export function buildRegistry(){
   const registry={
     schemaVersion:"0.2",
     commandCount:records.length,
-    listedCount:records.filter(x=>x.listed).length,
-    livePreviewCount:records.filter(x=>x.listed&&x.preview.type==="web").length,
+    listedCount:records.filter(x=>x.listed&&x.kind==="command").length,
+    livePreviewCount:records.filter(x=>x.listed&&x.kind==="command"&&x.preview.type==="web").length,
     commands:records
   };
   mkdirSync(GENERATED,{recursive:true});
