@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "0.2",
+  "id": "G001",
+  "slug": "voxel-growth",
+  "name": "VoxelGrowth",
+  "version": "0.1.0",
+  "summary": "Analysis-driven voxel growth massing with sun, density and cantilever controls.",
+  "kind": "command",
+  "listed": true,
+  "author": {
+    "name": "Bertrand Tan"
+  },
+  "runtime": {
+    "host": "rhino",
+    "rhino": "8",
+    "language": "python",
+    "entry": "main.py"
+  },
+  "category": "Generative",
+  "tags": [
+    "Generative",
+    "Massing"
+  ],
+  "network": "none",
+  "preview": {
+    "type": "none"
+  },
+  "source": {
+    "origin": "Hark Python Library"
+  }
+}
