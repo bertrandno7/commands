@@ -97,3 +97,92 @@
   .view-lens{flex:0 0 auto}
   .view-lens select{max-width:68px!important}
 }
+
+
+/* Embedded COMMANDS details mode. This is the SAME live simulation with a
+   more compact presentation, not a replacement screenshot or second engine. */
+html.embedded-demo{
+  overflow-x:hidden;
+  color-scheme:light;
+}
+.embedded-demo body{background:#fff;overflow-x:hidden}
+.embedded-demo .topbar,
+.embedded-demo .intro,
+.embedded-demo .about{
+  display:none!important;
+}
+.embedded-demo .page{
+  padding:0;
+  margin:0;
+  width:100%;
+  max-width:none;
+}
+.embedded-demo .workspace{
+  display:grid;
+  grid-template-columns:minmax(230px,27%) minmax(0,1fr);
+  min-height:0;
+  gap:8px;
+  align-items:stretch;
+}
+.embedded-demo .control-panel,
+.embedded-demo .visual-panel{
+  border-radius:7px;
+  min-width:0;
+}
+.embedded-demo .control-panel{
+  padding:15px;
+}
+.embedded-demo .panel-title{margin-bottom:14px}
+.embedded-demo .panel-title h2{font-size:16px}
+.embedded-demo .field{margin-bottom:11px;font-size:9px;gap:5px}
+.embedded-demo .field input,
+.embedded-demo .field select{height:34px;font-size:12px}
+.embedded-demo .presets{margin-bottom:10px}
+.embedded-demo .presets button{padding:7px 3px;font-size:10px}
+.embedded-demo .run-button{padding:12px;font-size:11px}
+.embedded-demo .hint{margin:12px 0;font-size:10px;line-height:1.45}
+.embedded-demo .panel-bottom{font-size:9px;padding-top:10px}
+.embedded-demo .viewer-bar{padding:10px 12px;gap:6px}
+.embedded-demo .viewer-bar strong{font-size:11px}
+.embedded-demo .viewer-bar span{font-size:9px}
+.embedded-demo .view-actions{gap:4px}
+.embedded-demo .view-actions button{padding:6px 8px;font-size:10px}
+.embedded-demo .view-projection select{height:28px;font-size:10px}
+.embedded-demo .view-toolgroup button{padding:6px}
+.embedded-demo #view{height:475px;min-height:0}
+.embedded-demo .visual-panel{min-height:0}
+.embedded-demo .viewer-footer{padding:8px 10px}
+.embedded-demo .viewer-footer span{font-size:9px;line-height:1.3}
+.embedded-demo .results{margin-top:12px}
+.embedded-demo .results-heading{display:none}
+.embedded-demo .metrics{
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:6px;
+}
+.embedded-demo .metrics article{
+  min-height:93px;
+  padding:11px 10px;
+}
+.embedded-demo .metrics article span{font-size:8px}
+.embedded-demo .metrics strong{
+  font-size:clamp(18px,2.6vw,28px);
+  margin-top:10px;
+}
+.embedded-demo .metrics small{font-size:9px}
+.embedded-demo .data-bar{padding:3px 2px 12px;margin-top:8px;gap:8px 16px}
+.embedded-demo .data-bar button{padding:8px 12px}
+@media (max-width:720px){
+  .embedded-demo .workspace{grid-template-columns:1fr;gap:7px}
+  .embedded-demo .visual-panel{grid-row:1}
+  .embedded-demo .control-panel{grid-row:2}
+  .embedded-demo .viewer-title{display:none}
+  .embedded-demo .view-actions{justify-content:space-between}
+  .embedded-demo .view-toolgroup{order:0;width:auto}
+  .embedded-demo #view{height:330px}
+  .embedded-demo .hint{display:none}
+  .embedded-demo .panel-bottom{display:none}
+  .embedded-demo .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .embedded-demo .metrics article{min-height:80px}
+  .embedded-demo .metrics strong{font-size:23px}
+  .embedded-demo .viewer-footer #navHint{font-size:8px}
+}
