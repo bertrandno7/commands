@@ -80,7 +80,9 @@ function updateCompass(){
   const bearing=dirName(windFrom);
   $("#directionLabel").textContent=windFrom+"° · "+bearing;
   $("#compassLabel").textContent=windFrom+"° "+bearing;
-  $("#windArrow").style.transform="rotate("+((windFrom+180)%360)+"deg)";
+  const to=(windFrom+180)%360;
+  $("#towardsLabel").textContent="TO "+to+"° "+dirName(to);
+  $("#windArrow").style.transform="rotate("+to+"deg)";
   document.querySelectorAll("[data-wind-from]").forEach(b=>{
     b.classList.toggle("selected",number(b.dataset.windFrom)===windFrom);
   });
@@ -100,6 +102,8 @@ function updateQuality(){
 }
 
 function invalidate(message){
+  // Never show stale heatmap colors beneath a newly selected wind direction.
+  viewer.setScene(scene);
   field=null;currentGrid=null;lastRunMs=null;
   for(const id of ["mean","peak","sheltered","accelerated","scaled"])
     $("#"+id).textContent="—";
