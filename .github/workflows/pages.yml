@@ -23,14 +23,39 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Node for automated demo screenshots
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install headless-browser dependency
+        run: npm install --no-package-lock --ignore-scripts
+
+      - name: Start local static site for screenshot capture
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/commands-preview-http.log 2>&1 &
+          sleep 2
+
+      - name: Capture real SunHours and WindScreen thumbnails
+        run: npm run thumbnails
+
+      - name: Verify generated images
+        run: |
+          test -s assets/thumbnails/A001.png
+          test -s assets/thumbnails/W001.png
+          test -s assets/thumbnails/manifest.json
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
           enablement: true
-      - name: Upload static site
+
+      - name: Upload site with fresh screenshots
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
+
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
