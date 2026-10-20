@@ -1,4 +1,4 @@
-name: Test SunHours
+name: Test COMMANDS Live Demos
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Run SunHours calculation and interaction tests
+      - name: Run solar, wind and viewport unit tests
         run: npm test
       - name: Install browser smoke dependency
         run: npm install --no-save --no-package-lock playwright-core@1.55.1
@@ -35,12 +35,14 @@ jobs:
         run: |
           python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/commands-server.log 2>&1 &
           sleep 2
-      - name: Verify live viewport in headless Chrome
+      - name: Verify SunHours in desktop/mobile Chrome
         run: node tests/browser-smoke.mjs
+      - name: Verify WindScreen in desktop/mobile Chrome
+        run: node tests/wind-browser.mjs
       - name: Save viewport screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: sunhours-viewport-screenshots
+          name: commands-viewport-screenshots
           path: artifacts/
           if-no-files-found: ignore
