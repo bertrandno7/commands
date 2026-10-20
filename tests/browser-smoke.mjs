@@ -86,7 +86,7 @@ async function checkPage(label,opts){
     if(label==="mobile"){
       await page.locator("#viewToolPan").click();
       assert.equal(await page.locator("#viewToolPan").getAttribute("aria-pressed"),"true");
-      assert.ok((await page.locator("#navHint").textContent()).includes("1 finger pan"));
+      assert.ok((await page.locator("#navHint").textContent()).includes("one-finger pan"));
       const beforePan=await element.evaluate(c=>c.toDataURL());
       await element.evaluate(c=>{
         const p=(type,x,y)=>c.dispatchEvent(new PointerEvent(type,{
