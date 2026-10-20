@@ -15,13 +15,17 @@ const CX=[0,1,0,-1,0,1,-1,-1,1];
 const CY=[0,0,1,0,-1,1,1,-1,-1];
 const W=[4/9,1/9,1/9,1/9,1/9,1/36,1/36,1/36,1/36];
 const OPP=[0,3,4,1,2,7,8,5,6];
+// Same numeric color stops are used for the viewport, thumbnail and legend.
+// The palette is vivid for legibility but remains strictly tied to simulated
+// normalized speed ratios; no colors or wind results are invented by AI.
 export const WIND_PALETTE=[
-  [0.0,[40,60,160]],
-  [0.5,[60,170,200]],
-  [0.85,[120,200,120]],
-  [1.0,[245,220,70]],
-  [1.2,[240,140,40]],
-  [1.5,[190,30,40]]
+  [0.00,[35,49,150]],
+  [0.30,[55,102,213]],
+  [0.55,[49,188,220]],
+  [0.80,[60,207,166]],
+  [1.00,[241,219,74]],
+  [1.20,[255,140,49]],
+  [1.50,[210,40,66]]
 ];
 const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 
@@ -264,11 +268,27 @@ export function makeWindCells(grid,result){
     const p=j*nx+i;
     if(solid[p])continue;
     const u=x0+i*cell,v=y0+j*cell;
+    // Continuous interpolation at cell vertices improves readability at
+    // architectural scales without changing a single solver sample.
+    // Samples inside buildings are NEVER used to interpolate a wind value.
+    const corner=(ii,jj)=>{
+      let total=0,n=0;
+      for(const cj of [jj-1,jj])for(const ci of [ii-1,ii]){
+        if(ci<0||ci>=nx||cj<0||cj>=ny)continue;
+        const index=cj*nx+ci;
+        if(solid[index])continue;
+        total+=result.ratio[index];n++;
+      }
+      return n?total/n:result.ratio[p];
+    };
     cells.push({
       building:"wind",surface:"wind",
       corners:[
         toWorld(u,v),toWorld(u+cell,v),
         toWorld(u+cell,v+cell),toWorld(u,v+cell)
+      ],
+      cornerRatios:[
+        corner(i,j),corner(i+1,j),corner(i+1,j+1),corner(i,j+1)
       ],
       center:toWorld(u+cell*.5,v+cell*.5),
       normal:[0,0,1],
