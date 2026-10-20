@@ -4,7 +4,7 @@
  * orbiting / panning / pinching never recalculates the sun hours.
  */
 import {getScene, analyzeSunHours} from "./sunhours-engine.js?v=3";
-import {SunHoursViewer} from "./sunhours-viewer.js?v=10";
+import {SunHoursViewer} from "./sunhours-viewer.js?v=12";
 
 const $=s=>document.querySelector(s);
 const form=$("#analysisForm");
