@@ -16,12 +16,15 @@ test("Wind-from convention matches W001: North blows south, East blows west",()=
   assert.ok(close(east[0],-1)&&close(east[1],0));
 });
 
-test("WindScreen palette matches Hark 0–1.5× legend",()=>{
-  assert.deepEqual(windRatioColor(0),[40,60,160]);
-  assert.deepEqual(windRatioColor(.5),[60,170,200]);
-  assert.deepEqual(windRatioColor(1),[245,220,70]);
-  assert.deepEqual(windRatioColor(1.5),[190,30,40]);
-  assert.deepEqual(windRatioColor(2),[190,30,40]);
+test("WindScreen CFD palette maps exact U/U∞ values consistently",()=>{
+  assert.deepEqual(windRatioColor(0),[35,49,150]);
+  assert.deepEqual(windRatioColor(.3),[55,102,213]);
+  assert.deepEqual(windRatioColor(.55),[49,188,220]);
+  assert.deepEqual(windRatioColor(.8),[60,207,166]);
+  assert.deepEqual(windRatioColor(1),[241,219,74]);
+  assert.deepEqual(windRatioColor(1.2),[255,140,49]);
+  assert.deepEqual(windRatioColor(1.5),[210,40,66]);
+  assert.deepEqual(windRatioColor(2),[210,40,66]);
 });
 
 test("Rasterization uses the real W001 courtyard footprints and 2.5x crosswind padding",()=>{
@@ -67,6 +70,8 @@ test("Courtyard creates relative acceleration and shelter from actual obstacle c
   assert.equal(cells.length,result.metrics.count);
   const sample=cells[Math.floor(cells.length/2)];
   assert.equal(sample.corners.length,4);
+  assert.equal(sample.cornerRatios.length,4);
+  assert.ok(sample.cornerRatios.every(Number.isFinite));
   assert.equal(sample.normal[2],1);
   assert.ok(Number.isFinite(sample.hours));
   const vel=flowAt(grid,result,sample.center[0],sample.center[1]);
