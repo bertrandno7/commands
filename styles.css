@@ -180,3 +180,10 @@ h1{font-size:34px;letter-spacing:-.04em;margin:0 0 6px}
   .result-row{align-items:flex-start;gap:10px;flex-direction:column}
   .detail-showcase,.detail-columns{grid-template-columns:1fr}
 }
+
+/* SunHours live demo entry points */
+.card-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.try-demo{background:#e5f2d6;color:#30451e;padding:7px 10px;border-radius:5px;font-size:10px;font-weight:700;white-space:nowrap}
+.try-demo:hover{background:#c5e5a5}
+.demo-banner{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:18px 24px 0;padding:14px 16px;background:#e5f2d6;border:1px solid #c7dea9;border-radius:6px;font-weight:750;font-size:13px;color:#314a24}
+.demo-banner span{white-space:nowrap;font-size:11px}
