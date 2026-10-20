@@ -36,6 +36,11 @@ function setGestureTool(mode){
 function updateNavigationHint(){
   const top=viewer.projection==="top";
   const tool=top?"Pan":viewer.activeTool==="pan"?"Pan":"Orbit";
+  orbitButton.disabled=top;
+  orbitButton.classList.toggle("active",!top && viewer.activeTool==="orbit");
+  panButton.classList.toggle("active",top || viewer.activeTool==="pan");
+  orbitButton.setAttribute("aria-pressed",String(!top && viewer.activeTool==="orbit"));
+  panButton.setAttribute("aria-pressed",String(top || viewer.activeTool==="pan"));
   $("#navHint").textContent=top
     ?"TOP · RMB pan · wheel zoom · touch: 1 finger pan, 2 fingers pan/pinch"
     :"PERSPECTIVE · RMB orbit · Shift+RMB pan · Ctrl+RMB / wheel zoom · touch: 1 finger "+tool.toLowerCase()+", 2 fingers pan/pinch";
