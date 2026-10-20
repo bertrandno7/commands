@@ -45,6 +45,16 @@ function addQuad(out, vertices, rgb, offset = [0,0,0]) {
     out.push(p[0],p[1],p[2],...rgb);
   }
 }
+/** Per-corner wind palette, smoothly interpolated by the GPU.
+ * Raw LBM ratios/metrics are unchanged; this only affects presentation. */
+function addGradientQuad(out, vertices, colors, offset=[0,0,0]) {
+  for(const k of [0,1,2,0,2,3]) {
+    const p=vertices[k],c=colors[k];
+    out.push(p[0]+offset[0],p[1]+offset[1],p[2]+offset[2],
+      c[0],c[1],c[2]);
+  }
+}
+
 function addLine(out, a, b, rgb) {
   out.push(...a,...rgb,...b,...rgb);
 }
@@ -87,13 +97,21 @@ function buildMeshes(scene, result) {
   if(result) {
     const max = result.daylightHours;
     for(const c of result.cells) {
-      const col=typeof result.colorFor==="function"
-        ?result.colorFor(c.hours):hoursColor(c.hours,max);
-      const shade=c.normal[2]>.5?1:(c.normal[0]?0.88:0.94);
-      const rgb=col.map(v => v/255*shade);
-      // Offset out from the solid to avoid Z fighting with its reference face.
+      // Offset out from solid faces so the heatmap is never Z-fighting.
       const offset=c.normal.map(n=>n*0.055);
-      addQuad(heat,c.corners,rgb,offset);
+      if(result.kind==="wind"&&Array.isArray(c.cornerRatios)){
+        const colors=c.cornerRatios.map(v=>
+          result.colorFor(v).map(channel=>channel/255));
+        // No arbitrary facade shading: the wind colors must match their
+        // physical U/U-infinity legend exactly in any projection.
+        addGradientQuad(heat,c.corners,colors,offset);
+      }else{
+        const col=typeof result.colorFor==="function"
+          ?result.colorFor(c.hours):hoursColor(c.hours,max);
+        const shade=c.normal[2]>.5?1:(c.normal[0]?0.88:0.94);
+        const rgb=col.map(v=>v/255*shade);
+        addQuad(heat,c.corners,rgb,offset);
+      }
     }
   }
   return {base,heat,outlines,guides};
