@@ -490,8 +490,8 @@ function scoreboard(s){
     primary:rows[0].score,label:"OPTION SCOREBOARD",sublabel:"Relative min-max scoring · four design options",
     draw2d:(ctx,w,h)=>drawScoreboard(ctx,w,h,rows,keys),
     metrics:[
-      metric("BEST OPTION",rows[0].name,"Rank 1"),
       metric("TOP SCORE",fmt(rows[0].score,1)+" / 100","Weighted relative score"),
+      metric("BEST OPTION",rows[0].name,"Rank 1"),
       metric("OPTIONS",rows.length,"Compared designs"),
       metric("ACTIVE METRICS",keys.length,"Weighted criteria")
     ],
