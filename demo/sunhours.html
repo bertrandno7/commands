@@ -68,7 +68,7 @@
           </select>
         </label>
         <div class="view-toolgroup" role="group" aria-label="Left drag or one-finger tool">
-          <button type="button" id="viewToolOrbit" class="active" aria-pressed="true" title="Drag to orbit in Perspective">↻ Orbit</button>
+          <button type="button" id="viewToolOrbit" class="active" aria-pressed="true" title="Unrestricted 360° tumble through poles and under the model">↻ Orbit</button>
           <button type="button" id="viewToolPan" aria-pressed="false" title="Drag to pan (model follows pointer)">✥ Pan</button>
         </div>
         <button type="button" id="viewReset" title="Reset view">↺ Reset</button>
@@ -77,7 +77,7 @@
     </div>
     <canvas id="view" width="1120" height="680" aria-label="Perspective or top-view 3D heatmap of buildings and solar exposure"></canvas>
     <div class="viewer-footer">
-      <span id="navHint">PERSPECTIVE · RMB orbit · Shift+RMB pan · Ctrl+RMB / wheel zoom · touch: 1 finger orbit, 2 fingers pan/pinch</span>
+      <span id="navHint">PERSPECTIVE · FREE 360° tumble · RMB orbit · Ctrl+Shift+RMB orbit object · Shift+RMB pan · wheel zoom</span>
       <span id="viewStatus">Ready to simulate</span>
     </div>
     <div class="legend"><div class="legend-head"><b>DIRECT SUN HOURS</b><span id="legendMax">—</span></div><div class="gradient"></div><div class="ticks"><span>0 h</span><span>LOW</span><span>MED</span><span>HIGH</span></div></div>
@@ -96,6 +96,6 @@
 </section>
 <section class="about"><div><div class="eyebrow">03 / ABOUT THE METHOD</div><h2>Real computation.<br>Not an AI-generated heatmap.</h2></div><div><p>This browser implementation ports the sun-position equations and sampling logic from <strong>A001_sun_hours.py</strong>. It shoots rays toward the sun from sampled roof, facade and ground points, and counts unblocked direct-sun intervals.</p><p><strong>Current scope:</strong> box-shaped massing presets, local dates, fixed sample intervals and simplified geometry. It is not a replacement for the full Rhino tool, detailed daylight simulation, annual radiation or climate-based compliance studies.</p><p>Results are numerical estimates for design exploration. Accuracy depends on geometry detail, sample resolution, orientation and weather-independent direct sun assumptions.</p><a href="../">← Back to the command library</a></div></section>
 </main>
-<script type="module" src="./sunhours.js?v=6"></script>
+<script type="module" src="./sunhours.js?v=8"></script>
 </body>
 </html>
