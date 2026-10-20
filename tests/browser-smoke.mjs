@@ -75,6 +75,26 @@ async function checkPage(label,opts){
       const afterPan=await element.evaluate(c=>c.toDataURL());
       assert.notEqual(afterPan,beforePan,"Rhino Shift+RMB pan must move the view");
       await element.screenshot({path:"artifacts/sunhours-desktop-pan.png"});
+
+      // A long, uninterrupted right-drag must pass the zenith/nadir,
+      // show the building from below and keep moving (no 90° clamp).
+      const beforeTumble=await element.evaluate(c=>c.toDataURL());
+      await element.evaluate(c=>{
+        const r=c.getBoundingClientRect();
+        const startX=r.left+r.width/2;
+        const startY=r.top+r.height/2;
+        const p=(type,y)=>c.dispatchEvent(new PointerEvent(type,{
+          bubbles:true,cancelable:true,pointerId:82,pointerType:"mouse",
+          clientX:startX,clientY:y,button:2,isPrimary:true
+        }));
+        p("pointerdown",startY);
+        for(let i=1;i<=26;i++)p("pointermove",startY+i*20);
+        p("pointerup",startY+26*20);
+      });
+      const afterTumble=await element.evaluate(c=>c.toDataURL());
+      assert.notEqual(afterTumble,beforeTumble,
+        "Unrestricted tumble must show a different side of the buildings");
+      await element.screenshot({path:"artifacts/sunhours-desktop-underneath.png"});
     }
 
     // Rhino Top: right drag pans; Perspective: right drag orbits.
