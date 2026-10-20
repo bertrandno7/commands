@@ -348,12 +348,12 @@ test("Unbounded orbit supports multiple revolutions with stable orientation",()=
   assert.ok(vecDist(cameraAxes(pole).forward,cameraAxes(sideways).forward)>.01);
 });
 
-test("Alt+RMB rolls view around its optical axis, without losing view direction",()=>{
+test("Rhino Shift+Alt+RMB deliberately rolls view without changing look direction",()=>{
   const {canvas}=mockCanvas();
   const v=new SunHoursViewer(canvas);
   v.setData(getScene("courtyard"),null);
   const before=v.camera();
-  const roll={pointerType:"mouse",button:2,altKey:true};
+  const roll={pointerType:"mouse",button:2,altKey:true,shiftKey:true};
   v.pointerDown(ev(22,180,155,roll));
   v.pointerMove(ev(22,330,155,roll));
   v.pointerUp(ev(22,330,155,roll));
@@ -445,4 +445,20 @@ test("Rhino orbit sensitivity is controlled and anomalous mouse spikes limited",
   const jumped=cameraAxes(rhinoWorldOrbit(q,10000,0));
   const safe=Math.acos(Math.max(-1,Math.min(1,vecDot(before.right,jumped.right))));
   assert.ok(safe<.38,"A browser 10,000px pointer spike cannot spin several revolutions");
+});
+
+test("Plain Alt+RMB cannot accidentally roll Rhino's horizon",()=>{
+  const {canvas}=mockCanvas();
+  const v=new SunHoursViewer(canvas);
+  v.setData(getScene("courtyard"),null);
+  const start=v.camera();
+  const mouse={pointerType:"mouse",button:2,altKey:true};
+  v.pointerDown(ev(33,100,100,mouse));
+  assert.equal(v.pointers.get(33).mode,"orbit");
+  v.pointerMove(ev(33,175,125,mouse));
+  v.pointerUp(ev(33,175,125,mouse));
+  const end=v.camera();
+  assert.ok(Math.abs(end.right[2])<1e-10,
+    "Ordinary orbit never rolls away from world horizontal");
+  assert.ok(vecDist(start.forward,end.forward)>.01);
 });
