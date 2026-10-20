@@ -39,6 +39,10 @@ const sidebar = document.querySelector("#categorySidebar");
 const drawer = document.querySelector("#detailDrawer");
 const backdrop = document.querySelector("#drawerBackdrop");
 let currentCommand = null;
+const liveDemoPaths=Object.freeze({
+  A001:"demo/sunhours.html",
+  W001:"demo/wind.html"
+});
 
 function categories() {
   return [...new Set(commands.map(c => c.cat))];
@@ -101,45 +105,78 @@ function render(){
 }
 
 function openDetail(id){
-  const c = commands.find(x=>x.id===id);
-  if(!c) return;
-  currentCommand = c;
-  const isSaved = saved.has(c.id);
-  document.querySelector("#saveCommand").textContent = isSaved ? "♥ Saved" : "♡ Save";
-  document.querySelector("#detailContent").innerHTML = `
-    ${c.id==="A001"?'<a class="demo-banner" href="./demo/sunhours.html">☀ Run SunHours in your browser <span>Live demo ↗</span></a>':c.id==="W001"?'<a class="demo-banner" href="./demo/wind.html">↝ Run WindScreen LBM in your browser <span>Live demo ↗</span></a>':""}<div class="detail-wrap">
+  const c=commands.find(x=>x.id===id);
+  if(!c)return;
+  currentCommand=c;
+  const demo=liveDemoPaths[c.id]||null;
+  const isSaved=saved.has(c.id);
+  const saveButton=document.querySelector("#saveCommand");
+  saveButton.textContent=isSaved?"♥ Saved":"♡ Save";
+
+  const livePreview=demo?`
+    <section class="detail-live" aria-label="Live interactive ${c.name} demonstration">
+      <div class="detail-live-heading">
+        <span class="live-status"><span class="live-dot"></span> LIVE INTERACTIVE SIMULATION</span>
+        <span class="live-instruction">Orbit, adjust inputs and rerun — right here</span>
+        <a class="detail-expand" href="./${demo}" target="_blank" rel="noopener noreferrer">Open full workspace ↗</a>
+      </div>
+      <div class="detail-frame-wrap">
+        <div class="detail-frame-loading" id="detailFrameLoading" role="status">
+          <span class="loading-orbit" aria-hidden="true"></span>
+          Loading ${c.name} simulation…
+        </div>
+        <iframe
+          id="liveCommandFrame"
+          class="detail-live-iframe"
+          title="Interactive ${c.name} analysis"
+          src="./${demo}?embed=1"
+          loading="eager"
+          referrerpolicy="same-origin"
+        ></iframe>
+      </div>
+      <p class="detail-live-caption">This is the real browser-based computation, not a screenshot. Early-stage design screening only; results depend on the simplified sample geometry and analysis settings.</p>
+    </section>`:`
+    <section class="detail-showcase">
+      <div class="hero-preview" aria-label="Illustrative command preview"></div>
+      <div class="detail-copy">
+        <p>${c.name} comes from the Hark seed command library. A runnable web demo hasn't been published for this command yet.</p>
+        <div class="tags"><span class="tag">${c.cat}</span>${c.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+        <div class="notice">No invented ratings or downloads. Community metrics will only appear when there is real activity.</div>
+      </div>
+    </section>`;
+
+  document.querySelector("#detailContent").innerHTML=`
+    <div class="detail-wrap">
       <div class="detail-head">
-        <div class="detail-thumb"></div>
+        <div class="detail-thumb ${demo?"detail-thumb-live":""}" ${demo?`style="background-image:url('./assets/thumbnails/${c.id}.png')"`:""}></div>
         <div>
-          <div style="display:flex;align-items:center;gap:8px"><h2>${c.name}</h2><span class="version">v${c.version}</span></div>
+          <div class="detail-name-row">
+            <h2>${c.name}</h2>
+            <span class="version">v${c.version}</span>
+            ${demo?'<span class="detail-runtime-badge">RUNNABLE</span>':""}
+          </div>
           <p class="detail-summary">${c.desc}</p>
-          <div class="author-row"><span class="creator-avatar"></span><strong>${c.creator}</strong><span>· ${c.id}</span></div>
+          <div class="author-row">
+            <span class="creator-avatar"></span><strong>${c.creator}</strong>
+            <span>· ${c.id}</span>
+          </div>
         </div>
       </div>
-
       <div class="detail-tabs">
-        <span class="active">Overview</span><span>Screenshots</span><span>Inputs / Outputs</span><span>Dependencies</span><span>Versions</span><span>Discussions</span>
+        <span class="active">${demo?"Live demo":"Overview"}</span>
+        <span>README</span><span>Inputs / Outputs</span><span>Dependencies</span>
       </div>
-
-      <div class="detail-showcase">
-        <div class="hero-preview"></div>
-        <div class="detail-copy">
-          <p>${c.name} is part of the seed library behind Commands. It is a real Rhino/Python tool, presented here as a preview of how community commands could be packaged, discovered and installed.</p>
-          <div class="tags"><span class="tag">${c.cat}</span>${c.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
-          <div class="notice">This preview intentionally avoids fake ratings, downloads and reviews. Community metrics will appear only when they are real.</div>
-        </div>
-      </div>
-
+      ${livePreview}
       <div class="detail-columns">
         <section class="detail-section">
-          <h3>README</h3>
+          <h3>About ${c.name}</h3>
           <p>${c.desc}</p>
-          <h3>Key features</h3>
+          <h3>Command details</h3>
           <ul>
             <li>Runs as a Rhino Python command</li>
             <li>Rhino compatibility: ${c.rhino}</li>
             <li>Network requirement: ${c.network}</li>
-            <li>Open command-package format planned</li>
+            <li>${demo?"Demo runs independently in your browser":"Browser execution not yet available"}</li>
           </ul>
         </section>
         <section class="detail-section">
@@ -150,20 +187,43 @@ function openDetail(id){
             <li>Host: Rhino</li>
             <li>Language: Python</li>
           </ul>
-          <h3>Future structured outputs</h3>
-          <p>Commands can eventually declare typed inputs, outputs, objectives and analysis results so both humans and AI agents can call them reliably.</p>
+          <h3>Open command standard</h3>
+          <p>Commands will support inspectable source, dependencies and typed inputs and outputs, for people and eventually AI agents.</p>
         </section>
       </div>
     </div>`;
+
+  drawer.classList.toggle("has-live-demo",Boolean(demo));
   drawer.classList.add("open");
   backdrop.classList.add("open");
   drawer.setAttribute("aria-hidden","false");
+  drawer.scrollTop=0;
+  document.body.classList.add("detail-is-open");
+
+  if(demo){
+    // The analysis starts as soon as the iframe is inserted. No "Try" click
+    // and no duplicate demo implementation inside the marketplace.
+    const frame=document.querySelector("#liveCommandFrame");
+    const loading=document.querySelector("#detailFrameLoading");
+    frame.addEventListener("load",()=>{
+      if(loading)loading.hidden=true;
+    },{once:true});
+    frame.addEventListener("error",()=>{
+      if(loading)loading.textContent="Could not load the live demo. Try the full workspace link.";
+    },{once:true});
+  }
 }
 
 function closeDetail(){
   drawer.classList.remove("open");
   backdrop.classList.remove("open");
   drawer.setAttribute("aria-hidden","true");
+  drawer.classList.remove("has-live-demo");
+  document.body.classList.remove("detail-is-open");
+  // Destroy the embedded WebGL/Worker instance on close to release GPU and
+  // CPU resources. Opening the command later starts a clean live simulation.
+  document.querySelector("#detailContent").replaceChildren();
+  currentCommand=null;
 }
 
 function openInstall(c){
