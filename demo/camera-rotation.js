@@ -126,6 +126,32 @@ export function freeOrbit(q,dx,dy,sensitivity=.0065){
   return quatNormalize(quatMultiply(q,delta));
 }
 
+/**
+ * Rhino-style default orbit ("Rotate around world axes").
+ *
+ * Unlike view-relative trackball motion, horizontal drag rotates around the
+ * fixed world Z axis, while vertical drag pitches about the current camera's
+ * horizontal (local X) axis. Therefore the horizon NEVER acquires unintended
+ * sideways roll during diagonal drags. Pitch remains unbounded: a slow drag
+ * can still go over the pole and underneath geometry.
+ *
+ * Uses 0.003 radians per CSS pixel (~17 degrees / 100 px), deliberately
+ * slower than the previous 0.0065 trackball. Large anomalous pointermove
+ * deltas are limited so a dropped frame cannot jump half a revolution.
+ */
+export function rhinoWorldOrbit(q, dx, dy, sensitivity=.003) {
+  if(!Number.isFinite(dx)||!Number.isFinite(dy))
+    return quatNormalize(q);
+  // Ignore anomalous device/browser jumps without slowing normal drags.
+  const safeDX=Math.max(-120,Math.min(120,dx));
+  const safeDY=Math.max(-120,Math.min(120,dy));
+  if(Math.abs(safeDX)+Math.abs(safeDY)<1e-12)return quatNormalize(q);
+
+  const yaw=quatAxisAngle([0,0,1],-safeDX*sensitivity);
+  const pitch=quatAxisAngle([1,0,0],-safeDY*sensitivity);
+  return quatNormalize(quatMultiply(yaw,quatMultiply(q,pitch)));
+}
+
 /** Optional view-axis roll for fully unconstrained 3-axis navigation. */
 export function rollView(q,delta,sensitivity=.0065){
   const rotation=quatAxisAngle([0,0,1],delta*sensitivity);
