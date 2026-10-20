@@ -267,9 +267,9 @@ export class SunHoursViewer {
   }
 
   camera(){
-    const parallel=this.projection==="top";
+    const parallel=this.projection!=="perspective";
     let forward,right,up;
-    if(parallel){
+    if(this.projection==="top"){
       // Looking vertically downward: east/right and north/up. The old
       // cross(forward,worldUp) was zero here, collapsing the Top view.
       forward=[0,0,-1];
@@ -328,7 +328,7 @@ export class SunHoursViewer {
 
   /** Rhino: right-drag orbits Perspective and pans Top. */
   setProjection(mode){
-    if(!["perspective","top"].includes(mode))throw new Error("Unknown view.");
+    if(!["perspective","parallel","top"].includes(mode))throw new Error("Unknown view.");
     if(this.projection===mode)return;
     this.projection=mode;
     this.draw();
@@ -382,12 +382,19 @@ export class SunHoursViewer {
 
     if(e.button===1)return "pan"; // middle mouse (optional Rhino-style mapping)
     if(e.button===2){
-      if(this.projection==="top" && e.ctrlKey && e.shiftKey){
-        this.setProjection("perspective");
+      if(this.projection!=="perspective" && e.ctrlKey && e.shiftKey){
+        if(this.projection==="top"){
+          // Rhino force-rotate of a parallel Top viewport remains PARALLEL.
+          // Start from the top-oriented camera rather than jumping to the
+          // old perspective yaw and pitch.
+          this.yaw=0;
+          this.elevation=1.49;
+          this.setProjection("parallel");
+        }
         return "orbit";
       }
       if(e.ctrlKey && !e.shiftKey)return "zoom";
-      if(e.shiftKey || this.projection==="top")return "pan";
+      if(e.shiftKey || this.projection!=="perspective")return "pan";
       return "orbit";
     }
     // Left drag is a web-demo convenience; Rhino's primary 3-button shortcuts
