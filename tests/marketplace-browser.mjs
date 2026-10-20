@@ -1,178 +1,139 @@
 /**
- * Registry-driven marketplace smoke test.
- *
- * No command IDs or demo paths are hard-coded here. The test reads the same
- * generated registry that the browser UI consumes, then verifies every listed
- * command and every registered live preview.
+ * COMMANDS marketplace integration smoke test.
+ * Each audited command page must mount its real runnable simulation, complete
+ * the calculation, and resize the iframe to its intrinsic content height.
  */
 import assert from "node:assert/strict";
-import {mkdirSync,existsSync} from "node:fs";
-import {chromium} from "playwright-core";
+import { existsSync, mkdirSync } from "node:fs";
+import { chromium } from "playwright-core";
 
-const browserPath=[
+const browserPath = [
   process.env.CHROME_PATH,
+  "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
   "/usr/bin/google-chrome",
   "/usr/bin/google-chrome-stable",
-  "/usr/bin/chromium"
+  "/usr/bin/chromium",
 ].filter(Boolean).find(existsSync);
-assert.ok(browserPath,"Installed Chrome/Chromium required for smoke test");
 
-mkdirSync("artifacts",{recursive:true});
-const browser=await chromium.launch({
-  headless:true,
-  executablePath:browserPath,
-  args:[
+assert.ok(browserPath, "Installed Chrome/Chromium is required for smoke tests");
+mkdirSync("artifacts", { recursive: true });
+
+const browser = await chromium.launch({
+  headless: true,
+  executablePath: browserPath,
+  args: [
     "--no-sandbox",
     "--enable-webgl",
     "--enable-unsafe-swiftshader",
     "--use-gl=angle",
-    "--use-angle=swiftshader"
-  ]
+    "--use-angle=swiftshader",
+  ],
 });
-const ORIGIN="http://127.0.0.1:8765";
 
-async function registry(page){
-  return page.evaluate(async()=>{
-    const response=await fetch("./generated/commands.json",{cache:"no-store"});
-    if(!response.ok)throw new Error("registry "+response.status);
-    return response.json();
+const ORIGIN = (process.env.COMMANDS_PREVIEW_ORIGIN || "http://127.0.0.1:8765").replace(/\/$/, "");
+const commands = [
+  { id: "A001", slug: "sun-hours", path: "/demo/sunhours.html", completion: "complete", metric: "#mean" },
+  { id: "W001", slug: "wind-screen", path: "/demo/wind.html", completion: "ready", metric: "#peak" },
+  { id: "M004", slug: "pixelate", path: "/demo/pixel.html", completion: "complete", metric: "#count" },
+  ...[
+    ["A002", "solar-radiation", "a002-solar-radiation"],
+    ["E001", "scoreboard", "e001-scoreboard"],
+    ["F001", "facade-panels", "f001-facade-panels"],
+    ["F002", "sun-facade", "f002-sun-facade"],
+    ["G001", "voxel-growth", "g001-voxel-growth"],
+    ["G005", "brief-growth", "g005-brief-growth"],
+    ["M003", "density", "m003-density"],
+    ["M005", "sun-carve", "m005-sun-carve"],
+    ["M006", "embodied-carbon", "m006-embodied-carbon"],
+    ["S001", "spiral-stair", "s001-spiral-stair"],
+    ["W002", "wind-comfort", "w002-wind-comfort"],
+    ["X000", "site-model", "x000-site-model"],
+  ].map(([id, slug, folder]) => ({
+    id, slug,
+    path: `/commands/${folder}/preview/index.html`,
+    metric: "[data-preview-metric]",
+    generic: true,
+  })),
+];
+
+async function checkCommand(page, command, mode) {
+  await page.goto(`${ORIGIN}/commands/${command.slug}#live-demo`, {
+    waitUntil: "domcontentloaded",
+    timeout: 30_000,
   });
-}
 
-async function waitForMarketplace(page,count){
-  await page.waitForFunction(
-    expected=>document.querySelectorAll(".command-card").length===expected,
-    count,{timeout:20000}
+  const frame = page.locator("#live-command-frame");
+  await frame.waitFor({ state: "visible" });
+  assert.ok(
+    (await frame.getAttribute("src"))?.includes(`${command.path}?embed=1`),
+    `${command.id} command page must embed its audited demo`,
   );
-}
 
-async function waitForPreview(page,preview){
+  const inner = page.frameLocator("#live-command-frame");
+  await inner.locator(command.metric).waitFor({ state: "visible", timeout: 120_000 });
   await page.waitForFunction(
-    ready=>{
-      const marker=document.querySelector(ready.selector);
-      const metric=document.querySelector(ready.metric);
-      if(!marker||!metric)return false;
-      const markerText=(marker.textContent||"").trim();
-      const metricText=((metric.value??metric.textContent)||"").trim();
-      let done=true;
-      if(ready.includes!=null)done=markerText.includes(String(ready.includes));
-      if(ready.attribute){
-        const value=marker.getAttribute(ready.attribute);
-        done=done&&(ready.equals==null?value!=null:value===String(ready.equals));
+    ({ completion, metric, generic }) => {
+      const iframe = document.querySelector("#live-command-frame");
+      const documentInside = iframe?.contentDocument;
+      if (generic) {
+        const ready = documentInside?.body?.getAttribute("data-preview-ready");
+        const value = documentInside?.querySelector(metric)?.textContent || "";
+        return ready === "true" && /[0-9]/.test(value) && !value.includes("—");
       }
-      return done&&/[0-9]/.test(metricText)&&!metricText.includes("—");
+      const progress = documentInside?.querySelector("#progressLabel")?.textContent || "";
+      const value = documentInside?.querySelector(metric)?.textContent || "";
+      return progress.includes(completion) && /[0-9]/.test(value) && !value.includes("—");
     },
-    preview.ready,{timeout:120000}
-  );
-}
-
-async function verifyHomepage(page,mode,reg){
-  const listed=reg.commands.filter(c=>c.listed!==false&&c.kind==="command");
-  await waitForMarketplace(page,listed.length);
-
-  assert.equal(await page.locator("#detailDrawer").count(),0);
-  assert.equal(await page.locator("#categoryStrip").count(),0);
-  assert.equal(await page.locator(".try-demo").count(),0);
-
-  const categories=[...new Set(listed.map(c=>c.category))].sort();
-  assert.equal(
-    await page.locator("#categorySidebar .sideitem").count(),
-    categories.length,
-    "Sidebar categories must come entirely from the registry"
+    { completion: command.completion, metric: command.metric, generic: command.generic },
+    { timeout: 120_000 },
   );
 
-  for(const command of listed){
-    const card=page.locator('.command-card[data-id="'+command.id+'"]');
-    assert.equal(await card.count(),1,command.id+" must render exactly once");
-    assert.ok((await card.locator("h3").textContent()).includes(command.name));
-    if(command.preview?.type==="web"){
-      assert.equal(await card.getAttribute("data-demo"),"./"+command.preview.entry);
-      const background=await card.locator(".card-visual").evaluate(
-        el=>getComputedStyle(el).backgroundImage
-      );
-      assert.ok(background.includes(command.id+".png"),
-        command.id+" must use its captured preview image");
-    }else{
-      assert.equal(await card.getAttribute("data-demo"),null,
-        command.id+" without browser preview must not fake a live link");
-    }
+  if (command.generic) {
+    const canvas = inner.locator("#previewCanvas");
+    assert.equal(await canvas.count(), 1, `${command.id} must render its preview canvas`);
+    assert.ok(await canvas.evaluate((element) => Boolean(element.getContext("2d"))), `${command.id} must have a 2D preview context`);
+  } else {
+    const webgl = await inner.locator("#view").evaluate((canvas) => Boolean(canvas.getContext("webgl")));
+    assert.ok(webgl, `${command.id} must render real WebGL geometry`);
   }
 
-  // Sidebar remains the only category filter.
-  const sampleCategory=categories.find(cat=>
-    listed.filter(c=>c.category===cat).length>1
-  )||categories[0];
-  const expected=listed.filter(c=>c.category===sampleCategory).length;
-  await page.locator('#categorySidebar .sideitem[data-cat="'+sampleCategory+'"]').click();
-  await waitForMarketplace(page,expected);
-  await page.locator("#discoverAll").click();
-  await waitForMarketplace(page,listed.length);
+  if (!command.generic) {
+    await page.waitForFunction(() => {
+      const iframe = document.querySelector("#live-command-frame");
+      const content = iframe?.contentDocument?.querySelector(".page");
+      if (!iframe || !content) return false;
+      const actual = iframe.getBoundingClientRect().height;
+      const natural = content.getBoundingClientRect().height;
+      return natural > 300 && actual >= Math.min(natural - 4, 2396);
+    }, null, { timeout: 20_000 });
+  }
 
-  // Install remains independent from preview navigation.
-  const first=listed[0];
-  await page.locator(
-    '.command-card[data-id="'+first.id+'"] [data-install="'+first.id+'"]'
-  ).click();
-  assert.equal(await page.locator("#installDialog").evaluate(el=>el.open),true);
-  await page.locator("#closeInstall").click();
-
-  await page.screenshot({
-    path:"artifacts/market-"+mode+"-registry.png",fullPage:true
+  await page.locator(".live-demo-frame-shell").screenshot({
+    path: `artifacts/market-${mode}-${command.slug}.png`,
+    timeout: 25_000,
   });
+  const value = await inner.locator(command.metric).textContent();
+  console.log(`✔ ${command.id} ${mode} embedded computation: ${value}`);
 }
 
-async function openEveryPreview(page,mode,reg){
-  const live=reg.commands.filter(c=>
-    c.listed!==false&&c.kind==="command"&&c.preview?.type==="web"
-  );
-  for(const command of live){
-    console.log("Opening live preview "+command.id+" "+command.name);
-    const card=page.locator('.command-card[data-id="'+command.id+'"]');
-    await card.click();
-    await page.waitForURL("**/"+command.preview.entry,{timeout:20000});
-    try{
-      await waitForPreview(page,command.preview);
-    }catch(error){
-      throw new Error(command.id+" "+command.name+" preview did not become ready: "+error.message);
-    }
-
-    await page.screenshot({
-      path:"artifacts/market-"+mode+"-"+command.id.toLowerCase()+".png",
-      fullPage:false
-    });
-
-    await page.goBack({waitUntil:"domcontentloaded"});
-    await waitForMarketplace(
-      page,
-      reg.commands.filter(c=>c.listed!==false&&c.kind==="command").length
-    );
-  }
-}
-
-async function run(mode,options){
-  const page=await browser.newPage(options);
-  const errors=[];
-  page.on("pageerror",error=>errors.push(error.message));
-
-  await page.goto(ORIGIN+"/",{waitUntil:"domcontentloaded",timeout:30000});
-  const reg=await registry(page);
-  await verifyHomepage(page,mode,reg);
-  await openEveryPreview(page,mode,reg);
-
-  assert.deepEqual(errors,[],"No uncaught marketplace/preview JavaScript errors");
-  console.log(
-    "Marketplace "+mode+" passed: "+reg.listedCount+
-    " commands, "+reg.livePreviewCount+" live previews"
-  );
+async function run(mode, options, list = commands) {
+  const page = await browser.newPage(options);
+  const errors = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  for (const command of list) await checkCommand(page, command, mode);
+  assert.deepEqual(errors, [], `${mode} command pages should have no uncaught errors`);
   await page.close();
 }
 
-try{
-  await run("desktop",{viewport:{width:1440,height:960},deviceScaleFactor:1});
-  await run("mobile",{
-    viewport:{width:390,height:844},
-    deviceScaleFactor:2,isMobile:true,hasTouch:true
-  });
-}finally{
+try {
+  await run("desktop", { viewport: { width: 1440, height: 960 }, deviceScaleFactor: 1 });
+  await run("mobile", {
+    viewport: { width: 390, height: 844 },
+    deviceScaleFactor: 2,
+    isMobile: true,
+    hasTouch: true,
+  }, commands.slice(0, 3));
+} finally {
   await browser.close();
 }

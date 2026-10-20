@@ -2,12 +2,12 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   getScene, sunSamples, sunPosition, analyzeSunHours, rayHitsBox
-} from "../demo/sunhours-engine.js";
-import { SunHoursViewer } from "../demo/sunhours-viewer.js";
+} from "../public/demo/sunhours-engine.js";
+import { SunHoursViewer } from "../public/demo/sunhours-viewer.js";
 import {
   quatRotate, quatNormalize, cameraAxes, freeOrbit,
   rhinoWorldOrbit, defaultCameraOrientation
-} from "../demo/camera-rotation.js";
+} from "../public/demo/camera-rotation.js";
 
 const BASE={lat:51.92,lon:4.48,year:2026,step:60,grid:6};
 

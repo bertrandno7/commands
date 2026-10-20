@@ -1,10 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {getScene} from "../demo/sunhours-engine.js";
+import {getScene} from "../public/demo/sunhours-engine.js";
 import {
   flowAxes,windRatioColor,createWindGrid,
   solveWindLBM,makeWindCells,flowAt
-} from "../demo/wind-engine.js";
+} from "../public/demo/wind-engine.js";
 
 const scene=getScene("courtyard");
 const close=(a,b,epsilon=1e-8)=>Math.abs(a-b)<epsilon;

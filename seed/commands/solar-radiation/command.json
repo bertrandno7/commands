@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "1.0",
+  "slug": "solar-radiation",
+  "name": "SolarRadiation",
+  "commandName": "SolarRadiation",
+  "version": "0.1.0",
+  "summary": "Estimate cumulative solar radiation and photovoltaic yield with context shading.",
+  "description": "Evaluates cumulative incident solar energy on design geometry, with weather-aware context shading and an early photovoltaic-yield estimate.",
+  "category": "Analysis",
+  "tags": [
+    "solar",
+    "radiation",
+    "pv",
+    "environmental"
+  ],
+  "license": "LicenseRef-Pending",
+  "entrypoint": {
+    "file": "src/main.py",
+    "callable": "run_command"
+  },
+  "icon": "icon.svg",
+  "runtime": {
+    "host": "rhino",
+    "rhinoVersions": [
+      "7",
+      "8"
+    ],
+    "pythonEngine": "Rhino Python (engine unverified)"
+  },
+  "dependencies": {
+    "python": [],
+    "commands": [],
+    "rhinoPlugins": [],
+    "files": []
+  },
+  "permissions": [
+    "document.read",
+    "document.write",
+    "network"
+  ],
+  "interface": {
+    "inputs": [
+      {
+        "name": "Geo",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Ctx",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Lat",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Lon",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Weather",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Grid",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "North",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Efficiency",
+        "type": "Rhino value",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "mesh",
+        "type": "Rhino geometry / analysis data",
+        "required": false
+      },
+      {
+        "name": "radiation",
+        "type": "Rhino geometry / analysis data",
+        "required": false
+      },
+      {
+        "name": "pv",
+        "type": "Rhino geometry / analysis data",
+        "required": false
+      },
+      {
+        "name": "legend",
+        "type": "Rhino geometry / analysis data",
+        "required": false
+      },
+      {
+        "name": "info",
+        "type": "Rhino geometry / analysis data",
+        "required": false
+      }
+    ]
+  },
+  "agent": {
+    "callable": false,
+    "description": "Estimate cumulative solar radiation and photovoltaic yield with context shading. Agent invocation is disabled until this imported draft is reviewed and packaged.",
+    "sideEffects": [
+      "document.read",
+      "document.write",
+      "network"
+    ]
+  },
+  "provenance": {
+    "status": "imported-draft",
+    "source": "COMMANDS repository source and live preview — commit 044050f",
+    "sourceFile": "A002_solar_radiation.py",
+    "snapshotDate": "2026-10-15"
+  }
+}

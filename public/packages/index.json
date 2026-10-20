@@ -1,0 +1,77 @@
+{
+  "spiral-stair": {
+    "version": "0.1.0",
+    "bytes": 5767,
+    "sha256": "0e40e9697cdd31b9b662530c69c64de526dd8d559811cc2140157e9c48cf3c5b"
+  },
+  "facade-panels": {
+    "version": "0.1.0",
+    "bytes": 5805,
+    "sha256": "bb2d3eebcb47398c6edf6e0189e7b692ebfe5bf27933585fc501da35a064a61f"
+  },
+  "pixelate": {
+    "version": "0.1.0",
+    "bytes": 11708,
+    "sha256": "85470ba772be5cc719f7443e50be118cbd7c0438b893589a52e4ac288d68ec88"
+  },
+  "density": {
+    "version": "0.1.0",
+    "bytes": 8443,
+    "sha256": "f2838dd4c51ee3391954383c5283f7925e910f8ce14a25f3753012db534d3a9a"
+  },
+  "sun-hours": {
+    "version": "0.1.0",
+    "bytes": 14249,
+    "sha256": "e51b32c189fcdf397840aaf2dbc8343a998374b3140ad62bc375dd5b0633d7f6"
+  },
+  "sun-facade": {
+    "version": "0.1.0",
+    "bytes": 8696,
+    "sha256": "60c092ee339423c26885a4c16d5ccd3d38f06681c3b6063fb3f5db05f8137b63"
+  },
+  "site-model": {
+    "version": "0.1.0",
+    "bytes": 24396,
+    "sha256": "7822502f7f28adf1023558a4334cd3da7132715789e4d563b79f1cf438224821"
+  },
+  "scoreboard": {
+    "version": "0.1.0",
+    "bytes": 11028,
+    "sha256": "ae93ab9789f1d8e53294dfe63b8cba0c729eef6f3fda20461764013a4d3f6962"
+  },
+  "sun-carve": {
+    "version": "0.1.0",
+    "bytes": 14140,
+    "sha256": "9a75fbf921b679350980d1d2c88db5dc3b2a52b2a6921e690bf239724f427e89"
+  },
+  "brief-growth": {
+    "version": "0.1.0",
+    "bytes": 27893,
+    "sha256": "b266d98000cd5474e109d42fb26fa3cf750c9ec3048bf5a5dfae916cfcba80f1"
+  },
+  "wind-screen": {
+    "version": "0.1.0",
+    "bytes": 11385,
+    "sha256": "108fd82503bd0b7c8ad030da96505c044bd7fb0c096dee92c01c3c032611ea35"
+  },
+  "solar-radiation": {
+    "version": "0.1.0",
+    "bytes": 14833,
+    "sha256": "bb22adb55b4065be4b908a18ad6504172561fe07ea6de92cf4cc292bab530215"
+  },
+  "wind-comfort": {
+    "version": "0.1.0",
+    "bytes": 12553,
+    "sha256": "c6e6cfa81c7b960c363dc4dce993f02ae7016818ee14099774ea31949421f00a"
+  },
+  "embodied-carbon": {
+    "version": "0.1.0",
+    "bytes": 12433,
+    "sha256": "80a93774614e95772ac1f30d4209c19a77300de6676155b6d04da6def3b98796"
+  },
+  "voxel-growth": {
+    "version": "0.1.0",
+    "bytes": 12091,
+    "sha256": "6dca9dc7fb375e7d4c2476df90462e04c7cdfd881659dcddd2972b285897388f"
+  }
+}

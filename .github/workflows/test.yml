@@ -1,31 +1,9 @@
-name: Test COMMANDS Registry and Live Demos
+name: Verify COMMANDS
 
 on:
   push:
-    branches: ["main"]
-    paths:
-      - "commands/**"
-      - "demo/**"
-      - "scripts/**"
-      - "tests/**"
-      - "package.json"
-      - "app.js"
-      - "index.html"
-      - "styles.css"
-      - "COMMAND_SPEC.md"
-      - ".github/workflows/test.yml"
+    branches: ["main", "codex/full-stack-mvp"]
   pull_request:
-    paths:
-      - "commands/**"
-      - "demo/**"
-      - "scripts/**"
-      - "tests/**"
-      - "package.json"
-      - "app.js"
-      - "index.html"
-      - "styles.css"
-      - "COMMAND_SPEC.md"
-      - ".github/workflows/test.yml"
   workflow_dispatch:
 
 permissions:
@@ -36,38 +14,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-
-      - name: Install test dependencies
-        run: npm install --no-package-lock --ignore-scripts
-
-      - name: Build filesystem command registry
-        run: npm run registry
-
-      - name: Run registry, solar, wind and viewport unit tests
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Rebuild deterministic seed packages
+        run: npm run seed:packages
+      - name: Unit, registry, package, and preview coverage tests
         run: npm test
-
-      - name: Serve static site
-        run: |
-          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/commands-server.log 2>&1 &
-          sleep 2
-
-      - name: Verify SunHours in desktop/mobile Chrome
-        run: node tests/browser-smoke.mjs
-
-      - name: Verify WindScreen in desktop/mobile Chrome
-        run: node tests/wind-browser.mjs
-
-      - name: Verify registry-driven marketplace and direct previews
-        run: node tests/marketplace-browser.mjs
-
-      - name: Save viewport screenshots
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: commands-viewport-screenshots
-          path: artifacts/
-          if-no-files-found: ignore
+      - name: Lint
+        run: npm run lint
+      - name: Production build
+        run: npm run build

@@ -1,0 +1,140 @@
+{
+  "schemaVersion": "1.0",
+  "slug": "spiral-stair",
+  "name": "SpiralStair",
+  "commandName": "SpiralStair",
+  "version": "0.1.0",
+  "summary": "Generate a parameterized spiral stair with structural and railing elements.",
+  "description": "Builds spiral stair treads around an inner and outer radius, with an optional central column, rail, and balusters.",
+  "category": "Geometry",
+  "tags": [
+    "stairs",
+    "parametric",
+    "railings",
+    "construction"
+  ],
+  "license": "LicenseRef-Pending",
+  "entrypoint": {
+    "file": "src/main.py",
+    "callable": "run_command"
+  },
+  "icon": "icon.svg",
+  "runtime": {
+    "host": "rhino",
+    "rhinoVersions": [
+      "7",
+      "8"
+    ],
+    "pythonEngine": "Rhino Python (engine unverified)"
+  },
+  "dependencies": {
+    "python": [],
+    "commands": [],
+    "rhinoPlugins": [],
+    "files": []
+  },
+  "permissions": [
+    "document.read",
+    "document.write"
+  ],
+  "interface": {
+    "inputs": [
+      {
+        "name": "C",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Ro",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Ri",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "H",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Rmax",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Rot",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "T",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Ov",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "CW",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Hr",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Pr",
+        "type": "Rhino value",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "treads",
+        "type": "Rhino geometry / data",
+        "required": false
+      },
+      {
+        "name": "column",
+        "type": "Rhino geometry / data",
+        "required": false
+      },
+      {
+        "name": "rail",
+        "type": "Rhino geometry / data",
+        "required": false
+      },
+      {
+        "name": "balusters",
+        "type": "Rhino geometry / data",
+        "required": false
+      },
+      {
+        "name": "info",
+        "type": "Rhino geometry / data",
+        "required": false
+      }
+    ]
+  },
+  "agent": {
+    "callable": false,
+    "description": "Generate a parameterized spiral stair with structural and railing elements. Agent invocation is disabled until this imported draft is reviewed and packaged.",
+    "sideEffects": [
+      "document.read",
+      "document.write"
+    ]
+  },
+  "provenance": {
+    "status": "imported-draft",
+    "source": "GH Library snapshot — 2026-10-15 · source reconciled with COMMANDS 044050f — 2026-10-20",
+    "sourceFile": "S001_spiral_staircase.py",
+    "snapshotDate": "2026-10-15"
+  }
+}

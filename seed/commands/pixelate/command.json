@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "1.0",
+  "slug": "pixelate",
+  "name": "Pixelate",
+  "commandName": "Pixelate",
+  "version": "0.1.0",
+  "summary": "Voxelize closed masses using multiple cell patterns and optional height coloring.",
+  "description": "Converts closed mass geometry into Cube, Tetra, Tri, Stagger, or CubeStagger cells with optional gaps and height-based colors.",
+  "category": "Massing",
+  "tags": [
+    "voxel",
+    "massing",
+    "mesh",
+    "discretization"
+  ],
+  "license": "LicenseRef-Pending",
+  "entrypoint": {
+    "file": "src/main.py",
+    "callable": "run_command"
+  },
+  "icon": "icon.svg",
+  "runtime": {
+    "host": "rhino",
+    "rhinoVersions": [
+      "7",
+      "8"
+    ],
+    "pythonEngine": "Rhino Python (engine unverified)"
+  },
+  "dependencies": {
+    "python": [],
+    "commands": [],
+    "rhinoPlugins": [],
+    "files": []
+  },
+  "permissions": [
+    "document.read",
+    "document.write",
+    "filesystem.write"
+  ],
+  "interface": {
+    "inputs": [
+      {
+        "name": "Mass",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Size",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Height",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Mode",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Gap",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Colour",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Units",
+        "type": "Rhino value",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "mesh",
+        "type": "Rhino geometry / data",
+        "required": false
+      },
+      {
+        "name": "centres",
+        "type": "Rhino geometry / data",
+        "required": false
+      },
+      {
+        "name": "cells",
+        "type": "Rhino geometry / data",
+        "required": false
+      },
+      {
+        "name": "count",
+        "type": "Rhino geometry / data",
+        "required": false
+      },
+      {
+        "name": "volume",
+        "type": "Rhino geometry / data",
+        "required": false
+      },
+      {
+        "name": "info",
+        "type": "Rhino geometry / data",
+        "required": false
+      }
+    ]
+  },
+  "agent": {
+    "callable": false,
+    "description": "Voxelize closed masses using multiple cell patterns and optional height coloring. Agent invocation is disabled until this imported draft is reviewed and packaged.",
+    "sideEffects": [
+      "document.read",
+      "document.write",
+      "filesystem.write"
+    ]
+  },
+  "provenance": {
+    "status": "imported-draft",
+    "source": "GH Library snapshot — 2026-10-15 · source reconciled with COMMANDS 044050f — 2026-10-20",
+    "sourceFile": "M004_pixelate.py",
+    "snapshotDate": "2026-10-15"
+  }
+}

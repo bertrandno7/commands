@@ -1,0 +1,118 @@
+{
+  "schemaVersion": "1.0",
+  "slug": "wind-comfort",
+  "name": "WindComfort",
+  "commandName": "WindComfort",
+  "version": "0.1.0",
+  "summary": "Screen pedestrian wind comfort across multiple climate sectors.",
+  "description": "Combines directional wind screening with climate frequencies to support early NEN 8100-oriented option comparison.",
+  "category": "Analysis",
+  "tags": [
+    "wind",
+    "comfort",
+    "nen-8100",
+    "climate"
+  ],
+  "license": "LicenseRef-Pending",
+  "entrypoint": {
+    "file": "src/main.py",
+    "callable": "run_command"
+  },
+  "icon": "icon.svg",
+  "runtime": {
+    "host": "rhino",
+    "rhinoVersions": [
+      "8"
+    ],
+    "pythonEngine": "Rhino 8 CPython"
+  },
+  "dependencies": {
+    "python": [
+      "numpy"
+    ],
+    "commands": [],
+    "rhinoPlugins": [],
+    "files": []
+  },
+  "permissions": [
+    "document.read",
+    "document.write",
+    "network"
+  ],
+  "interface": {
+    "inputs": [
+      {
+        "name": "Geo",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Weather",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Sectors",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Cell",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Steps",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Slice",
+        "type": "Rhino value",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "comfort",
+        "type": "Rhino geometry / analysis data",
+        "required": false
+      },
+      {
+        "name": "exceedance",
+        "type": "Rhino geometry / analysis data",
+        "required": false
+      },
+      {
+        "name": "sectors",
+        "type": "Rhino geometry / analysis data",
+        "required": false
+      },
+      {
+        "name": "legend",
+        "type": "Rhino geometry / analysis data",
+        "required": false
+      },
+      {
+        "name": "info",
+        "type": "Rhino geometry / analysis data",
+        "required": false
+      }
+    ]
+  },
+  "agent": {
+    "callable": false,
+    "description": "Screen pedestrian wind comfort across multiple climate sectors. Agent invocation is disabled until this imported draft is reviewed and packaged.",
+    "sideEffects": [
+      "document.read",
+      "document.write",
+      "network"
+    ]
+  },
+  "provenance": {
+    "status": "imported-draft",
+    "source": "COMMANDS repository source and live preview — commit 044050f",
+    "sourceFile": "W002_wind_comfort.py",
+    "snapshotDate": "2026-10-15"
+  }
+}

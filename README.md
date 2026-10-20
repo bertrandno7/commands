@@ -1,118 +1,95 @@
-# Commands
+# COMMANDS
 
-Commands is a free, open community platform for discovering, sharing, installing, versioning and remixing small design commands.
+COMMANDS is an open community registry for discovering, publishing, downloading, versioning, forking, and remixing small design commands. V1 focuses on Rhino/Python and treats one callable command—not a monolithic plugin—as the unit of sharing.
 
-Rhino/Python is the first target: vibe coding is making useful one-off tools abundant, while distribution is still folders, chat attachments and aliases.
+The product combines a responsive marketplace, creator and command pages, fifteen runnable browser previews, canonical `.command.zip` packages, immutable releases, ChatGPT sign-in, a D1 catalog, R2 package storage, and an MCP discovery surface. It deliberately does **not** attempt to recreate CAD in the browser.
 
-## Product thesis
+## Seed library
 
-- The unit is a command, not a giant plugin.
-- Public commands should be readable, forkable and versioned.
-- Commands may be geometric, analytical, or both.
-- The same command interface should eventually be callable by humans and AI agents.
+The initial catalog was audited from `Hark / Projects / Python Codes - GH Library / 00_Rhino_Commands` and reconciled with the repository source at commit `044050f`. All fifteen listed commands have:
 
-## Filesystem-driven catalogue
+- the current Rhino/Python source;
+- a deterministic browser preview and computed screenshot;
+- a validated v1 package and SHA-256 record;
+- explicit dependency and permission metadata;
+- honest `imported-draft` provenance.
 
-The marketplace is no longer hand-maintained in `app.js`.
+The source snapshot did not include an explicit code license. Seed downloads therefore remain clearly marked provisional and use `LicenseRef-Pending`; community publishing requires a supported open-source SPDX license.
 
-`commands/` is the source of truth:
+## Stack
+
+- Vinext / React 19 / TypeScript
+- Cloudflare Workers runtime
+- D1 + Drizzle for catalog, versions, profiles, stars, forks, and download counts
+- R2 for immutable community package objects
+- ChatGPT sign-in for publishing and personal actions
+- Playwright browser verification
+
+## Run locally
+
+Requirements: Node.js `>=22.13.0` and Chrome or Edge for browser tests.
+
+```sh
+npm ci
+npm run seed:packages
+npm test
+npm run build
+node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_concerned_grim_reaper.sql
+npm start
+```
+
+Use the URL printed by Wrangler (normally `http://127.0.0.1:8787`). To run the end-to-end browser and publishing checks against it:
+
+```powershell
+$env:COMMANDS_PREVIEW_ORIGIN='http://127.0.0.1:8787'
+npm run test:browser
+```
+
+Useful commands:
+
+- `npm run dev` — development server with hot reload
+- `npm run build` — production Worker build
+- `npm run seed:packages` — rebuild and validate the fifteen deterministic seed packages
+- `npm run thumbnails` — capture all fifteen real browser previews
+- `npm test` — numerical, package-integrity, and preview-coverage tests
+- `npm run test:browser` — desktop/mobile previews plus an upload → catalog → download → checksum flow
+
+## Repository shape
 
 ```text
-commands/
-  a001-sunhours/
-    command.json
-    main.py
-  m004-pixelate/
-    command.json
-    main.py
-  ...
+app/                 pages, API routes, MCP endpoint
+components/          marketplace and publishing UI
+db/ + drizzle/       schema and initial migration
+lib/                 catalog, package, validation, and auth-domain logic
+public/demo/         shared browser-preview engines
+public/commands/     standard command preview adapters
+public/packages/     deterministic seed archives and SHA-256 index
+seed/commands/       canonical package source trees
+tests/               numerical, integrity, browser, and end-to-end checks
+docs/                product and architecture notes
 ```
 
-`npm run registry` scans the filesystem and writes `generated/commands.json`. The browser loads that generated registry directly.
+## Command package v1
 
-A loose Python file below `commands/` is also auto-discovered if its directory has no `command.json`. COMMANDS infers its ID, name, category and summary from the filename/docstring so a new script cannot silently disappear from the catalogue. Add a manifest when you want curated metadata.
+Every archive has `command.json`, `README.md`, the declared icon, and an executable entrypoint. The manifest records:
 
-The migrated Hark seed library currently contains **16 packages**: 15 listed commands plus one internal module (`G006 VoxelFacade`).
+- identity, SemVer, category, tags, and SPDX license;
+- Rhino/Python compatibility;
+- Python, Rhino-plugin, command, and bundled-file dependencies;
+- declared permissions;
+- typed inputs, outputs, objectives, and metrics;
+- a future agent-call contract and provenance.
 
-## Live preview contract
+Uploads are bounded and inspected before storage: safe normalized paths, no traversal or symlinks, compressed/expanded/file-count limits, required-file validation, CRC verification, exact embedded-manifest matching, callable verification, open-license enforcement, and immutable content-addressed releases.
 
-A script appearing in the registry and a script being runnable in a browser are different things.
-
-Every Python script under `commands/` can be discovered automatically. A **true live preview** is created automatically only when the command also declares a browser-compatible preview.
-
-Manifest example:
-
-```json
-{
-  "preview": {
-    "type": "web",
-    "entry": "commands/a003-shadow-study/preview/index.html",
-    "capture": "[data-command-preview]",
-    "ready": {
-      "selector": "body",
-      "attribute": "data-preview-ready",
-      "equals": "true",
-      "metric": "[data-preview-metric]"
-    }
-  }
-}
-```
-
-For the standard convention, placing `preview/index.html` beside an inferred Python command is enough for the registry builder to discover it automatically. The preview should:
-
-- expose the visible capture region with `data-command-preview`;
-- set `body[data-preview-ready="true"]` only after real computation is complete;
-- expose a numeric result using `data-preview-metric`.
-
-Existing previews can use custom selectors in `command.json`.
-
-At each GitHub Pages deployment, the build:
-
-1. scans `commands/`;
-2. generates the marketplace registry;
-3. finds every command whose `preview.type` is `web`;
-4. opens each preview in headless Chrome;
-5. waits for its declared completion condition;
-6. captures a consistent 16:9 screenshot;
-7. uses that screenshot as the command card thumbnail;
-8. publishes the site.
-
-There is no hard-coded preview list.
-
-### Current browser-runnable commands
-
-All **15 listed commands** now have live browser previews.
-
-- Analysis: **A001 SunHours, A002 SolarRadiation, W001 WindScreen, W002 WindComfort, M006 EmbodiedCarbon**
-- Massing / generative: **M003 Density, M004 Pixelate, M005 SunCarve, G001 VoxelGrowth, G005 BriefGrowth**
-- Facade / geometry: **F001 FacadePanels, F002 SunFacade, S001 SpiralStair**
-- Site / evaluation: **X000 SiteModel, E001 Scoreboard**
-
-The ports are deliberately honest about scope. Pure maths and browser-compatible solvers are executed directly; Rhino-only Brep/NURBS operations, external datasets, or desktop persistence are represented by deterministic browser adapters rather than being mislabeled as native Rhino execution. `G006 VoxelFacade` remains an internal helper module and is not a standalone marketplace command.
-
-## Local development
-
-```bash
-npm install
-npm run registry
-python3 -m http.server 8765
-```
-
-Then, in another terminal:
-
-```bash
-npm run thumbnails
-npm test
-```
-
-Chrome/Chromium is required for thumbnail generation.
+See `/docs/package-format` in the running app and [`docs/architecture.md`](docs/architecture.md).
 
 ## Roadmap
 
-1. Filesystem-driven marketplace and real browser previews.
-2. Real publishing: accounts, profiles, versions, stars/forks and GitHub-backed releases.
-3. Rhino bridge: install/update/uninstall commands and register them in Rhino.
-4. Intelligent commands: AI-assisted creation and analysis-aware operations.
-5. Only later: private firm libraries and a standalone programmable 3D environment.
+1. **V1 marketplace:** open public discovery, packages, creators, versions, stars/forks, publishing, API, and MCP discovery.
+2. **Rhino companion:** local install/update, checksum verification, permission prompts, native command registration, and a lockfile.
+3. **AI command creation:** prompt-to-package scaffolding with static checks, sandboxed validation, and human-owned publication.
+4. **Analysis-aware commands:** compose geometry, analysis, constraints, metrics, and objectives such as `TwistForSun`.
+5. **Standalone 3D environment:** only after the package and agent ecosystem proves the need.
 
-Public community access should remain free.
+The public community remains free and open. Sponsorship and future private enterprise libraries are extension points, not paywalls on core community features.

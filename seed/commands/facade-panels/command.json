@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "1.0",
+  "slug": "facade-panels",
+  "name": "FacadePanels",
+  "commandName": "FacadePanels",
+  "version": "0.1.0",
+  "summary": "Panelize a single-face facade and separate flat panels from warped ones.",
+  "description": "Divides a single facade face into panels, measures diagonal warp, and groups panels by a configurable flatness tolerance.",
+  "category": "Facade",
+  "tags": [
+    "panelization",
+    "facade",
+    "warp",
+    "rationalization"
+  ],
+  "license": "LicenseRef-Pending",
+  "entrypoint": {
+    "file": "src/main.py",
+    "callable": "run_command"
+  },
+  "icon": "icon.svg",
+  "runtime": {
+    "host": "rhino",
+    "rhinoVersions": [
+      "7",
+      "8"
+    ],
+    "pythonEngine": "Rhino Python (engine unverified)"
+  },
+  "dependencies": {
+    "python": [],
+    "commands": [],
+    "rhinoPlugins": [],
+    "files": []
+  },
+  "permissions": [
+    "document.read",
+    "document.write"
+  ],
+  "interface": {
+    "inputs": [
+      {
+        "name": "S",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "W",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Hp",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "J",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Tol",
+        "type": "Rhino value",
+        "required": false
+      },
+      {
+        "name": "Flip",
+        "type": "Rhino value",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "panels",
+        "type": "Rhino geometry / data",
+        "required": false
+      },
+      {
+        "name": "flat",
+        "type": "Rhino geometry / data",
+        "required": false
+      },
+      {
+        "name": "warped",
+        "type": "Rhino geometry / data",
+        "required": false
+      },
+      {
+        "name": "warp",
+        "type": "Rhino geometry / data",
+        "required": false
+      },
+      {
+        "name": "info",
+        "type": "Rhino geometry / data",
+        "required": false
+      }
+    ]
+  },
+  "agent": {
+    "callable": false,
+    "description": "Panelize a single-face facade and separate flat panels from warped ones. Agent invocation is disabled until this imported draft is reviewed and packaged.",
+    "sideEffects": [
+      "document.read",
+      "document.write"
+    ]
+  },
+  "provenance": {
+    "status": "imported-draft",
+    "source": "GH Library snapshot — 2026-10-15 · source reconciled with COMMANDS 044050f — 2026-10-20",
+    "sourceFile": "F001_facade_panelizer.py",
+    "snapshotDate": "2026-10-15"
+  }
+}

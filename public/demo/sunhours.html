@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+if(new URLSearchParams(location.search).get("embed")==="1"){
+  document.documentElement.classList.add("embedded-demo");
+}
+</script>
+<meta name="theme-color" content="#f7f7f5">
+<title>SunHours — Live Demo · Commands</title>
+<link rel="stylesheet" href="./sunhours.css?v=6">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../"><span class="mark">◈</span>Commands<span class="brand-small"> / LAB</span></a>
+  <span class="live"><span class="pulse"></span> LIVE BROWSER DEMO</span>
+  <a class="back" href="../">← Marketplace</a>
+</header>
+<main class="page">
+<section class="intro">
+  <div><div class="eyebrow">ANALYSIS / A001 / LIVE COMMAND</div>
+    <h1>SunHours<span class="period">.</span></h1>
+    <p>How many hours of direct sunlight does a surface receive? Run a real shading-aware solar study on architectural massing, right here in your browser.</p>
+  </div>
+  <div class="intro-aside"><span>ENGINE</span><strong>NOAA + Ray casting</strong><span>ORIGIN</span><strong>Hark Python Library</strong><span>EXECUTION</span><strong>100% client-side</strong></div>
+</section>
+<section class="workspace">
+  <aside class="control-panel">
+    <div class="panel-title"><span>01</span><h2>Analysis setup</h2></div>
+    <form id="analysisForm">
+      <label class="field">SCENE <select id="scene"><option value="courtyard">Rotterdam courtyard</option><option value="tower">Tower + context</option><option value="canyon">Street canyon</option></select></label>
+      <div class="field-row">
+        <label class="field">LATITUDE <input id="lat" type="number" min="-90" max="90" step=".01" value="51.92" required></label>
+        <label class="field">LONGITUDE <input id="lon" type="number" min="-180" max="180" step=".01" value="4.48" required></label>
+      </div>
+      <div class="presets">
+        <button type="button" data-date="2026-03-21">Equinox</button>
+        <button type="button" class="selected" data-date="2026-06-21">Summer</button>
+        <button type="button" data-date="2026-12-21">Winter</button>
+      </div>
+      <label class="field">STUDY DATE <input id="date" type="date" value="2026-06-21" required></label>
+      <div class="field-row">
+        <label class="field">SAMPLE STEP <select id="step"><option value="60">60 min · Fast</option><option value="30" selected>30 min · Standard</option><option value="15">15 min · Detailed</option><option value="10">10 min · Fine</option></select></label>
+        <label class="field">GRID SIZE <select id="grid"><option value="6">6 m · Fast</option><option value="4" selected>4 m · Standard</option><option value="2">2 m · Detailed</option></select></label>
+      </div>
+      <button id="run" type="submit" class="run-button"><span>▶</span> Run analysis <span class="arrow">↗</span></button>
+      <div class="progress-wrap" id="progressWrap" hidden><div class="progress-bar"><div id="progress"></div></div><span id="progressLabel">Calculating…</span></div>
+      <p class="hint">Ray-casting includes shadows from all buildings and self-shading. Each cell counts unblocked samples with the sun above the horizon.</p>
+      <div class="panel-bottom"><span class="green-dot"></span> Browser computation · no cloud required</div>
+    </form>
+  </aside>
+  <div class="visual-panel">
+    <div class="viewer-bar">
+      <div class="viewer-title">
+        <strong id="sceneTitle">Rotterdam courtyard</strong>
+        <span id="sceneSubtitle">Hark A001-core · Rotterdam test massing</span>
+      </div>
+      <div class="view-actions">
+        <label class="view-projection" title="Rhino-style viewport projection">
+          <select id="viewProjection" aria-label="View projection">
+            <option value="perspective">Perspective</option>
+            <option value="top">Top</option>
+            <option value="parallel">Parallel (3D)</option>
+          </select>
+        </label>
+        <label class="view-projection view-lens" title="Real camera focal length in Perspective">
+          <span>Lens</span>
+          <select id="viewLens" aria-label="Perspective camera lens">
+            <option value="24">24 mm</option>
+            <option value="35" selected>35 mm</option>
+            <option value="50">50 mm</option>
+          </select>
+        </label>
+        <div class="view-toolgroup" role="group" aria-label="Left drag or one-finger tool">
+          <button type="button" id="viewToolOrbit" class="active" aria-pressed="true" title="Rhino-style orbit around world axes, stable horizon and measured speed">↻ Orbit</button>
+          <button type="button" id="viewToolPan" aria-pressed="false" title="Drag to pan (model follows pointer)">✥ Pan</button>
+        </div>
+        <button type="button" id="viewReset" title="Reset view">↺ Reset</button>
+        <button type="button" id="png" title="Export image">↓ PNG</button>
+      </div>
+    </div>
+    <canvas id="view" width="1120" height="680" aria-label="Perspective or top-view 3D heatmap of buildings and solar exposure"></canvas>
+    <div class="viewer-footer">
+      <span id="navHint">PERSPECTIVE · FREE 360° tumble · RMB orbit · Ctrl+Shift+RMB orbit object · Shift+RMB pan · wheel zoom</span>
+      <span id="viewStatus">Ready to simulate</span>
+    </div>
+    <div class="legend"><div class="legend-head"><b>DIRECT SUN HOURS</b><span id="legendMax">—</span></div><div class="gradient"></div><div class="ticks"><span>0 h</span><span>LOW</span><span>MED</span><span>HIGH</span></div></div>
+  </div>
+</section>
+<section class="results">
+  <div class="results-heading"><div><div class="eyebrow">02 / ANALYSIS OUTPUT</div><h2>Measured performance</h2></div><span class="result-label" id="resultLabel">Awaiting first run</span></div>
+  <div class="metrics">
+    <article><span>MEAN SUN HOURS</span><strong id="mean">—</strong><small>All sampled cells</small></article>
+    <article><span>MAXIMUM SUN HOURS</span><strong id="max">—</strong><small>Brightest cell</small></article>
+    <article><span>FACADE AVERAGE</span><strong id="facade">—</strong><small>All vertical faces</small></article>
+    <article><span>GROUND AVERAGE</span><strong id="ground">—</strong><small>Open ground</small></article>
+    <article><span>DAYLIGHT SAMPLED</span><strong id="daylight">—</strong><small>Sun above horizon</small></article>
+  </div>
+  <div class="data-bar"><span id="cellCount">— sampled cells</span><span id="sunCount">— time samples</span><span id="timezone">Time zone: auto CET / CEST</span><button id="csv" disabled>↓ Download CSV results</button></div>
+</section>
+<section class="about"><div><div class="eyebrow">03 / ABOUT THE METHOD</div><h2>Real computation.<br>Not an AI-generated heatmap.</h2></div><div><p>This browser implementation ports the sun-position equations and sampling logic from <strong>A001_sun_hours.py</strong>. It shoots rays toward the sun from sampled roof, facade and ground points, and counts unblocked direct-sun intervals.</p><p><strong>Current scope:</strong> box-shaped massing presets, local dates, fixed sample intervals and simplified geometry. It is not a replacement for the full Rhino tool, detailed daylight simulation, annual radiation or climate-based compliance studies.</p><p>Results are numerical estimates for design exploration. Accuracy depends on geometry detail, sample resolution, orientation and weather-independent direct sun assumptions.</p><a href="../">← Back to the command library</a></div></section>
+</main>
+<script defer src="./embed-resize.js?v=1"></script>
+<script type="module" src="./sunhours.js?v=13"></script>
+</body>
+</html>

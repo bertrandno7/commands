@@ -8,6 +8,8 @@ import {chromium} from "playwright-core";
 
 const paths=[
   process.env.CHROME_PATH,
+  "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
   "/usr/bin/google-chrome",
   "/usr/bin/google-chrome-stable",
   "/usr/bin/chromium"
@@ -37,7 +39,8 @@ async function runViewport(label,config){
     errors.push("Request failed: "+req.url()+" "+req.failure()?.errorText);
   });
 
-  await page.goto("http://127.0.0.1:8765/demo/wind.html",{
+  const origin=(process.env.COMMANDS_PREVIEW_ORIGIN||"http://127.0.0.1:8765").replace(/\/$/,"");
+  await page.goto(origin+"/demo/wind.html",{
     waitUntil:"domcontentloaded",timeout:30000
   });
   await page.waitForFunction(

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {
  SHAPES,MODE_NAMES,SQ3,cellVolume,heightColor,
  shapeBounds,insideMassing,cubeShift,triShift,pixelate
-} from "../demo/pixel-engine.js";
+} from "../public/demo/pixel-engine.js";
 
 test("M004 uses Hark's actual slab, rotated tower and spherical massing",()=>{
  assert.equal(SHAPES.length,3);

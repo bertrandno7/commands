@@ -4,6 +4,8 @@ import { chromium } from "playwright-core";
 
 const chromePaths=[
   process.env.CHROME_PATH,
+  "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
   "/usr/bin/google-chrome",
   "/usr/bin/google-chrome-stable",
   "/usr/bin/chromium"
@@ -22,13 +24,14 @@ const browser=await chromium.launch({
     "--use-angle=swiftshader"
   ]
 });
+const ORIGIN=(process.env.COMMANDS_PREVIEW_ORIGIN||"http://127.0.0.1:8765").replace(/\/$/,"");
 
 async function checkPage(label,opts){
   const page=await browser.newPage(opts);
   const pageErrors=[];
   page.on("pageerror",err=>pageErrors.push(err.message));
 
-  await page.goto("http://127.0.0.1:8765/demo/sunhours.html",{
+  await page.goto(ORIGIN+"/demo/sunhours.html",{
     waitUntil:"domcontentloaded",timeout:30000
   });
   await page.waitForFunction(
