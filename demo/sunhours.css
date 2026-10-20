@@ -21,3 +21,22 @@
 .about{display:grid;grid-template-columns:1fr 1fr;gap:60px;padding:70px 0 0;margin-top:55px;border-top:1px solid var(--line)}.about p{font-size:13px;color:#686e67;line-height:1.7;margin:0 0 16px}.about a{font-size:13px;font-weight:700;text-decoration:underline}
 @media(max-width:1080px){.workspace{grid-template-columns:275px minmax(0,1fr)}.metrics{grid-template-columns:repeat(3,1fr)}.intro-aside{display:none}}
 @media(max-width:760px){.page{padding:25px 12px 55px}.topbar{padding:0 14px}.live{display:none}.brand{font-size:18px}.intro{padding:8px 5px 26px}.workspace{grid-template-columns:1fr}.control-panel{padding:19px}.panel-title{margin-bottom:18px}.field{margin-bottom:14px}.hint{margin-bottom:14px}.visual-panel{min-height:470px}#view{height:410px}.legend{left:10px;bottom:55px;width:170px;padding:10px}.viewer-footer{font-size:8px}.metrics{grid-template-columns:repeat(2,1fr);gap:8px}.metrics article{min-height:112px}.metrics article span{font-size:8px}.data-bar button{width:100%;margin-left:0}.about{grid-template-columns:1fr;gap:25px;padding-top:45px}.results{margin-top:36px}.result-label{max-width:90px;text-align:right}.viewer-bar{padding:12px}.view-actions button{font-size:10px;padding:8px}}
+
+/* WebGL orbit controls: touch-action must be disabled before gestures start. */
+#view{
+  touch-action:none!important;
+  -webkit-user-select:none;
+  user-select:none;
+  cursor:grab;
+  overscroll-behavior:contain;
+}
+#view.dragging{cursor:grabbing}
+@media(max-width:760px){
+  .viewer-footer span:first-child{
+    font-size:9px;
+    letter-spacing:0;
+    max-width:58%;
+    line-height:1.35
+  }
+  .viewer-footer span:last-child{text-align:right;max-width:42%;line-height:1.35}
+}
