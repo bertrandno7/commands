@@ -4,15 +4,20 @@
  * Native WebGL 1 with real GPU depth testing. No CDN or framework required.
  * Perspective uses an actual pinhole projection (depth-dependent 1/w scaling).
  * Rhino Top uses a separate parallel projection with north consistently up.
+ * Orbit uses camera-relative quaternions, enabling unlimited rotations
+ * through both poles and underneath geometry without clipping angles.
  * Rhino-inspired desktop navigation (Perspective):
  *   RMB orbit, Shift+RMB pan, Ctrl+RMB / wheel zoom, MMB pan.
- * Top view: RMB pan, Ctrl+Shift+RMB switches to Perspective orbit.
+ * Top view: RMB pan, Ctrl+Shift+RMB rotates as a parallel view.
  * Left-drag uses the selected web-demo tool (Orbit or Pan).
  * Touch: one-finger Orbit/Pan tool; two-finger screen-following pan + pinch.
  * Pan moves geometry in the exact screen-space direction of the pointer.
  * Camera always orbits around the visible scene.
  */
 import { hoursColor } from "./sunhours-engine.js?v=3";
+import {
+  defaultCameraOrientation, cameraAxes, freeOrbit, rollView
+} from "./camera-rotation.js?v=1";
 
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 const dot = (a,b) => a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
@@ -154,8 +159,9 @@ export class SunHoursViewer {
     this.canvas=canvas;
     this.scene=null;
     this.result=null;
-    this.yaw=-0.72;
-    this.elevation=0.61;
+    this.defaultOrientation=defaultCameraOrientation();
+    this.orientation=[...this.defaultOrientation];
+    this.savedNonTopOrientation=[...this.defaultOrientation];
     this.zoom=1;
     this.target=[0,0,12];
     this.baseHalfHeight=60;
@@ -230,8 +236,8 @@ export class SunHoursViewer {
   }
 
   reset(){
-    this.yaw=-0.72;
-    this.elevation=0.61;
+    this.orientation=this.projection==="top"?
+      [0,0,0,1]:[...this.defaultOrientation];
     this.zoom=1;
     if(this.scene){
       const g=this.scene.ground;
@@ -268,20 +274,12 @@ export class SunHoursViewer {
 
   camera(){
     const parallel=this.projection!=="perspective";
-    let forward,right,up;
-    if(this.projection==="top"){
-      // Looking vertically downward: east/right and north/up. The old
-      // cross(forward,worldUp) was zero here, collapsing the Top view.
-      forward=[0,0,-1];
-      right=[1,0,0];
-      up=[0,1,0];
-    }else{
-      const ce=Math.cos(this.elevation),se=Math.sin(this.elevation);
-      const radial=[ce*Math.sin(this.yaw),-ce*Math.cos(this.yaw),se];
-      forward=radial.map(x=>-x);
-      right=normalized(cross(forward,[0,0,1]));
-      up=normalized(cross(right,forward));
-    }
+    // The camera's three axes remain orthonormal at every orientation,
+    // including upside down and exactly over either pole.
+    const axes=this.projection==="top"
+      ?{right:[1,0,0],up:[0,1,0],forward:[0,0,-1]}
+      :cameraAxes(this.orientation);
+    const {forward,right,up}=axes;
     const aspect=Math.max(.2,this.canvas.clientWidth/Math.max(1,this.canvas.clientHeight));
     const tanHalf=12/this.lensMm; // 35mm-camera vertical sensor size: 24 mm
     const distance=this.baseDistance/this.zoom;
@@ -330,9 +328,27 @@ export class SunHoursViewer {
   setProjection(mode){
     if(!["perspective","parallel","top"].includes(mode))throw new Error("Unknown view.");
     if(this.projection===mode)return;
+    if(mode==="top"){
+      this.savedNonTopOrientation=[...this.orientation];
+      this.orientation=[0,0,0,1];
+    }else if(this.projection==="top"){
+      this.orientation=[...this.savedNonTopOrientation];
+    }
     this.projection=mode;
     this.draw();
     if(typeof this.onProjectionChange==="function")this.onProjectionChange(mode);
+  }
+
+  /** Unrestricted camera-relative tumble around the current view target. */
+  orbitByScreen(dx,dy){
+    if(this.projection==="top")return;
+    this.orientation=freeOrbit(this.orientation,dx,dy);
+  }
+
+  /** Optional full camera roll: Alt+right drag in Perspective or Parallel. */
+  rollByScreen(dx){
+    if(this.projection==="top")return;
+    this.orientation=rollView(this.orientation,dx);
   }
 
   /**
@@ -384,16 +400,17 @@ export class SunHoursViewer {
     if(e.button===2){
       if(this.projection!=="perspective" && e.ctrlKey && e.shiftKey){
         if(this.projection==="top"){
-          // Rhino force-rotate of a parallel Top viewport remains PARALLEL.
-          // Start from the top-oriented camera rather than jumping to the
-          // old perspective yaw and pitch.
-          this.yaw=0;
-          this.elevation=1.49;
+          // Rotating a Top viewport begins from a plan orientation, without
+          // switching into pinhole Perspective.
           this.setProjection("parallel");
+          this.orientation=[0,0,0,1];
+          this.draw();
         }
         return "orbit";
       }
       if(e.ctrlKey && !e.shiftKey)return "zoom";
+      if(e.altKey&&!e.ctrlKey&&!e.shiftKey&&this.projection!=="top")
+        return "roll";
       if(e.shiftKey || this.projection!=="perspective")return "pan";
       return "orbit";
     }
@@ -430,9 +447,9 @@ export class SunHoursViewer {
       }else if(last.mode==="zoom"){
         this.zoomAt(Math.exp(-dy*.012),last.startX,last.startY);
       }else if(last.mode==="orbit"){
-        // Direct tumble: drag the model right/down => it moves right/down.
-        this.yaw+=dx*.0065;
-        this.elevation=clamp(this.elevation+dy*.0065,.08,1.50);
+        this.orbitByScreen(dx,dy);
+      }else if(last.mode==="roll"){
+        this.rollByScreen(dx);
       }
     }else if(this.pointers.size===2){
       const pointsAfter=[...this.pointers.values()].map(p=>[p.x,p.y]);
