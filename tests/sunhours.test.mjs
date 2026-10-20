@@ -59,6 +59,7 @@ function mockCanvas(){
     width:0,height:0,clientWidth:520,clientHeight:380,
     style:{},classList:{add(){},remove(){}},
     getContext:(kind)=>kind==="webgl"?gl:null,
+    getBoundingClientRect(){return {left:12,top:20,width:520,height:380};},
     addEventListener(){},setPointerCapture(){}
   };
   return {canvas,draws};
@@ -84,34 +85,143 @@ test("WebGL draws real depth-tested polygons, not painted backfaces", async()=>{
   assert.ok(draws.some(d=>d[0]==="draw"&&d[1]===1&&d[2]>20),"guides and edges");
 });
 
-test("Single-finger orbit, right-drag pan, pinch zoom and reset are stable",()=>{
+
+function screenPosition(viewer,point){
+  const cam=viewer.camera();
+  const p=point.map((n,i)=>n-viewer.target[i]);
+  const scale=viewer.canvas.clientHeight/(2*cam.halfHeight);
+  const dot=(a,b)=>a.reduce((sum,n,i)=>sum+n*b[i],0);
+  return [
+    viewer.canvas.clientWidth/2+dot(p,cam.right)*scale,
+    viewer.canvas.clientHeight/2-dot(p,cam.up)*scale
+  ];
+}
+function assertScreenFollows(viewer,point,before,dx,dy){
+  const after=screenPosition(viewer,point);
+  assert.ok(Math.abs(after[0]-before[0]-dx)<1e-7,
+    "Panning right must move the model right by exactly "+dx+"px");
+  assert.ok(Math.abs(after[1]-before[1]-dy)<1e-7,
+    "Panning down must move the model down by exactly "+dy+"px");
+}
+
+test("Perspective: RMB orbits without panning (Rhino default)",()=>{
   const {canvas}=mockCanvas();
-  const viewer=new SunHoursViewer(canvas);
-  viewer.setData(getScene("courtyard"),null);
-  const yaw=viewer.yaw,el=viewer.elevation;
-
-  viewer.pointerDown(ev(1,100,100));
-  viewer.pointerMove(ev(1,135,80));
-  viewer.pointerUp(ev(1,135,80));
-  assert.notEqual(viewer.yaw,yaw);
-  assert.notEqual(viewer.elevation,el);
-
-  const originalZoom=viewer.zoom;
-  viewer.pointerDown(ev(1,100,130));
-  viewer.pointerDown(ev(2,200,130));
-  viewer.pointerMove(ev(2,250,130));
-  assert.ok(viewer.zoom>originalZoom);
-  viewer.pointerUp(ev(1,100,130));
-  viewer.pointerUp(ev(2,250,130));
-
-  const target=[...viewer.target];
+  const v=new SunHoursViewer(canvas);
+  v.setData(getScene("courtyard"),null);
+  const yaw=v.yaw,elevation=v.elevation,target=[...v.target];
   const mouse={pointerType:"mouse",button:2};
-  viewer.pointerDown(ev(3,120,150,mouse));
-  viewer.pointerMove(ev(3,170,150,mouse));
-  viewer.pointerUp(ev(3,170,150,mouse));
-  assert.ok(viewer.target.some((x,i)=>Math.abs(x-target[i])>.01));
+  v.pointerDown(ev(1,100,100,mouse));
+  v.pointerMove(ev(1,155,130,mouse));
+  v.pointerUp(ev(1,155,130,mouse));
+  assert.notEqual(v.yaw,yaw);
+  assert.notEqual(v.elevation,elevation);
+  assert.deepEqual(v.target,target);
+});
 
-  viewer.reset();
-  assert.equal(viewer.zoom,1);
-  assert.equal(viewer.yaw,-.72);
+test("Perspective: Shift+RMB pans geometry in screen-drag direction",()=>{
+  const {canvas}=mockCanvas();
+  const v=new SunHoursViewer(canvas);
+  v.setData(getScene("courtyard"),null);
+  const point=[12,22,30],before=screenPosition(v,point);
+  const yaw=v.yaw,elevation=v.elevation;
+  const mouse={pointerType:"mouse",button:2,shiftKey:true};
+  v.pointerDown(ev(2,140,140,mouse));
+  v.pointerMove(ev(2,220,195,mouse));
+  v.pointerUp(ev(2,220,195,mouse));
+  assertScreenFollows(v,point,before,80,55);
+  assert.equal(v.yaw,yaw);
+  assert.equal(v.elevation,elevation);
+});
+
+test("Perspective: MMB pans while Ctrl+RMB zooms toward pointer",()=>{
+  const {canvas}=mockCanvas();
+  const v=new SunHoursViewer(canvas);
+  v.setData(getScene("courtyard"),null);
+  const point=[-9,15,0],before=screenPosition(v,point);
+  const middle={pointerType:"mouse",button:1};
+  v.pointerDown(ev(3,100,100,middle));
+  v.pointerMove(ev(3,135,125,middle));
+  v.pointerUp(ev(3,135,125,middle));
+  assertScreenFollows(v,point,before,35,25);
+
+  // An arbitrary point on the view plane under the mouse should remain pinned
+  // when zooming to cursor, just like Rhino wheel zoom.
+  const anchorScreen=[210,170]; // client coordinates
+  const origin=[...v.target],cam=v.camera();
+  const scale=2*cam.halfHeight/canvas.clientHeight;
+  const sx=anchorScreen[0]-12-canvas.clientWidth/2;
+  const sy=anchorScreen[1]-20-canvas.clientHeight/2;
+  const anchor=origin.map((t,i)=>t+scale*(sx*cam.right[i]-sy*cam.up[i]));
+  const expected=screenPosition(v,anchor);
+  const old=v.zoom;
+  const mouse={pointerType:"mouse",button:2,ctrlKey:true};
+  v.pointerDown(ev(4,...anchorScreen,mouse));
+  v.pointerMove(ev(4,anchorScreen[0],anchorScreen[1]-70,mouse));
+  v.pointerUp(ev(4,anchorScreen[0],anchorScreen[1]-70,mouse));
+  assert.ok(v.zoom>old);
+  const after=screenPosition(v,anchor);
+  assert.ok(Math.abs(after[0]-expected[0])<1e-7);
+  assert.ok(Math.abs(after[1]-expected[1])<1e-7);
+});
+
+test("Top view: RMB pans; Ctrl+Shift+RMB breaks into Perspective orbit",()=>{
+  const {canvas}=mockCanvas();
+  const v=new SunHoursViewer(canvas);
+  v.setData(getScene("tower"),null);
+  v.setProjection("top");
+  assert.equal(v.projection,"top");
+  const before=screenPosition(v,[18,12,0]);
+  const pan={pointerType:"mouse",button:2};
+  v.pointerDown(ev(5,120,130,pan));
+  v.pointerMove(ev(5,180,100,pan));
+  v.pointerUp(ev(5,180,100,pan));
+  assertScreenFollows(v,[18,12,0],before,60,-30);
+  const forceRotate={pointerType:"mouse",button:2,ctrlKey:true,shiftKey:true};
+  v.pointerDown(ev(6,110,150,forceRotate));
+  assert.equal(v.projection,"perspective");
+  const yaw=v.yaw;
+  v.pointerMove(ev(6,140,150,forceRotate));
+  v.pointerUp(ev(6,140,150,forceRotate));
+  assert.notEqual(v.yaw,yaw);
+});
+
+test("Touch: one-finger Orbit/Pan tool and two-finger screen-following pan",()=>{
+  const {canvas}=mockCanvas();
+  const v=new SunHoursViewer(canvas);
+  v.setData(getScene("courtyard"),null);
+  const yaw=v.yaw;
+  v.pointerDown(ev(1,100,110));
+  v.pointerMove(ev(1,145,110));
+  v.pointerUp(ev(1,145,110));
+  assert.notEqual(v.yaw,yaw);
+
+  v.setTool("pan");
+  const point=[20,20,16],before=screenPosition(v,point);
+  v.pointerDown(ev(2,100,100));
+  v.pointerMove(ev(2,180,140));
+  v.pointerUp(ev(2,180,140));
+  assertScreenFollows(v,point,before,80,40);
+
+  v.setTool("orbit");
+  const again=screenPosition(v,point);
+  const z=v.zoom;
+  v.pointerDown(ev(7,100,170));
+  v.pointerDown(ev(8,200,170));
+  v.pointerMove(ev(7,120,190));
+  v.pointerMove(ev(8,220,190));
+  v.pointerUp(ev(7,120,190));
+  v.pointerUp(ev(8,220,190));
+  assertScreenFollows(v,point,again,20,20);
+  assert.equal(v.zoom,z);
+
+  v.pointerDown(ev(9,120,170));
+  v.pointerDown(ev(10,220,170));
+  v.pointerMove(ev(10,270,170));
+  assert.ok(v.zoom>z);
+  v.pointerUp(ev(9,120,170));
+  v.pointerUp(ev(10,270,170));
+
+  v.reset();
+  assert.equal(v.zoom,1);
+  assert.equal(v.yaw,-0.72);
 });
