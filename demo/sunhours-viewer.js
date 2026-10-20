@@ -2,8 +2,13 @@
  * COMMANDS / SunHours WebGL viewer.
  *
  * Native WebGL 1 with real GPU depth testing. No CDN or framework required.
- * Drag: orbit. Shift/right-drag: pan. Wheel or two-finger pinch: zoom.
- * Two-finger translation pans. Camera always orbits around the visible scene.
+ * Rhino-inspired desktop navigation (Perspective):
+ *   RMB orbit, Shift+RMB pan, Ctrl+RMB / wheel zoom, MMB pan.
+ * Top view: RMB pan, Ctrl+Shift+RMB switches to Perspective orbit.
+ * Left-drag uses the selected web-demo tool (Orbit or Pan).
+ * Touch: one-finger Orbit/Pan tool; two-finger screen-following pan + pinch.
+ * Pan moves geometry in the exact screen-space direction of the pointer.
+ * Camera always orbits around the visible scene.
  */
 import { hoursColor } from "./sunhours-engine.js?v=3";
 
@@ -139,7 +144,9 @@ export class SunHoursViewer {
     });
     this.buffers={};
     this.webglAvailable=!!this.gl;
-    this.mousePan=false;
+    this.projection="perspective";
+    this.activeTool="orbit";
+    this.onProjectionChange=null;
     this.init();
   }
 
@@ -182,7 +189,8 @@ export class SunHoursViewer {
     this.canvas.addEventListener("wheel",e=>{
       e.preventDefault();
       const multiplier=e.deltaMode===1?16:e.deltaMode===2?this.canvas.clientHeight:1;
-      this.zoom=clamp(this.zoom*Math.exp(-e.deltaY*multiplier*.0012),.45,5);
+      // Rhino-like wheel zoom, anchored at the pointer rather than scene center.
+      this.zoomAt(Math.exp(-e.deltaY*multiplier*.0012),e.clientX,e.clientY);
       this.draw();
     },{passive:false});
     this.canvas.addEventListener("dblclick",()=>this.reset());
@@ -227,8 +235,10 @@ export class SunHoursViewer {
   }
 
   camera(){
-    const ce=Math.cos(this.elevation),se=Math.sin(this.elevation);
-    const radial=[ce*Math.sin(this.yaw),-ce*Math.cos(this.yaw),se];
+    const elev=this.projection==="top"?Math.PI/2:this.elevation;
+    const yaw=this.projection==="top"?0:this.yaw;
+    const ce=Math.cos(elev),se=Math.sin(elev);
+    const radial=[ce*Math.sin(yaw),-ce*Math.cos(yaw),se];
     const forward=radial.map(x=>-x);
     const right=normalized(cross(forward,[0,0,1]));
     const up=normalized(cross(right,forward));
@@ -238,52 +248,135 @@ export class SunHoursViewer {
       depthHalf:this.baseHalfHeight*3.4};
   }
 
-  moveTarget(dx,dy){
+  /** Sets the web-demo's single-pointer tool. RMB remains Rhino-standard. */
+  setTool(mode){
+    if(!["orbit","pan"].includes(mode))throw new Error("Unknown navigation tool.");
+    this.activeTool=mode;
+  }
+
+  /** Rhino: right-drag orbits Perspective and pans Top. */
+  setProjection(mode){
+    if(!["perspective","top"].includes(mode))throw new Error("Unknown view.");
+    if(this.projection===mode)return;
+    this.projection=mode;
+    this.draw();
+    if(typeof this.onProjectionChange==="function")this.onProjectionChange(mode);
+  }
+
+  /**
+   * Screen-space pan: the geometry stays UNDER the pointer.
+   *
+   * Since WebGL Y points up but pointer Y points down, the target shift is
+   * -dx * camera.right + dy * camera.up. This is intentionally NOT the
+   * camera's perceived direction of travel; Rhino pans the scene.
+   */
+  panByScreen(dx,dy){
     const cam=this.camera();
     const worldPerPixel=2*cam.halfHeight/Math.max(1,this.canvas.clientHeight);
-    const sx=-dx*worldPerPixel,sy=dy*worldPerPixel;
+    for(let i=0;i<3;i++){
+      this.target[i]+=worldPerPixel*(-dx*cam.right[i]+dy*cam.up[i]);
+    }
+  }
+
+  /**
+   * Zoom around the cursor/gesture midpoint. Without adjusting the camera
+   * target here, pinch and wheel zoom appear to drag the model backwards.
+   */
+  zoomAt(factor,clientX,clientY){
+    if(!(factor>0)||!Number.isFinite(factor))return;
+    const oldZoom=this.zoom;
+    const nextZoom=clamp(oldZoom*factor,.45,5);
+    if(nextZoom===oldZoom)return;
+    const cam=this.camera();
+    const height=Math.max(1,this.canvas.clientHeight);
+    const rect=this.canvas.getBoundingClientRect?.();
+    const x=rect&&Number.isFinite(clientX)?
+      clientX-rect.left-this.canvas.clientWidth/2:0;
+    const y=rect&&Number.isFinite(clientY)?
+      clientY-rect.top-this.canvas.clientHeight/2:0;
+    const oldScale=2*this.baseHalfHeight/(height*oldZoom);
+    const newScale=2*this.baseHalfHeight/(height*nextZoom);
+    const diff=oldScale-newScale;
     for(let i=0;i<3;i++)
-      this.target[i]+=cam.right[i]*sx+cam.up[i]*sy;
+      this.target[i]+=diff*(x*cam.right[i]-y*cam.up[i]);
+    this.zoom=nextZoom;
+  }
+
+  /** Resolve the gesture on pointer-down; no mid-drag tool switching. */
+  pointerMode(e){
+    const type=e.pointerType||"mouse";
+    if(type==="touch"||type==="pen")
+      return this.projection==="top"?"pan":this.activeTool;
+
+    if(e.button===1)return "pan"; // middle mouse (optional Rhino-style mapping)
+    if(e.button===2){
+      if(this.projection==="top" && e.ctrlKey && e.shiftKey){
+        this.setProjection("perspective");
+        return "orbit";
+      }
+      if(e.ctrlKey && !e.shiftKey)return "zoom";
+      if(e.shiftKey || this.projection==="top")return "pan";
+      return "orbit";
+    }
+    // Left drag is a web-demo convenience; Rhino's primary 3-button shortcuts
+    // always take precedence and remain independent of this tool selector.
+    if(e.shiftKey)return "pan";
+    return this.projection==="top"?"pan":this.activeTool;
   }
 
   pointerDown(e){
-    if(e.button!==0 && e.button!==1 && e.button!==2 && e.pointerType!=="touch")return;
+    if(e.pointerType!=="touch" && ![0,1,2].includes(e.button))return;
     e.preventDefault();
-    this.pointers.set(e.pointerId,[e.clientX,e.clientY]);
-    this.mousePan=e.button!==0||e.shiftKey||e.ctrlKey||e.altKey;
+    const mode=this.pointerMode(e);
+    this.pointers.set(e.pointerId,{
+      x:e.clientX,y:e.clientY,
+      startX:e.clientX,startY:e.clientY,mode
+    });
     this.canvas.classList.add("dragging");
     try{this.canvas.setPointerCapture(e.pointerId);}catch(_){}
   }
+
   pointerMove(e){
     if(!this.pointers.has(e.pointerId))return;
     e.preventDefault();
-    const pointsBefore=[...this.pointers.values()].map(p=>[...p]);
+    const pointsBefore=[...this.pointers.values()].map(p=>[p.x,p.y]);
     const last=this.pointers.get(e.pointerId);
-    const next=[e.clientX,e.clientY];
-    this.pointers.set(e.pointerId,next);
+    const dx=e.clientX-last.x,dy=e.clientY-last.y;
+    last.x=e.clientX;
+    last.y=e.clientY;
+
     if(this.pointers.size===1){
-      const dx=next[0]-last[0],dy=next[1]-last[1];
-      if(this.mousePan){this.moveTarget(dx,dy);}
-      else{
-        this.yaw+=dx*.007;
-        this.elevation=clamp(this.elevation-dy*.006,.10,1.48);
+      if(last.mode==="pan"){
+        this.panByScreen(dx,dy);
+      }else if(last.mode==="zoom"){
+        this.zoomAt(Math.exp(-dy*.012),last.startX,last.startY);
+      }else if(last.mode==="orbit"){
+        // Direct tumble: drag the model right/down => it moves right/down.
+        this.yaw+=dx*.0065;
+        this.elevation=clamp(this.elevation+dy*.0065,.08,1.50);
       }
     }else if(this.pointers.size===2){
-      const pointsAfter=[...this.pointers.values()];
-      const centerBefore=avg(...pointsBefore),centerAfter=avg(...pointsAfter);
-      const d0=distance2(...pointsBefore),d1=distance2(...pointsAfter);
-      if(d0>1)this.zoom=clamp(this.zoom*d1/d0,.45,5);
-      this.moveTarget(centerAfter[0]-centerBefore[0],centerAfter[1]-centerBefore[1]);
+      const pointsAfter=[...this.pointers.values()].map(p=>[p.x,p.y]);
+      const beforeCenter=avg(...pointsBefore),afterCenter=avg(...pointsAfter);
+      const distanceBefore=distance2(...pointsBefore);
+      const distanceAfter=distance2(...pointsAfter);
+      // The scale is anchored at the OLD midpoint, then moved to the NEW
+      // midpoint. Pure translation moves the content in exactly that direction.
+      if(distanceBefore>2){
+        this.zoomAt(distanceAfter/distanceBefore,beforeCenter[0],beforeCenter[1]);
+      }
+      this.panByScreen(
+        afterCenter[0]-beforeCenter[0],
+        afterCenter[1]-beforeCenter[1]
+      );
     }
     this.draw();
   }
+
   pointerUp(e){
     if(!this.pointers.has(e.pointerId))return;
     this.pointers.delete(e.pointerId);
-    if(this.pointers.size===0){
-      this.canvas.classList.remove("dragging");
-      this.mousePan=false;
-    }
+    if(this.pointers.size===0)this.canvas.classList.remove("dragging");
   }
 
   drawSet(name,mode){
