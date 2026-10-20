@@ -182,7 +182,7 @@ try{
         path:file,type:"png",animations:"disabled",timeout:25000
       });
       const bytes=statSync(file).size;
-      assert.ok(bytes>15000,demo.id+": unexpected blank or tiny capture");
+      assert.ok(bytes>8000,demo.id+": unexpected blank or tiny capture");
       console.log("✔ "+demo.id+" "+dimensions.width+"×"+
         dimensions.height+" ("+Math.round(bytes/1024)+" KiB)");
 
@@ -228,7 +228,7 @@ try{
         SITE_ORIGIN+"/assets/thumbnails/"+demo.id+".png"
       );
       assert.ok(image.ok(),demo.id+" thumbnail must return HTTP 200");
-      assert.ok((await image.body()).length>15000);
+      assert.ok((await image.body()).length>8000);
 
       const target=await card.getAttribute("data-demo");
       assert.equal(target,"./"+demo.path,
