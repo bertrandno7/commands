@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "0.2",
+  "id": "W001",
+  "slug": "wind-screen",
+  "name": "WindScreen",
+  "version": "0.1.0",
+  "summary": "Fast 2D lattice-Boltzmann wind screening at pedestrian height.",
+  "kind": "command",
+  "listed": true,
+  "author": {
+    "name": "Bertrand Tan"
+  },
+  "runtime": {
+    "host": "rhino",
+    "rhino": "8",
+    "language": "python",
+    "entry": "main.py"
+  },
+  "category": "Analysis",
+  "tags": [
+    "Wind",
+    "Screening"
+  ],
+  "network": "optional",
+  "preview": {
+    "type": "web",
+    "entry": "demo/wind.html",
+    "capture": ".wind-stage",
+    "ready": {
+      "selector": "#progressLabel",
+      "includes": "ready",
+      "metric": "#peak"
+    },
+    "prepare": {
+      "uncheck": [
+        "#showParticles"
+      ]
+    }
+  },
+  "source": {
+    "origin": "Hark Python Library"
+  }
+}
