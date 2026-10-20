@@ -155,7 +155,7 @@ export class SunHoursViewer {
     this.scene=null;
     this.result=null;
     this.yaw=-0.72;
-    this.elevation=0.78;
+    this.elevation=0.61;
     this.zoom=1;
     this.target=[0,0,12];
     this.baseHalfHeight=60;
@@ -231,7 +231,7 @@ export class SunHoursViewer {
 
   reset(){
     this.yaw=-0.72;
-    this.elevation=0.78;
+    this.elevation=0.61;
     this.zoom=1;
     if(this.scene){
       const g=this.scene.ground;
