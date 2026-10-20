@@ -87,7 +87,8 @@ function buildMeshes(scene, result) {
   if(result) {
     const max = result.daylightHours;
     for(const c of result.cells) {
-      const col=hoursColor(c.hours,max);
+      const col=typeof result.colorFor==="function"
+        ?result.colorFor(c.hours):hoursColor(c.hours,max);
       const shade=c.normal[2]>.5?1:(c.normal[0]?0.88:0.94);
       const rgb=col.map(v => v/255*shade);
       // Offset out from the solid to avoid Z fighting with its reference face.
@@ -179,6 +180,7 @@ export class SunHoursViewer {
     this.projection="perspective";
     this.activeTool="orbit";
     this.onProjectionChange=null;
+    this.onDraw=null;
     this.init();
   }
 
@@ -606,6 +608,7 @@ export class SunHoursViewer {
     this.drawSet("guides",gl.LINES);
     this.drawSet("heat",gl.TRIANGLES);
     this.drawSet("outlines",gl.LINES);
+    if(typeof this.onDraw==="function")this.onDraw();
   }
 
   /** Graceful top-plan fallback if the device disables WebGL. */
