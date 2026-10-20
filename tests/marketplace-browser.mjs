@@ -52,6 +52,19 @@ async function openLive(page,id,expectedPath,completion,outputId,artifact){
     {timeout:120000}
   );
   assert.equal(await page.locator("#detailFrameLoading").isHidden(),true);
+  await page.waitForFunction(()=>{
+    const frame=document.querySelector("#liveCommandFrame");
+    const content=frame?.contentDocument?.querySelector(".page");
+    if(!frame||!content)return false;
+    const actual=frame.getBoundingClientRect().height;
+    const natural=content.getBoundingClientRect().height;
+    return natural>550 && actual>=natural-2 && actual<3400;
+  },null,{timeout:20000});
+  const scrollFit=await frame.evaluate(el=>({
+    frame:Math.round(el.getBoundingClientRect().height),
+    content:Math.round(el.contentDocument.querySelector(".page").getBoundingClientRect().height)
+  }));
+  console.log(id+" auto-sized embedded page: "+JSON.stringify(scrollFit));
   const liveView=page.frameLocator("#liveCommandFrame").locator("#view");
   assert.ok(await liveView.evaluate(c=>Boolean(c.getContext("webgl"))),
     "Detail viewer should have real WebGL geometry");
