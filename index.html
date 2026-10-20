@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Commands — discover, download, share and remix small design commands." />
-  <title>Commands — Discover. Download. Share. Remix.</title>
-  <link rel="preconnect" href="https://images.unsplash.com">
-  <link rel="stylesheet" href="./styles.css?v=11" />
+  <meta name="description" content="Commands — discover, download, share and remix useful design commands." />
+  <title>Commands — Design tools, shared.</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="./styles.css?v=12" />
 </head>
 <body>
   <div class="app">
     <header class="topbar">
-      <a class="brand" href="./">
+      <a class="brand" href="./" aria-label="Commands home">
         <span class="brand-cube" aria-hidden="true"><i></i></span>
         <span>Commands</span>
       </a>
@@ -22,22 +22,20 @@
         <kbd>⌘ K</kbd>
       </label>
 
-      <nav class="topnav">
-        <a class="active" href="#discover">Explore</a>
-        <button id="publishBtn">Contribute</button>
+      <nav class="topnav" aria-label="Primary">
+        <a class="active" href="./">Explore</a>
+        <button id="publishBtn" type="button">Contribute</button>
         <a href="./COMMAND_SPEC.md">Docs</a>
-        <a href="https://github.com/bertrandno7/commands" target="_blank" rel="noreferrer">Community</a>
+        <a href="https://github.com/bertrandno7/commands" target="_blank" rel="noreferrer">GitHub</a>
       </nav>
-      <button class="profile-dot" aria-label="Profile">B</button>
     </header>
 
-    <aside class="sidebar">
-      <div class="sidegroup">
-        <button class="sideitem active" data-side="discover"><span>✣</span>Discover</button>
-        <button class="sideitem" data-side="featured"><span>↗</span>Featured</button>
-        <button class="sideitem" data-side="latest"><span>◷</span>Latest</button>
-        <button class="sideitem" data-side="saved"><span>☆</span>My Library</button>
-      </div>
+    <aside class="sidebar" aria-label="Command filters">
+      <button class="sideitem active" id="discoverAll" type="button">
+        <span>✣</span>
+        <strong>All commands</strong>
+        <small id="allCount"></small>
+      </button>
 
       <p class="side-label">Categories</p>
       <div id="categorySidebar" class="sidegroup compact"></div>
@@ -45,196 +43,50 @@
       <div class="sidebar-spacer"></div>
 
       <div class="publish-card">
-        <div class="publish-art" aria-hidden="true">
-          <span></span><span></span><span></span><span></span><span></span>
-        </div>
-        <strong>Share your commands with the world.</strong>
-        <p>Small tools deserve a proper home.</p>
-        <button id="publishSideBtn">Publish a command →</button>
+        <strong>Made something useful?</strong>
+        <p>Share a small command with the community.</p>
+        <button id="publishSideBtn" type="button">Publish a command →</button>
       </div>
     </aside>
 
     <main class="content" id="discover">
       <section class="discover-head">
         <div>
-          <p class="eyebrow">COMMUNITY-MADE DESIGN TOOLS</p>
-          <h1>Discover</h1>
-          <p>Commands for a more creative, efficient and measurable design process.</p>
+          <p class="eyebrow">COMMUNITY DESIGN TOOLS</p>
+          <h1>Discover commands</h1>
+          <p>Small tools for geometry, analysis, automation and design.</p>
         </div>
-        <div class="head-controls">
-          <label class="sortbox">
-            <span>Sort by</span>
-            <select id="sortSelect">
-              <option value="featured">Featured</option>
-              <option value="name">Name</option>
-              <option value="category">Category</option>
-            </select>
-          </label>
-          <div class="viewtoggle" aria-label="View">
-            <button class="active" title="Grid">⊞</button>
-            <button title="List" disabled>☷</button>
-          </div>
-        </div>
+        <label class="sortbox">
+          <span>Sort</span>
+          <select id="sortSelect" aria-label="Sort commands">
+            <option value="featured">Featured</option>
+            <option value="name">Name</option>
+            <option value="category">Category</option>
+          </select>
+        </label>
       </section>
-
-      <section id="categoryStrip" class="category-strip">
-  <button class="category-card"><span class="category-icon">◫</span><strong>Analysis</strong><small>5</small><p>Environmental and spatial analysis</p></button>
-  <button class="category-card"><span class="category-icon">▱</span><strong>Massing</strong><small>3</small><p>Urban form and volumetrics</p></button>
-  <button class="category-card"><span class="category-icon">▦</span><strong>Facade</strong><small>2</small><p>Panels, systems and envelopes</p></button>
-  <button class="category-card"><span class="category-icon">✦</span><strong>Generative</strong><small>2</small><p>Form finding and rule-based growth</p></button>
-  <button class="category-card"><span class="category-icon">◇</span><strong>Geometry</strong><small>1</small><p>Modelling tools and generators</p></button>
-  <button class="category-card"><span class="category-icon">⌖</span><strong>Site</strong><small>1</small><p>Context, mapping and site data</p></button>
-</section>
 
       <div class="result-row">
         <span id="resultMeta">15 commands</span>
-        <span class="seed-note">Seed library · Hark / GH Python Library</span>
+        <span class="seed-note">Seed library · Hark</span>
       </div>
 
-      <section id="commandGrid" class="command-grid">
-  <article class="command-card" data-id="M005" data-cat="Massing">
-    <div class="card-visual"></div>
-    <div class="card-body">
-      <div class="card-title-row">
-        <div class="card-name"><span class="card-icon">SU</span><h3>SunCarve</h3></div>
-        <span class="version">v0.1.0</span>
-      </div>
-      <p>Greedy cuts that improve useful facade sun while controlling volume loss.</p>
-      <div class="creator"><span class="creator-avatar"></span><span>Bertrand Tan</span></div>
-      <div class="tags"><span class="tag">Massing</span><span class="tag">Solar</span><span class="tag">Optimization</span></div>
-      <div class="card-footer"><span class="card-stats">M005 · Rhino</span><button class="install-mini">Install</button></div>
-    </div>
-  </article>
-  <article class="command-card" data-id="A001" data-cat="Analysis">
-    <div class="card-visual"></div>
-    <div class="card-body">
-      <div class="card-title-row">
-        <div class="card-name"><span class="card-icon">SU</span><h3>SunHours</h3></div>
-        <span class="version">v0.1.0</span>
-      </div>
-      <p>Shading-aware sun-hours analysis using solar positions and context geometry.</p>
-      <div class="creator"><span class="creator-avatar"></span><span>Bertrand Tan</span></div>
-      <div class="tags"><span class="tag">Analysis</span><span class="tag">Solar</span><span class="tag">Environmental</span></div>
-      <div class="card-footer"><span class="card-stats">A001 · Rhino</span><button class="install-mini">Install</button></div>
-    </div>
-  </article>
-  <article class="command-card" data-id="A002" data-cat="Analysis">
-    <div class="card-visual"></div>
-    <div class="card-body">
-      <div class="card-title-row">
-        <div class="card-name"><span class="card-icon">SO</span><h3>SolarRadiation</h3></div>
-        <span class="version">v0.1.0</span>
-      </div>
-      <p>Cumulative solar radiation and PV estimate with weather and context shading.</p>
-      <div class="creator"><span class="creator-avatar"></span><span>Bertrand Tan</span></div>
-      <div class="tags"><span class="tag">Analysis</span><span class="tag">Solar</span><span class="tag">PV</span></div>
-      <div class="card-footer"><span class="card-stats">A002 · Rhino</span><button class="install-mini">Install</button></div>
-    </div>
-  </article>
-  <article class="command-card" data-id="W002" data-cat="Analysis">
-    <div class="card-visual"></div>
-    <div class="card-body">
-      <div class="card-title-row">
-        <div class="card-name"><span class="card-icon">WI</span><h3>WindComfort</h3></div>
-        <span class="version">v0.1.0</span>
-      </div>
-      <p>NEN 8100 wind comfort screening across multiple wind sectors.</p>
-      <div class="creator"><span class="creator-avatar"></span><span>Bertrand Tan</span></div>
-      <div class="tags"><span class="tag">Analysis</span><span class="tag">Wind</span><span class="tag">Comfort</span></div>
-      <div class="card-footer"><span class="card-stats">W002 · Rhino</span><button class="install-mini">Install</button></div>
-    </div>
-  </article>
-  <article class="command-card" data-id="X000" data-cat="Site">
-    <div class="card-visual"></div>
-    <div class="card-body">
-      <div class="card-title-row">
-        <div class="card-name"><span class="card-icon">SI</span><h3>SiteModel</h3></div>
-        <span class="version">v0.1.0</span>
-      </div>
-      <p>Generate 3D context from latitude and longitude using BAG and OSM sources.</p>
-      <div class="creator"><span class="creator-avatar"></span><span>Bertrand Tan</span></div>
-      <div class="tags"><span class="tag">Site</span><span class="tag">Context</span><span class="tag">OSM</span></div>
-      <div class="card-footer"><span class="card-stats">X000 · Rhino</span><button class="install-mini">Install</button></div>
-    </div>
-  </article>
-  <article class="command-card" data-id="M003" data-cat="Massing">
-    <div class="card-visual"></div>
-    <div class="card-body">
-      <div class="card-title-row">
-        <div class="card-name"><span class="card-icon">DE</span><h3>Density</h3></div>
-        <span class="version">v0.1.0</span>
-      </div>
-      <p>GFA, FSI, GSI, OSR, envelope and orientation metrics.</p>
-      <div class="creator"><span class="creator-avatar"></span><span>Bertrand Tan</span></div>
-      <div class="tags"><span class="tag">Massing</span><span class="tag">Metrics</span><span class="tag">Spacemate</span></div>
-      <div class="card-footer"><span class="card-stats">M003 · Rhino</span><button class="install-mini">Install</button></div>
-    </div>
-  </article>
-  <article class="command-card" data-id="M004" data-cat="Massing">
-    <div class="card-visual"></div>
-    <div class="card-body">
-      <div class="card-title-row">
-        <div class="card-name"><span class="card-icon">PI</span><h3>Pixelate</h3></div>
-        <span class="version">v0.1.0</span>
-      </div>
-      <p>Pixelate massing into cubes, tetrahedra or staggered cells.</p>
-      <div class="creator"><span class="creator-avatar"></span><span>Bertrand Tan</span></div>
-      <div class="tags"><span class="tag">Massing</span><span class="tag">Geometry</span><span class="tag">Voxel</span></div>
-      <div class="card-footer"><span class="card-stats">M004 · Rhino</span><button class="install-mini">Install</button></div>
-    </div>
-  </article>
-  <article class="command-card" data-id="M006" data-cat="Analysis">
-    <div class="card-visual"></div>
-    <div class="card-body">
-      <div class="card-title-row">
-        <div class="card-name"><span class="card-icon">EM</span><h3>EmbodiedCarbon</h3></div>
-        <span class="version">v0.1.0</span>
-      </div>
-      <p>Estimate embodied carbon by structure, facade, reuse and new construction.</p>
-      <div class="creator"><span class="creator-avatar"></span><span>Bertrand Tan</span></div>
-      <div class="tags"><span class="tag">Analysis</span><span class="tag">Carbon</span><span class="tag">LCA</span></div>
-      <div class="card-footer"><span class="card-stats">M006 · Rhino</span><button class="install-mini">Install</button></div>
-    </div>
-  </article>
-  <article class="command-card" data-id="E001" data-cat="Evaluation">
-    <div class="card-visual"></div>
-    <div class="card-body">
-      <div class="card-title-row">
-        <div class="card-name"><span class="card-icon">SC</span><h3>Scoreboard</h3></div>
-        <span class="version">v0.1.0</span>
-      </div>
-      <p>Snapshot, weight, rank and compare design options with Pareto scoring.</p>
-      <div class="creator"><span class="creator-avatar"></span><span>Bertrand Tan</span></div>
-      <div class="tags"><span class="tag">Evaluation</span><span class="tag">Options</span><span class="tag">Pareto</span></div>
-      <div class="card-footer"><span class="card-stats">E001 · Rhino</span><button class="install-mini">Install</button></div>
-    </div>
-  </article></section>
+      <section id="commandGrid" class="command-grid" aria-live="polite"></section>
+
       <section id="emptyState" class="empty-state" hidden>
         <div>⌁</div>
         <h2>No commands found</h2>
-        <p>Try another search or publish the one you wish existed.</p>
+        <p>Try another search or category.</p>
       </section>
     </main>
   </div>
-
-  <aside id="detailDrawer" class="detail-drawer" aria-hidden="true">
-    <div class="drawer-top">
-      <button id="closeDrawer" class="back-button">← Back to discover</button>
-      <div class="drawer-actions">
-        <button id="saveCommand" class="secondary-button">♡ Save</button>
-        <button id="installCommand" class="primary-button">Install</button>
-      </div>
-    </div>
-    <div id="detailContent"></div>
-  </aside>
-  <div id="drawerBackdrop" class="drawer-backdrop"></div>
 
   <dialog id="publishDialog" class="publish-dialog">
     <button id="closePublish" class="dialog-close" aria-label="Close">×</button>
     <div>
       <p class="eyebrow">CONTRIBUTE</p>
       <h2>Publish a command</h2>
-      <p>Publishing is the next milestone. The open package format already exists, so a command can be versioned and distributed without locking anyone into the website.</p>
+      <p>Publishing is the next platform milestone. COMMANDS already has an open package format so tools can be versioned and distributed without locking anyone into the website.</p>
       <pre>{
   "name": "MyCommand",
   "version": "0.1.0",
@@ -252,11 +104,11 @@
     <div>
       <p class="eyebrow">INSTALL</p>
       <h2 id="installTitle">Command install</h2>
-      <p>Direct one-click installation is coming with the Rhino bridge. For V0, these are real seed tools from the Hark library, but this site does not pretend a package installer exists yet.</p>
-      <a class="secondary-button inline" href="./COMMAND_SPEC.md">See how packages will work</a>
+      <p>One-click Rhino installation is the next infrastructure milestone. The seed tools are real, but COMMANDS does not pretend the installer exists yet.</p>
+      <a class="secondary-button inline" href="./COMMAND_SPEC.md">See package format</a>
     </div>
   </dialog>
 
-  <script src="./app.js?v=11"></script>
+  <script src="./app.js?v=12"></script>
 </body>
 </html>
