@@ -4,7 +4,7 @@
  * orbiting / panning / pinching never recalculates the sun hours.
  */
 import {getScene, analyzeSunHours} from "./sunhours-engine.js?v=3";
-import {SunHoursViewer} from "./sunhours-viewer.js?v=4";
+import {SunHoursViewer} from "./sunhours-viewer.js?v=5";
 
 const $=s=>document.querySelector(s);
 const form=$("#analysisForm");
@@ -22,6 +22,7 @@ viewer.setData(scene,null);
 // Perspective RMB orbit; Shift+RMB pan; Ctrl+RMB or wheel zoom.
 // Top RMB pan. Left-drag/one finger uses the chosen web-demo tool.
 const viewProjection=$("#viewProjection");
+const viewLens=$("#viewLens");
 const orbitButton=$("#viewToolOrbit");
 const panButton=$("#viewToolPan");
 
@@ -37,6 +38,7 @@ function updateNavigationHint(){
   const top=viewer.projection==="top";
   const tool=top?"Pan":viewer.activeTool==="pan"?"Pan":"Orbit";
   orbitButton.disabled=top;
+  viewLens.disabled=top;
   orbitButton.classList.toggle("active",!top && viewer.activeTool==="orbit");
   panButton.classList.toggle("active",top || viewer.activeTool==="pan");
   orbitButton.setAttribute("aria-pressed",String(!top && viewer.activeTool==="orbit"));
@@ -46,6 +48,7 @@ function updateNavigationHint(){
     :"PERSPECTIVE · RMB orbit · Shift+RMB pan · Ctrl+RMB / wheel zoom · touch: 1 finger "+tool.toLowerCase()+", 2 fingers pan/pinch";
 }
 viewProjection.addEventListener("change",e=>viewer.setProjection(e.target.value));
+viewLens.addEventListener("change",e=>viewer.setLens(e.target.value));
 viewer.onProjectionChange=(mode)=>{
   viewProjection.value=mode;
   updateNavigationHint();
