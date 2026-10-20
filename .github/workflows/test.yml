@@ -7,12 +7,18 @@ on:
       - "demo/**"
       - "tests/**"
       - "package.json"
+      - "app.js"
+      - "index.html"
+      - "styles.css"
       - ".github/workflows/test.yml"
   pull_request:
     paths:
       - "demo/**"
       - "tests/**"
       - "package.json"
+      - "app.js"
+      - "index.html"
+      - "styles.css"
       - ".github/workflows/test.yml"
   workflow_dispatch:
 
@@ -39,6 +45,8 @@ jobs:
         run: node tests/browser-smoke.mjs
       - name: Verify WindScreen in desktop/mobile Chrome
         run: node tests/wind-browser.mjs
+      - name: Verify auto-running marketplace detail demos
+        run: node tests/marketplace-browser.mjs
       - name: Save viewport screenshots
         if: always()
         uses: actions/upload-artifact@v4
