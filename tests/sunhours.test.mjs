@@ -372,3 +372,41 @@ test("Top view orientation restores correctly after leaving and returning",()=>{
   v.setProjection("perspective");
   assert.ok(vecDist(v.orientation,pose)<1e-10,"Restore prior free camera view");
 });
+
+test("Ctrl+Shift+RMB picks a building and preserves it under the pointer",()=>{
+  const {canvas}=mockCanvas();
+  const v=new SunHoursViewer(canvas);
+  v.setData(getScene("courtyard"),null);
+  const buildingPoint=[20,35,24];
+  const screen=v.projectWorld(buildingPoint);
+  const rect=canvas.getBoundingClientRect();
+  const clientX=screen[0]+rect.left,clientY=screen[1]+rect.top;
+  const pivot=v.pickOrbitPivot(clientX,clientY);
+  assert.ok(pivot&&pivot.every(Number.isFinite),
+    "Ray from cursor should intersect site geometry");
+  const before=v.projectWorld(pivot);
+  const target=[...v.target];
+
+  const mouse={pointerType:"mouse",button:2,ctrlKey:true,shiftKey:true};
+  v.pointerDown(ev(25,clientX,clientY,mouse));
+  const state=v.pointers.get(25);
+  assert.equal(state.mode,"orbit-object");
+  assert.ok(state.pivot);
+  v.pointerMove(ev(25,clientX+128,clientY+68,mouse));
+  v.pointerUp(ev(25,clientX+128,clientY+68,mouse));
+  const after=v.projectWorld(pivot);
+  assert.ok(near(after[0],before[0],1e-6));
+  assert.ok(near(after[1],before[1],1e-6),
+    "Building point must stay at the original mouse pixel");
+  assert.ok(vecDist(v.target,target)>1,
+    "Orbiting around a picked point changes the target as the camera moves");
+});
+
+test("Normal RMB orbit still uses the scene pivot without target drift",()=>{
+  const {canvas}=mockCanvas();
+  const v=new SunHoursViewer(canvas);
+  v.setData(getScene("tower"),null);
+  const target=[...v.target];
+  for(let i=0;i<300;i++)v.orbitByScreen(6,4);
+  assert.deepEqual(v.target,target);
+});
