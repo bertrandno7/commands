@@ -194,3 +194,34 @@ h1{font-size:34px;letter-spacing:-.04em;margin:0 0 6px}
 }
 .command-card[data-id="W001"] .card-visual:before,
 .command-card[data-id="W001"] .card-visual:after{display:none}
+
+
+/*
+ * The demo cards use auto-captured browser screenshots, generated inside
+ * .github/workflows/pages.yml. No hand-made marketing images are needed.
+ * W001 keeps the previous computed SVG as a fallback if PNG is unavailable.
+ */
+.command-card .card-visual{
+  aspect-ratio:16/9;
+  height:auto;
+  min-height:150px;
+}
+.command-card[data-id="A001"] .card-visual,
+.command-card[data-id="W001"] .card-visual{
+  background-color:#e6e9e4;
+  background-position:center;
+  background-size:cover;
+  background-repeat:no-repeat;
+}
+.command-card[data-id="A001"] .card-visual{
+  background-image:url("./assets/thumbnails/A001.png");
+}
+.command-card[data-id="W001"] .card-visual{
+  background-image:url("./assets/thumbnails/W001.png"),url("./assets/windscreen.svg");
+}
+.command-card[data-id="A001"] .card-visual:before,
+.command-card[data-id="A001"] .card-visual:after,
+.command-card[data-id="W001"] .card-visual:before,
+.command-card[data-id="W001"] .card-visual:after{
+  display:none;
+}
