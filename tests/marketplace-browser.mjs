@@ -93,6 +93,7 @@ async function run(mode,options){
   );
   await openLive(page,"A001","demo/sunhours.html","complete","#mean","market-"+mode+"-sunhours");
   await openLive(page,"W001","demo/wind.html","ready","#peak","market-"+mode+"-wind");
+  await openLive(page,"M004","demo/pixel.html","complete","#count","market-"+mode+"-pixel");
   assert.deepEqual(errors,[],"No uncaught marketplace JS errors");
   await page.close();
 }
