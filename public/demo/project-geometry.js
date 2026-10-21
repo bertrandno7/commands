@@ -360,6 +360,12 @@ async function parseStoredFile(stored,scale){
   if(extension==="glb")return parseGlb(buffer,scale,stored.name);
   throw new Error("Unsupported geometry format: "+stored.name);
 }
+
+export async function parseGeometryBlob(blob,name,{units="m"}={}){
+  if(!(blob instanceof Blob))throw new Error("Geometry input must be a Blob or File.");
+  if(!supportedGeometryFile(name))throw new Error("Unsupported geometry format: "+name);
+  return parseStoredFile({blob,name},unitScale(units));
+}
 function mergeParsed(parsed){
   const total=parsed.reduce((sum,p)=>sum+p.positions.length,0);
   const positions=new Float32Array(total);
