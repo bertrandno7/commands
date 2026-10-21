@@ -86,3 +86,10 @@
 }
 .shared-project-skeleton.short{width:55%;margin-top:7px}
 @keyframes projectPulse{to{background-position:-200% 0}}
+
+#sampleSceneField.project-overridden{
+  opacity:.42;
+}
+#sampleSceneField.project-overridden select{
+  cursor:not-allowed;
+}
