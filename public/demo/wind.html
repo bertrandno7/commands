@@ -14,6 +14,7 @@ if(new URLSearchParams(location.search).get("embed")==="1"){
 <title>WindScreen — Live Demo · Commands</title>
 <link rel="stylesheet" href="./sunhours.css?v=6">
 <link rel="stylesheet" href="./wind.css?v=3">
+<link rel="stylesheet" href="./project-geometry.css?v=1">
 </head>
 <body>
 <header class="topbar">
@@ -39,7 +40,8 @@ if(new URLSearchParams(location.search).get("embed")==="1"){
     <aside class="control-panel">
       <div class="panel-title"><span>01</span><h2>Wind setup</h2></div>
       <form id="windForm">
-        <label class="field">MASSING SCENE
+        <div id="projectGeometryMount"></div>
+        <label class="field" id="sampleSceneField">SAMPLE MASSING
           <select id="scene">
             <option value="courtyard">Rotterdam courtyard</option>
             <option value="tower">Tower + context</option>
@@ -175,13 +177,13 @@ if(new URLSearchParams(location.search).get("embed")==="1"){
       <h2>Flow physics,<br>not a generated picture.</h2></div>
     <div>
       <p>The solver is adapted from your <strong>W001_wind_screening.py</strong>: a D2Q9 lattice-Boltzmann model with obstacle bounce-back and Smagorinsky-style local viscosity. It samples a horizontal plane through the building footprints and calculates a relative mean velocity field.</p>
-      <p><strong>Important:</strong> the browser edition uses a smaller domain, fewer steps, and simplified inflow/outflow conditions for speed. It is suitable for early <strong>qualitative option comparison</strong>, not calibrated wind predictions. Geometry height is only used to determine whether a building intersects the 1.5 m slice.</p>
+      <p><strong>Project geometry:</strong> the same OBJ, STL or GLB project used by SunHours can be sectioned automatically 1.5 m above its base and rasterized into W001 obstacles. Closed massing is required at the slice height.</p><p><strong>Important:</strong> the browser edition uses a smaller domain, fewer steps, and simplified inflow/outflow conditions for speed. It is suitable for early <strong>qualitative option comparison</strong>, not calibrated wind predictions.</p>
       <p>This is not 3D CFD, does not account for downdrafts/downwash, vertical turbulence, weather statistics, or terrain roughness, and <strong>must not be treated as a NEN 8100 wind-comfort assessment</strong>. Your W002 command handles additional climate/sector screening separately.</p>
       <a href="../">← Back to the command library</a>
     </div>
   </section>
 </main>
 <script defer src="./embed-resize.js?v=1"></script>
-<script type="module" src="./wind.js?v=3"></script>
+<script type="module" src="./wind.js?v=4"></script>
 </body>
 </html>
