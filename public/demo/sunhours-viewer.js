@@ -36,6 +36,14 @@ function normalized(a) {
 const avg = (a,b) => [(a[0]+b[0])/2,(a[1]+b[1])/2];
 const distance2 = (a,b) => Math.hypot(a[0]-b[0],a[1]-b[1]);
 
+function addTriangle(out,vertices,rgb,offset=[0,0,0]) {
+  for(const p of vertices){
+    out.push(
+      p[0]+offset[0],p[1]+offset[1],p[2]+offset[2],
+      ...rgb
+    );
+  }
+}
 function addQuad(out, vertices, rgb, offset = [0,0,0]) {
   const shifted = vertices.map(p => [
     p[0]+offset[0],p[1]+offset[1],p[2]+offset[2]
@@ -43,6 +51,16 @@ function addQuad(out, vertices, rgb, offset = [0,0,0]) {
   for (const i of [0,1,2,0,2,3]) {
     const p = shifted[i];
     out.push(p[0],p[1],p[2],...rgb);
+  }
+}
+function addRawMesh(out,positions,baseColor){
+  for(let i=0;i<positions.length;i+=9){
+    const a=[positions[i],positions[i+1],positions[i+2]];
+    const b=[positions[i+3],positions[i+4],positions[i+5]];
+    const c=[positions[i+6],positions[i+7],positions[i+8]];
+    const n=normalized(cross(sub(b,a),sub(c,a)));
+    const shade=.72+.24*Math.abs(n[2])+.04*Math.max(0,n[1]);
+    addTriangle(out,[a,b,c],baseColor.map(v=>Math.min(1,v*shade)));
   }
 }
 /** Per-corner wind palette, smoothly interpolated by the GPU.
@@ -61,13 +79,19 @@ function addLine(out, a, b, rgb) {
 function buildMeshes(scene, result) {
   const base=[], heat=[], outlines=[], guides=[];
   const g=scene.ground;
+  const gz=Number.isFinite(g.z)?g.z:0;
   addQuad(base,[
-    [g.x,g.y,-0.04],[g.x+g.w,g.y,-0.04],
-    [g.x+g.w,g.y+g.d,-0.04],[g.x,g.y+g.d,-0.04]
+    [g.x,g.y,gz-.04],[g.x+g.w,g.y,gz-.04],
+    [g.x+g.w,g.y+g.d,gz-.04],[g.x,g.y+g.d,gz-.04]
   ],[0.89,0.915,0.895]);
 
+  if(scene.meshPositions?.length)
+    addRawMesh(base,scene.meshPositions,[.76,.80,.77]);
+  if(scene.contextPositions?.length)
+    addRawMesh(base,scene.contextPositions,[.63,.67,.65]);
+
   const face = (v,c) => addQuad(base,v,c);
-  for (const b of scene.buildings) {
+  for (const b of scene.buildings||[]) {
     const x=b.x,y=b.y,w=b.w,d=b.d,z=b.h;
     const a=[x,y,0], bb=[x+w,y,0], c=[x+w,y+d,0], d0=[x,y+d,0];
     const aa=[x,y,z], ab=[x+w,y,z], ac=[x+w,y+d,z], ad=[x,y+d,z];
@@ -88,35 +112,32 @@ function buildMeshes(scene, result) {
   const gLine=[.80,.84,.80];
   const firstX=Math.ceil(g.x/10)*10, firstY=Math.ceil(g.y/10)*10;
   for(let x=firstX; x<=g.x+g.w;x+=10)
-    addLine(guides,[x,g.y,.07],[x,g.y+g.d,.07],gLine);
+    addLine(guides,[x,g.y,gz+.07],[x,g.y+g.d,gz+.07],gLine);
   for(let y=firstY;y<=g.y+g.d;y+=10)
-    addLine(guides,[g.x,y,.07],[g.x+g.w,y,.07],gLine);
-  addLine(guides,[g.x,g.y,.08],[g.x+g.w,g.y,.08],[.51,.57,.52]);
-  addLine(guides,[g.x,g.y,.08],[g.x,g.y+g.d,.08],[.51,.57,.52]);
+    addLine(guides,[g.x,y,gz+.07],[g.x+g.w,y,gz+.07],gLine);
+  addLine(guides,[g.x,g.y,gz+.08],[g.x+g.w,g.y,gz+.08],[.51,.57,.52]);
+  addLine(guides,[g.x,g.y,gz+.08],[g.x,g.y+g.d,gz+.08],[.51,.57,.52]);
 
   if(result) {
     const max = result.daylightHours;
     for(const c of result.cells) {
-      // Offset out from solid faces so the heatmap is never Z-fighting.
-      const offset=c.normal.map(n=>n*0.055);
+      const offset=c.normal.map(n=>n*0.035);
       if(result.kind==="wind"&&Array.isArray(c.cornerRatios)){
         const colors=c.cornerRatios.map(v=>
           result.colorFor(v).map(channel=>channel/255));
-        // No arbitrary facade shading: the wind colors must match their
-        // physical U/U-infinity legend exactly in any projection.
         addGradientQuad(heat,c.corners,colors,offset);
       }else{
         const col=typeof result.colorFor==="function"
           ?result.colorFor(c.hours):hoursColor(c.hours,max);
-        const shade=c.normal[2]>.5?1:(c.normal[0]?0.88:0.94);
+        const shade=c.normal[2]>.5?1:(Math.abs(c.normal[0])>.5?0.88:0.94);
         const rgb=col.map(v=>v/255*shade);
-        addQuad(heat,c.corners,rgb,offset);
+        if(c.corners.length===3)addTriangle(heat,c.corners,rgb,offset);
+        else addQuad(heat,c.corners,rgb,offset);
       }
     }
   }
   return {base,heat,outlines,guides};
 }
-
 function compile(gl,type,src) {
   const sh=gl.createShader(type);
   gl.shaderSource(sh,src);
@@ -262,12 +283,21 @@ export class SunHoursViewer {
       [0,0,0,1]:[...this.defaultOrientation];
     this.zoom=1;
     if(this.scene){
-      const g=this.scene.ground;
-      const h=Math.max(1,...this.scene.buildings.map(b=>b.h));
-      this.target=[g.x+g.w/2,g.y+g.d/2,h*.28];
-      this.baseHalfHeight=Math.max(22,Math.hypot(g.w,g.d,h)*.66);
-      // Fit at 35 mm. Lens changes now really change the field of view
-      // rather than silently dollying the camera to fake the same framing.
+      if(this.scene.bounds){
+        const {min,max}=this.scene.bounds;
+        const size=[max[0]-min[0],max[1]-min[1],max[2]-min[2]];
+        this.target=[
+          (min[0]+max[0])/2,
+          (min[1]+max[1])/2,
+          (min[2]+max[2])/2
+        ];
+        this.baseHalfHeight=Math.max(4,Math.hypot(...size)*.62);
+      }else{
+        const g=this.scene.ground;
+        const h=Math.max(1,...(this.scene.buildings||[]).map(b=>b.h));
+        this.target=[g.x+g.w/2,g.y+g.d/2,h*.28];
+        this.baseHalfHeight=Math.max(22,Math.hypot(g.w,g.d,h)*.66);
+      }
       this.baseDistance=this.baseHalfHeight/(12/35);
     }
     this.draw();
@@ -412,8 +442,7 @@ export class SunHoursViewer {
       rayOrigin=origin;
     }
     let best=Infinity;
-    for(const b of this.scene.buildings){
-      const low=[b.x,b.y,0],high=[b.x+b.w,b.y+b.d,b.h];
+    const hitAabb=(low,high)=>{
       let tmin=-Infinity,tmax=Infinity,valid=true;
       for(let i=0;i<3;i++){
         const d=rayDirection[i],p=rayOrigin[i];
@@ -423,18 +452,25 @@ export class SunHoursViewer {
         }
         let ta=(low[i]-p)/d,tb=(high[i]-p)/d;
         if(ta>tb)[ta,tb]=[tb,ta];
-        tmin=Math.max(tmin,ta);
-        tmax=Math.min(tmax,tb);
+        tmin=Math.max(tmin,ta);tmax=Math.min(tmax,tb);
         if(tmax<tmin){valid=false;break;}
       }
-      if(valid){
-        const t=tmin>1e-4?tmin:tmax>1e-4?tmax:null;
-        if(t!==null&&t<best)best=t;
-      }
+      if(!valid)return null;
+      return tmin>1e-4?tmin:tmax>1e-4?tmax:null;
+    };
+    if(this.scene.bounds){
+      const t=hitAabb(this.scene.bounds.min,this.scene.bounds.max);
+      if(t!==null&&t<best)best=t;
+    }
+    for(const b of this.scene.buildings||[]){
+      const low=[b.x,b.y,0],high=[b.x+b.w,b.y+b.d,b.h];
+      const t=hitAabb(low,high);
+      if(t!==null&&t<best)best=t;
     }
     // Ground is a plane, rather than a thick solid.
     if(Math.abs(rayDirection[2])>1e-9){
-      const t=-rayOrigin[2]/rayDirection[2];
+      const planeZ=Number.isFinite(this.scene.ground.z)?this.scene.ground.z:0;
+      const t=(planeZ-rayOrigin[2])/rayDirection[2];
       if(t>1e-4&&t<best){
         const gx=rayOrigin[0]+rayDirection[0]*t;
         const gy=rayOrigin[1]+rayDirection[1]*t;
@@ -651,7 +687,7 @@ export class SunHoursViewer {
       const color=hoursColor(cell.hours,this.result.daylightHours);
       polygon(cell.corners,"rgb("+color.join(",")+")");
     }
-    for(const b of this.scene.buildings){
+    for(const b of this.scene.buildings||[]){
       const pts=[[b.x,b.y],[b.x+b.w,b.y],[b.x+b.w,b.y+b.d],[b.x,b.y+b.d]];
       c.beginPath();pts.forEach((p,i)=>{
         const [x,y]=project(p);i?c.lineTo(x,y):c.moveTo(x,y);

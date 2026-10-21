@@ -58,7 +58,7 @@ export function LiveCommandDemo({ demo }: { demo: LiveCommandDemo }) {
           src={`${demo.path}?embed=1`}
           style={{ height }}
           loading="lazy"
-          sandbox="allow-scripts allow-same-origin allow-downloads"
+          sandbox="allow-scripts allow-same-origin allow-downloads allow-top-navigation-by-user-activation"
           onLoad={(event) => resizeToContent(event.currentTarget)}
         />
       </div>

@@ -10,6 +10,7 @@ if(new URLSearchParams(location.search).get("embed")==="1"){
 <meta name="theme-color" content="#f7f7f5">
 <title>SunHours — Live Demo · Commands</title>
 <link rel="stylesheet" href="./sunhours.css?v=6">
+<link rel="stylesheet" href="./project-geometry.css?v=1">
 </head>
 <body>
 <header class="topbar">
@@ -29,7 +30,8 @@ if(new URLSearchParams(location.search).get("embed")==="1"){
   <aside class="control-panel">
     <div class="panel-title"><span>01</span><h2>Analysis setup</h2></div>
     <form id="analysisForm">
-      <label class="field">SCENE <select id="scene"><option value="courtyard">Rotterdam courtyard</option><option value="tower">Tower + context</option><option value="canyon">Street canyon</option></select></label>
+      <div id="projectGeometryMount"></div>
+      <label class="field" id="sampleSceneField">SAMPLE SCENE <select id="scene"><option value="courtyard">Rotterdam courtyard</option><option value="tower">Tower + context</option><option value="canyon">Street canyon</option></select></label>
       <div class="field-row">
         <label class="field">LATITUDE <input id="lat" type="number" min="-90" max="90" step=".01" value="51.92" required></label>
         <label class="field">LONGITUDE <input id="lon" type="number" min="-180" max="180" step=".01" value="4.48" required></label>
@@ -94,14 +96,14 @@ if(new URLSearchParams(location.search).get("embed")==="1"){
     <article><span>MEAN SUN HOURS</span><strong id="mean">—</strong><small>All sampled cells</small></article>
     <article><span>MAXIMUM SUN HOURS</span><strong id="max">—</strong><small>Brightest cell</small></article>
     <article><span>FACADE AVERAGE</span><strong id="facade">—</strong><small>All vertical faces</small></article>
-    <article><span>GROUND AVERAGE</span><strong id="ground">—</strong><small>Open ground</small></article>
+    <article><span id="groundMetricLabel">GROUND AVERAGE</span><strong id="ground">—</strong><small id="groundMetricNote">Open ground</small></article>
     <article><span>DAYLIGHT SAMPLED</span><strong id="daylight">—</strong><small>Sun above horizon</small></article>
   </div>
   <div class="data-bar"><span id="cellCount">— sampled cells</span><span id="sunCount">— time samples</span><span id="timezone">Time zone: auto CET / CEST</span><button id="csv" disabled>↓ Download CSV results</button></div>
 </section>
-<section class="about"><div><div class="eyebrow">03 / ABOUT THE METHOD</div><h2>Real computation.<br>Not an AI-generated heatmap.</h2></div><div><p>This browser implementation ports the sun-position equations and sampling logic from <strong>A001_sun_hours.py</strong>. It shoots rays toward the sun from sampled roof, facade and ground points, and counts unblocked direct-sun intervals.</p><p><strong>Current scope:</strong> box-shaped massing presets, local dates, fixed sample intervals and simplified geometry. It is not a replacement for the full Rhino tool, detailed daylight simulation, annual radiation or climate-based compliance studies.</p><p>Results are numerical estimates for design exploration. Accuracy depends on geometry detail, sample resolution, orientation and weather-independent direct sun assumptions.</p><a href="../">← Back to the command library</a></div></section>
+<section class="about"><div><div class="eyebrow">03 / ABOUT THE METHOD</div><h2>Real computation.<br>Not an AI-generated heatmap.</h2></div><div><p>This browser implementation ports the sun-position equations and sampling logic from <strong>A001_sun_hours.py</strong>. It shoots rays toward the sun from sampled roof, facade and ground points, and counts unblocked direct-sun intervals.</p><p><strong>Project geometry:</strong> OBJ, STL and uncompressed GLB meshes can be loaded once in COMMANDS Project and reused here. Uploaded analysis meshes are sampled directly and ray-tested against both analysis and optional context geometry.</p><p>This remains an early direct-sun design tool, not a replacement for detailed daylight simulation, annual radiation or climate-based compliance studies.</p><p>Results are numerical estimates for design exploration. Accuracy depends on geometry detail, sample resolution, orientation and weather-independent direct sun assumptions.</p><a href="../">← Back to the command library</a></div></section>
 </main>
 <script defer src="./embed-resize.js?v=1"></script>
-<script type="module" src="./sunhours.js?v=13"></script>
+<script type="module" src="./sunhours.js?v=14"></script>
 </body>
 </html>

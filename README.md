@@ -25,6 +25,19 @@ The source snapshot did not include an explicit code license. Seed downloads the
 - ChatGPT sign-in for publishing and personal actions
 - Playwright browser verification
 
+## Shared Project Geometry
+
+Browser-capable commands can reuse one local architectural model through **COMMANDS Project** instead of asking for a new upload per command.
+
+- \`/project\` stores the active project in browser IndexedDB; model bytes are not uploaded to COMMANDS.
+- V1 imports OBJ, STL, and uncompressed GLB, with metres, centimetres, millimetres, or feet as source units.
+- Files can be marked as **analysis geometry** or **context geometry**.
+- SunHours samples the uploaded analysis mesh and ray-tests it against analysis + context triangles.
+- WindScreen sections the same project 1.5 m above its base and rasterizes the closed section into the existing W001 LBM solver.
+- The importer/storage layer is shared. New commands add a geometry adapter rather than another uploader.
+
+This does **not** mean every browser preview automatically understands arbitrary geometry. SunHours and WindScreen are the first real consumers; other commands can adopt the same project contract as their geometry semantics are defined.
+
 ## Run locally
 
 Requirements: Node.js `>=22.13.0` and Chrome or Edge for browser tests.

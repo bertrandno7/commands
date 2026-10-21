@@ -7,7 +7,7 @@
  * tracers. Tracers illustrate the computed mean 2D vector field; they are
  * not a transient/3D CFD particle simulation.
  */
-import {SunHoursViewer} from "./sunhours-viewer.js?v=12";
+import {SunHoursViewer} from "./sunhours-viewer.js?v=13";
 import {makeWindCells,windRatioColor,flowAt} from "./wind-engine.js?v=2";
 
 const PI=Math.PI;

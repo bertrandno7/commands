@@ -1,0 +1,95 @@
+.shared-project-card{
+  margin:0 0 17px;
+  padding:12px;
+  border:1px solid #dfe3dd;
+  border-radius:7px;
+  background:#f7f9f6;
+}
+.shared-project-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:8px;
+}
+.shared-project-head>span{
+  color:#6f776f;
+  font-size:8px;
+  font-weight:850;
+  letter-spacing:.11em;
+}
+.shared-project-head small{
+  color:#9aa19b;
+  font-size:7px;
+  letter-spacing:.05em;
+}
+.shared-project-card>strong{
+  display:block;
+  overflow:hidden;
+  color:#252c27;
+  font-size:11px;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.shared-project-card>p{
+  margin:5px 0 8px;
+  color:#858d86;
+  font-size:8px;
+  line-height:1.5;
+}
+.shared-project-action{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:31px;
+  padding:0 9px;
+  border:1px solid #cdd3cd;
+  border-radius:5px;
+  background:#fff;
+  color:#3f4741;
+  font-size:8px;
+  font-weight:750;
+}
+.shared-project-action:hover{border-color:#909a91;color:#172019}
+.shared-project-action.subtle{background:transparent}
+.shared-project-privacy{
+  display:block;
+  margin-top:7px;
+  color:#a0a69f;
+  font-size:7px;
+  line-height:1.4;
+}
+.shared-project-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+  margin-top:7px;
+}
+.shared-project-meta span{
+  padding:3px 5px;
+  border-radius:3px;
+  background:#e9ede8;
+  color:#687068;
+  font-size:7px;
+}
+.shared-project-live{color:#3f8d5f!important;font-weight:800}
+.shared-project-card.is-active{border-color:#cbdace;background:#f5faf6}
+.shared-project-card.is-error{border-color:#e0c7c2;background:#fff8f6}
+.shared-project-card.is-error .shared-project-head small{color:#aa665d}
+.shared-project-skeleton{
+  height:11px;
+  width:84%;
+  border-radius:3px;
+  background:linear-gradient(90deg,#e7eae6,#f2f4f1,#e7eae6);
+  background-size:200% 100%;
+  animation:projectPulse 1.2s linear infinite;
+}
+.shared-project-skeleton.short{width:55%;margin-top:7px}
+@keyframes projectPulse{to{background-position:-200% 0}}
+
+#sampleSceneField.project-overridden{
+  opacity:.42;
+}
+#sampleSceneField.project-overridden select{
+  cursor:not-allowed;
+}
