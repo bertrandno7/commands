@@ -238,6 +238,7 @@ $("#windForm").addEventListener("submit",e=>{
 $("#cancel").addEventListener("click",()=>cancelCurrent(true));
 
 $("#scene").addEventListener("change",e=>{
+  if(project)return;
   cancelCurrent();
   scene=getScene(e.target.value);
   viewer.setScene(scene);
