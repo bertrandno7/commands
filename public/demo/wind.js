@@ -154,7 +154,8 @@ function resultUI(grid,solution,elapsedMs){
   $("#stepCount").textContent=solution.steps.toLocaleString()+" iterations";
   $("#duration").textContent=(elapsedMs/1000).toFixed(1)+" s solve time";
   $("#resultLabel").textContent=
-    scene.name+" · wind from "+grid.windFrom+"° · "+grid.cell+" m grid";
+    scene.name+" · wind from "+grid.windFrom+"° · "+grid.cell+" m grid"+
+    (grid.project?" · 1.5 m above project base":"");
   $("#viewStatus").textContent=
     "Wind ratio "+m.mean.toFixed(2)+"× mean · "+m.acceleratedPercent.toFixed(1)+"% accelerated";
   $("#csv").disabled=false;
