@@ -294,4 +294,37 @@ $("#csv").addEventListener("click",()=>{
 
 window.addEventListener("beforeunload",()=>cancelCurrent());
 updateCompass();updateSpeed();updateQuality();
-runWind();
+
+async function useProjectGeometry(nextProject,error){
+  cancelCurrent();
+  project=nextProject;
+  field=null;
+  currentGrid=null;
+  $("#csv").disabled=true;
+  $("#scene").disabled=!!project;
+  $("#sampleSceneField").classList.toggle("project-overridden",!!project);
+
+  if(project){
+    scene=projectToViewerScene(project);
+    viewer.setScene(scene);
+    $("#sceneTitle").textContent=project.name;
+    $("#sceneSubtitle").textContent=
+      project.triangleCount.toLocaleString()+" triangles · W001 section at 1.5 m above base";
+    invalidate("Project geometry · solving wind");
+  }else{
+    scene=getScene($("#scene").value);
+    viewer.setScene(scene);
+    $("#sceneTitle").textContent=scene.name;
+    $("#sceneSubtitle").textContent=scene.subtitle+" · W001 slice";
+    invalidate(error?"Project unavailable · using sample":"Sample geometry · solving wind");
+  }
+  runWind();
+}
+
+attachProjectPanel({
+  mount:$("#projectGeometryMount"),
+  onProjectChanged:useProjectGeometry
+}).catch(error=>{
+  console.error(error);
+  useProjectGeometry(null,error);
+});
