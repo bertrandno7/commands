@@ -30,6 +30,19 @@ The database and object store cannot commit atomically. Object keys are content-
 
 The MCP server exposes only `search_commands` and `get_command_manifest`. It does not execute Rhino commands. Actual execution belongs in a future local Rhino bridge where document context and permission prompts exist.
 
+## Local Project Geometry
+
+The registry/runtime and the browser analysis substrate are separate concerns.
+
+\`/project\` provides one **local-only active geometry project** stored in IndexedDB (\`commands-project-v1\`). The record keeps source files, source units, and per-file roles (\`analysis\` / \`context\`). A BroadcastChannel notifies open command previews when the project changes.
+
+The shared browser importer normalizes OBJ, STL, and uncompressed GLB into metre-based triangle buffers plus bounds. Command adapters then request only the representation they need:
+
+- **SunHours** → triangle samples + BVH ray intersections.
+- **WindScreen** → horizontal section at 1.5 m above project base → obstacle raster → existing D2Q9 LBM solver.
+
+This is intentionally not a browser CAD document model. The project layer owns import, persistence, units, analysis/context roles, and mesh normalization; individual commands own the transformation from shared geometry into their analytical input. That keeps one upload reusable without pretending every Rhino-specific algorithm can run unchanged in the browser.
+
 ## Seed content
 
 The initial fifteen listed commands came from `Hark / Projects / Python Codes - GH Library / 00_Rhino_Commands`, snapshot 2026-10-15, and were reconciled with the owner's COMMANDS repository at `044050f`. They retain `imported-draft` status, zero synthetic engagement, verified creator attribution, and unresolved licenses. That provenance is intentionally visible rather than rewritten as a public release claim.
