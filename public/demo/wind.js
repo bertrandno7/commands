@@ -4,7 +4,10 @@
  */
 import {getScene} from "./sunhours-engine.js?v=3";
 import {createWindGrid,WIND_PALETTE} from "./wind-engine.js?v=2";
-import {WindViewer} from "./wind-viewer.js?v=2";
+import {WindViewer} from "./wind-viewer.js?v=3";
+import {createWindGridFromProject} from "./project-analysis.js?v=1";
+import {projectToViewerScene} from "./project-geometry.js?v=1";
+import {attachProjectPanel} from "./project-panel.js?v=1";
 
 const $=s=>document.querySelector(s);
 const labels=[
@@ -23,6 +26,7 @@ $(".wind-gradient").style.background="linear-gradient(90deg, "+gradientStops+")"
 
 const viewer=new WindViewer($("#view"),$("#flowOverlay"));
 let scene=getScene("courtyard");
+let project=null;
 let field=null;
 let currentGrid=null;
 let running=null;
