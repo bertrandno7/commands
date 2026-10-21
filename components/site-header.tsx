@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bell, Menu, Plus, Search } from "lucide-react";
+import { Bell, Box, Menu, Plus, Search } from "lucide-react";
 import {
   chatGPTSignInPath,
   chatGPTSignOutPath,
@@ -31,6 +31,7 @@ export async function SiteHeader() {
 
         <nav className="desktop-nav" aria-label="Primary navigation">
           <Link href="/discover">Discover</Link>
+          <Link href="/project"><Box size={14} /> Project</Link>
           <Link href="/publish">Publish</Link>
           <Link href="/docs/package-format">Docs</Link>
           <Link href="/roadmap">Roadmap</Link>
@@ -62,6 +63,7 @@ export async function SiteHeader() {
             <summary className="icon-button" aria-label="Open navigation"><Menu size={19} /></summary>
             <nav>
               <Link href="/discover">Discover</Link>
+              <Link href="/project">Project geometry</Link>
               <Link href="/publish">Publish a command</Link>
               <Link href="/docs/package-format">Package docs</Link>
               <Link href="/roadmap">Roadmap</Link>
