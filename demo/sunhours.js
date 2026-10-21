@@ -4,7 +4,10 @@
  * orbiting / panning / pinching never recalculates the sun hours.
  */
 import {getScene, analyzeSunHours} from "./sunhours-engine.js?v=3";
-import {SunHoursViewer} from "./sunhours-viewer.js?v=12";
+import {SunHoursViewer} from "./sunhours-viewer.js?v=13";
+import {analyzeProjectSunHours} from "./project-analysis.js?v=1";
+import {projectToViewerScene} from "./project-geometry.js?v=1";
+import {attachProjectPanel} from "./project-panel.js?v=1";
 
 const $=s=>document.querySelector(s);
 const form=$("#analysisForm");
@@ -12,6 +15,7 @@ const button=$("#run");
 const canvas=$("#view");
 const viewer=new SunHoursViewer(canvas);
 let scene=getScene("courtyard");
+let project=null;
 let result=null;
 let pending=false;
 let rerunRequested=false;
@@ -90,9 +94,18 @@ function showResults(r){
   $("#mean").textContent=fmt(r.metrics.mean);
   $("#max").textContent=fmt(r.metrics.max);
   $("#facade").textContent=fmt(r.metrics.facadeMean);
-  $("#ground").textContent=fmt(r.metrics.groundMean);
+  if(project){
+    $("#groundMetricLabel").textContent="ROOF AVERAGE";
+    $("#groundMetricNote").textContent="Upward-facing project mesh";
+    $("#ground").textContent=fmt(r.metrics.roofMean||0);
+  }else{
+    $("#groundMetricLabel").textContent="GROUND AVERAGE";
+    $("#groundMetricNote").textContent="Open ground";
+    $("#ground").textContent=fmt(r.metrics.groundMean);
+  }
   $("#daylight").textContent=fmt(r.daylightHours);
-  $("#cellCount").textContent=r.metrics.cells.toLocaleString()+" sampled cells";
+  $("#cellCount").textContent=r.metrics.cells.toLocaleString()+" sampled cells"+
+    (r.effectiveGrid?" · ~"+r.effectiveGrid.toFixed(1)+" m mesh":"");
   $("#sunCount").textContent=r.metrics.samples+" sun positions";
   $("#timezone").textContent="UTC+"+r.timezone+" · "+r.options.year;
   $("#legendMax").textContent=fmt(r.daylightHours);
@@ -113,7 +126,9 @@ async function runAnalysis(){
   const analysedScene=scene;
   try{
     const options=optionsFromForm();
-    const r=await analyzeSunHours(analysedScene,options,updateProgress);
+    const r=project
+      ?await analyzeProjectSunHours(project,options,updateProgress)
+      :await analyzeSunHours(analysedScene,options,updateProgress);
     if(analysedScene===scene && !rerunRequested){
       result=r;
       viewer.setData(scene,r);
@@ -136,6 +151,7 @@ async function runAnalysis(){
 
 form.addEventListener("submit",e=>{e.preventDefault();runAnalysis();});
 $("#scene").addEventListener("change",e=>{
+  if(project)return;
   scene=getScene(e.target.value);
   result=null;
   viewer.setData(scene,null);
@@ -179,4 +195,36 @@ $("#csv").addEventListener("click",()=>{
   setTimeout(()=>URL.revokeObjectURL(url),2000);
 });
 
-runAnalysis();
+async function useProjectGeometry(nextProject,error){
+  project=nextProject;
+  result=null;
+  $("#csv").disabled=true;
+  $("#scene").disabled=!!project;
+  $("#sampleSceneField").classList.toggle("project-overridden",!!project);
+
+  if(project){
+    scene=projectToViewerScene(project);
+    viewer.setData(scene,null);
+    $("#sceneTitle").textContent=project.name;
+    $("#sceneSubtitle").textContent=
+      project.triangleCount.toLocaleString()+" triangles · shared COMMANDS Project";
+    $("#viewStatus").textContent="Project loaded · calculating";
+    $("#resultLabel").textContent="Project geometry · calculating";
+  }else{
+    scene=getScene($("#scene").value);
+    viewer.setData(scene,null);
+    $("#sceneTitle").textContent=scene.name;
+    $("#sceneSubtitle").textContent=scene.subtitle;
+    $("#viewStatus").textContent=error?"Project unavailable · using sample":"Sample geometry · calculating";
+    $("#resultLabel").textContent=error?"Project error — sample fallback":"Sample geometry";
+  }
+  await runAnalysis();
+}
+
+attachProjectPanel({
+  mount:$("#projectGeometryMount"),
+  onProjectChanged:useProjectGeometry
+}).catch(error=>{
+  console.error(error);
+  useProjectGeometry(null,error);
+});
