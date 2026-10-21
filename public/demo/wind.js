@@ -167,9 +167,13 @@ function runWind(){
   let grid,values;
   try{
     values=formValues();
-    grid=createWindGrid(scene,{
-      windFrom:values.windFrom,cell:values.cell,slice:1.5
-    });
+    grid=project
+      ?createWindGridFromProject(project,{
+          windFrom:values.windFrom,cell:values.cell,height:1.5
+        })
+      :createWindGrid(scene,{
+          windFrom:values.windFrom,cell:values.cell,slice:1.5
+        });
   }catch(err){
     reportError(err.message);return;
   }
