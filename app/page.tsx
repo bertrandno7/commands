@@ -96,9 +96,9 @@ export default async function Home() {
         <div className="section-heading-row">
           <div>
             <span className="section-kicker"><Radio size={14} /> Tested command labs</span>
-            <h2>Not mockups. Working previews.</h2>
+            <h2>Simple shapes. Real calculations.</h2>
           </div>
-          <p>Real geometry and analysis kernels from the latest repository, running locally in your browser.</p>
+          <p>Every command opens as a focused playground with basic geometry and real browser-side logic—no upload required.</p>
         </div>
         <div className="live-lab-grid">
           {liveDemos.map((demo) => {
