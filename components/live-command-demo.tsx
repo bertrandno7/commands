@@ -39,8 +39,8 @@ export function LiveCommandDemo({ demo }: { demo: LiveCommandDemo }) {
     <section className="live-demo-section" id="live-demo">
       <div className="live-demo-heading">
         <div>
-          <span className="section-kicker"><Radio size={13} /> Working preview · {demo.id}</span>
-          <h2>Try {demo.name} in the browser</h2>
+          <span className="section-kicker"><Radio size={13} /> Interactive playground · {demo.id}</span>
+          <h2>Play with {demo.name}</h2>
           <p>{demo.summary}</p>
         </div>
         <a href={demo.path} target="_blank" rel="noreferrer">
@@ -49,8 +49,8 @@ export function LiveCommandDemo({ demo }: { demo: LiveCommandDemo }) {
       </div>
       <div className="live-demo-frame-shell">
         <div className="live-demo-bar">
-          <span><Play size={12} fill="currentColor" /> Live calculation</span>
-          <small>Rhino-free preview · source logic ported for the web</small>
+          <span><Play size={12} fill="currentColor" /> Basic-shape live preview</span>
+          <small>No upload required · source logic ported for the web</small>
         </div>
         <iframe
           id="live-command-frame"
@@ -63,7 +63,7 @@ export function LiveCommandDemo({ demo }: { demo: LiveCommandDemo }) {
         />
       </div>
       <p className="live-demo-caveat">
-        This preview runs a tested browser adaptation. The downloadable command remains the Rhino/Python source of record.
+        This playground uses simple deterministic geometry so the command is understandable immediately. The downloadable command remains the Rhino/Python source of record.
       </p>
     </section>
   );
