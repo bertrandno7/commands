@@ -5,9 +5,6 @@
 import {getScene} from "./sunhours-engine.js?v=3";
 import {createWindGrid,WIND_PALETTE} from "./wind-engine.js?v=2";
 import {WindViewer} from "./wind-viewer.js?v=3";
-import {createWindGridFromProject} from "./project-analysis.js?v=1";
-import {projectToViewerScene} from "./project-geometry.js?v=1";
-import {attachProjectPanel} from "./project-panel.js?v=1";
 
 const $=s=>document.querySelector(s);
 const labels=[
@@ -26,7 +23,6 @@ $(".wind-gradient").style.background="linear-gradient(90deg, "+gradientStops+")"
 
 const viewer=new WindViewer($("#view"),$("#flowOverlay"));
 let scene=getScene("courtyard");
-let project=null;
 let field=null;
 let currentGrid=null;
 let running=null;
@@ -155,7 +151,7 @@ function resultUI(grid,solution,elapsedMs){
   $("#duration").textContent=(elapsedMs/1000).toFixed(1)+" s solve time";
   $("#resultLabel").textContent=
     scene.name+" · wind from "+grid.windFrom+"° · "+grid.cell+" m grid"+
-    (grid.project?" · 1.5 m above project base":"");
+    "";
   $("#viewStatus").textContent=
     "Wind ratio "+m.mean.toFixed(2)+"× mean · "+m.acceleratedPercent.toFixed(1)+"% accelerated";
   $("#csv").disabled=false;
@@ -168,13 +164,9 @@ function runWind(){
   let grid,values;
   try{
     values=formValues();
-    grid=project
-      ?createWindGridFromProject(project,{
-          windFrom:values.windFrom,cell:values.cell,height:1.5
-        })
-      :createWindGrid(scene,{
-          windFrom:values.windFrom,cell:values.cell,slice:1.5
-        });
+    grid=createWindGrid(scene,{
+      windFrom:values.windFrom,cell:values.cell,slice:1.5
+    });
   }catch(err){
     reportError(err.message);return;
   }
@@ -238,7 +230,6 @@ $("#windForm").addEventListener("submit",e=>{
 $("#cancel").addEventListener("click",()=>cancelCurrent(true));
 
 $("#scene").addEventListener("change",e=>{
-  if(project)return;
   cancelCurrent();
   scene=getScene(e.target.value);
   viewer.setScene(scene);
@@ -295,36 +286,4 @@ $("#csv").addEventListener("click",()=>{
 window.addEventListener("beforeunload",()=>cancelCurrent());
 updateCompass();updateSpeed();updateQuality();
 
-async function useProjectGeometry(nextProject,error){
-  cancelCurrent();
-  project=nextProject;
-  field=null;
-  currentGrid=null;
-  $("#csv").disabled=true;
-  $("#scene").disabled=!!project;
-  $("#sampleSceneField").classList.toggle("project-overridden",!!project);
-
-  if(project){
-    scene=projectToViewerScene(project);
-    viewer.setScene(scene);
-    $("#sceneTitle").textContent=project.name;
-    $("#sceneSubtitle").textContent=
-      project.triangleCount.toLocaleString()+" triangles · W001 section at 1.5 m above base";
-    invalidate("Project geometry · solving wind");
-  }else{
-    scene=getScene($("#scene").value);
-    viewer.setScene(scene);
-    $("#sceneTitle").textContent=scene.name;
-    $("#sceneSubtitle").textContent=scene.subtitle+" · W001 slice";
-    invalidate(error?"Project unavailable · using sample":"Sample geometry · solving wind");
-  }
-  runWind();
-}
-
-attachProjectPanel({
-  mount:$("#projectGeometryMount"),
-  onProjectChanged:useProjectGeometry
-}).catch(error=>{
-  console.error(error);
-  useProjectGeometry(null,error);
-});
+runWind();
