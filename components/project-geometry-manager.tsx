@@ -199,7 +199,7 @@ export function ProjectGeometryManager() {
         ],
       });
       setActive(record);
-      setMessage("Project saved locally. SunHours and WindScreen will use it automatically.");
+      setMessage("Project saved locally. Use the experimental SunHours or WindScreen links to test it.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Could not save the project.");
     } finally {
@@ -323,8 +323,8 @@ export function ProjectGeometryManager() {
               ))}
             </div>
             <div className="project-command-links">
-              <Link href="/commands/sun-hours#live-demo"><Sun size={15} /> SunHours</Link>
-              <Link href="/commands/wind-screen#live-demo"><Wind size={15} /> WindScreen</Link>
+              <Link href="/demo/sunhours.html?project=1"><Sun size={15} /> Experimental SunHours</Link>
+              <Link href="/demo/wind.html?project=1"><Wind size={15} /> Experimental WindScreen</Link>
             </div>
             <button className="project-clear" type="button" onClick={clearProject} disabled={busy}>
               <Trash2 size={14} /> Clear active project

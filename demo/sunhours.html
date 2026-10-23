@@ -30,8 +30,8 @@ if(new URLSearchParams(location.search).get("embed")==="1"){
   <aside class="control-panel">
     <div class="panel-title"><span>01</span><h2>Analysis setup</h2></div>
     <form id="analysisForm">
-      <div id="projectGeometryMount"></div>
-      <label class="field" id="sampleSceneField">SAMPLE SCENE <select id="scene"><option value="courtyard">Rotterdam courtyard</option><option value="tower">Tower + context</option><option value="canyon">Street canyon</option></select></label>
+      <div id="projectGeometryMount" hidden></div>
+      <label class="field" id="sampleSceneField">BASIC MASSING <select id="scene"><option value="courtyard">Rotterdam courtyard</option><option value="tower">Tower + context</option><option value="canyon">Street canyon</option></select></label>
       <div class="field-row">
         <label class="field">LATITUDE <input id="lat" type="number" min="-90" max="90" step=".01" value="51.92" required></label>
         <label class="field">LONGITUDE <input id="lon" type="number" min="-180" max="180" step=".01" value="4.48" required></label>
@@ -101,7 +101,7 @@ if(new URLSearchParams(location.search).get("embed")==="1"){
   </div>
   <div class="data-bar"><span id="cellCount">— sampled cells</span><span id="sunCount">— time samples</span><span id="timezone">Time zone: auto CET / CEST</span><button id="csv" disabled>↓ Download CSV results</button></div>
 </section>
-<section class="about"><div><div class="eyebrow">03 / ABOUT THE METHOD</div><h2>Real computation.<br>Not an AI-generated heatmap.</h2></div><div><p>This browser implementation ports the sun-position equations and sampling logic from <strong>A001_sun_hours.py</strong>. It shoots rays toward the sun from sampled roof, facade and ground points, and counts unblocked direct-sun intervals.</p><p><strong>Project geometry:</strong> OBJ, STL and uncompressed GLB meshes can be loaded once in COMMANDS Project and reused here. Uploaded analysis meshes are sampled directly and ray-tested against both analysis and optional context geometry.</p><p>This remains an early direct-sun design tool, not a replacement for detailed daylight simulation, annual radiation or climate-based compliance studies.</p><p>Results are numerical estimates for design exploration. Accuracy depends on geometry detail, sample resolution, orientation and weather-independent direct sun assumptions.</p><a href="../">← Back to the command library</a></div></section>
+<section class="about"><div><div class="eyebrow">03 / ABOUT THE METHOD</div><h2>Real computation.<br>Not an AI-generated heatmap.</h2></div><div><p>This browser implementation ports the sun-position equations and sampling logic from <strong>A001_sun_hours.py</strong>. It shoots rays toward the sun from sampled roof, facade and ground points, and counts unblocked direct-sun intervals.</p><p><strong>V1 playground:</strong> this preview intentionally uses controlled architectural massing so you can understand the solar behaviour immediately, with no file preparation or upload step.</p><p>This remains an early direct-sun design tool, not a replacement for detailed daylight simulation, annual radiation or climate-based compliance studies.</p><p>Results are numerical estimates for design exploration. Accuracy depends on geometry detail, sample resolution, orientation and weather-independent direct sun assumptions.</p><a href="../">← Back to the command library</a></div></section>
 </main>
 <script defer src="./embed-resize.js?v=1"></script>
 <script type="module" src="./sunhours.js?v=14"></script>

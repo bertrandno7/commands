@@ -25,18 +25,20 @@ The source snapshot did not include an explicit code license. Seed downloads the
 - ChatGPT sign-in for publishing and personal actions
 - Playwright browser verification
 
-## Shared Project Geometry
+## V1 playgrounds first
 
-Browser-capable commands can reuse one local architectural model through **COMMANDS Project** instead of asking for a new upload per command.
+COMMANDS V1 prioritizes **instant browser playgrounds on simple deterministic geometry**. A visitor should be able to open any listed command, understand the operation, change a few meaningful parameters, and see a real result without preparing or uploading a model.
 
-- \`/project\` stores the active project in browser IndexedDB; model bytes are not uploaded to COMMANDS.
-- V1 imports OBJ, STL, and uncompressed GLB, with metres, centimetres, millimetres, or feet as source units.
-- Files can be marked as **analysis geometry** or **context geometry**.
-- SunHours samples the uploaded analysis mesh and ray-tests it against analysis + context triangles.
-- WindScreen sections the same project 1.5 m above its base and rasterizes the closed section into the existing W001 LBM solver.
-- The importer/storage layer is shared. New commands add a geometry adapter rather than another uploader.
+All fifteen listed commands have a browser preview and computed screenshot. SunHours and WindScreen use architectural sample scenes such as towers, courtyards, and street canyons; the other command previews use similarly focused parametric inputs.
 
-This does **not** mean every browser preview automatically understands arbitrary geometry. SunHours and WindScreen are the first real consumers; other commands can adopt the same project contract as their geometry semantics are defined.
+### Experimental project geometry
+
+The existing local geometry importer is preserved at `/project` for development, but it is intentionally **not part of the primary navigation or default preview flow**.
+
+- It stores model bytes locally in browser IndexedDB; files are not uploaded to COMMANDS.
+- It currently supports OBJ, STL, and uncompressed GLB.
+- SunHours and WindScreen can still consume the shared project when their preview is opened with `?project=1`.
+- This is experimental infrastructure for later, not a V1 requirement.
 
 ## Run locally
 

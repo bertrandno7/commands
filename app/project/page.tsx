@@ -2,19 +2,19 @@ import type { Metadata } from "next";
 import { ProjectGeometryManager } from "@/components/project-geometry-manager";
 
 export const metadata: Metadata = {
-  title: "Project Geometry",
-  description: "Load one local geometry project and reuse it across browser-capable COMMANDS analyses.",
+  title: "Experimental Project Geometry",
+  description: "Experimental local geometry import for selected COMMANDS analyses.",
 };
 
 export default function ProjectPage() {
   return (
     <main className="shell page-shell project-page">
       <header className="page-intro">
-        <span className="eyebrow"><i /> COMMANDS PROJECT</span>
-        <h1>One model.<br />Many commands.</h1>
+        <span className="eyebrow"><i /> EXPERIMENTAL · NOT REQUIRED FOR V1</span>
+        <h1>Bring your own model.<br />Later.</h1>
         <p>
-          Keep a shared architectural model in your browser, then reuse it across analysis commands
-          without uploading the same file again.
+          COMMANDS V1 is designed around fast basic-shape playgrounds with no upload step.
+          This local geometry importer remains available for testing, but it is no longer part of the main product journey.
         </p>
       </header>
       <ProjectGeometryManager />

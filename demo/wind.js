@@ -5,9 +5,8 @@
 import {getScene} from "./sunhours-engine.js?v=3";
 import {createWindGrid,WIND_PALETTE} from "./wind-engine.js?v=2";
 import {WindViewer} from "./wind-viewer.js?v=3";
-import {createWindGridFromProject} from "./project-analysis.js?v=1";
-import {projectToViewerScene} from "./project-geometry.js?v=1";
-import {attachProjectPanel} from "./project-panel.js?v=1";
+const experimentalProjectMode=new URLSearchParams(location.search).get("project")==="1";
+let projectTools=null;
 
 const $=s=>document.querySelector(s);
 const labels=[
@@ -169,7 +168,7 @@ function runWind(){
   try{
     values=formValues();
     grid=project
-      ?createWindGridFromProject(project,{
+      ?projectTools.createWindGridFromProject(project,{
           windFrom:values.windFrom,cell:values.cell,height:1.5
         })
       :createWindGrid(scene,{
@@ -305,7 +304,7 @@ async function useProjectGeometry(nextProject,error){
   $("#sampleSceneField").classList.toggle("project-overridden",!!project);
 
   if(project){
-    scene=projectToViewerScene(project);
+    scene=projectTools.projectToViewerScene(project);
     viewer.setScene(scene);
     $("#sceneTitle").textContent=project.name;
     $("#sceneSubtitle").textContent=
@@ -321,10 +320,31 @@ async function useProjectGeometry(nextProject,error){
   runWind();
 }
 
-attachProjectPanel({
-  mount:$("#projectGeometryMount"),
-  onProjectChanged:useProjectGeometry
-}).catch(error=>{
+async function initialisePreview(){
+  const mount=$("#projectGeometryMount");
+  if(!experimentalProjectMode){
+    if(mount)mount.hidden=true;
+    runWind();
+    return;
+  }
+
+  if(mount)mount.hidden=false;
+  const [analysisModule,geometryModule,panelModule]=await Promise.all([
+    import("./project-analysis.js?v=1"),
+    import("./project-geometry.js?v=1"),
+    import("./project-panel.js?v=1")
+  ]);
+  projectTools={
+    createWindGridFromProject:analysisModule.createWindGridFromProject,
+    projectToViewerScene:geometryModule.projectToViewerScene
+  };
+  await panelModule.attachProjectPanel({
+    mount,
+    onProjectChanged:useProjectGeometry
+  });
+}
+
+initialisePreview().catch(error=>{
   console.error(error);
   useProjectGeometry(null,error);
 });

@@ -92,8 +92,8 @@ export default async function CommandPage({ params }: { params: Promise<{ slug: 
       </header>
 
       <nav className="detail-tabs" aria-label="Command page sections">
-        <a href="#overview" className="active">Overview</a>
-        {liveDemo && <a href="#live-demo">Live demo</a>}
+        {liveDemo && <a href="#live-demo" className="active">Playground</a>}
+        <a href="#overview">Overview</a>
         <a href="#inputs">Inputs &amp; outputs</a>
         <a href="#dependencies">Dependencies</a>
         <a href="#versions">Versions</a>
@@ -102,6 +102,8 @@ export default async function CommandPage({ params }: { params: Promise<{ slug: 
 
       <div className="command-detail-grid">
         <div className="detail-main">
+          {liveDemo && <LiveCommandDemo demo={liveDemo} />}
+
           <section className="detail-gallery" id="overview">
             <CommandArtwork slug={command.slug} name={command.name} category={command.category} priority />
             <div className="gallery-thumbs" aria-hidden="true">
@@ -117,8 +119,6 @@ export default async function CommandPage({ params }: { params: Promise<{ slug: 
               <div><strong>Imported draft from a working library</strong><p>{command.downloadAvailable === false ? "This catalog record and preview are real, but its Rhino package is still being migrated." : "This seed is packaged as a provisional 0.1.0 snapshot."} Its license still needs an explicit author declaration before production reuse.</p></div>
             </aside>
           )}
-
-          {liveDemo && <LiveCommandDemo demo={liveDemo} />}
 
           <article className="readme-section">
             <div className="readme-heading"><span>README.md</span><a href={`/api/v1/commands/${command.slug}/manifest`}>View manifest <ExternalLink size={13} /></a></div>

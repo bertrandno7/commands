@@ -71,6 +71,15 @@ async function seedProject(){
 
 try{
   await page.goto(origin+"/demo/sunhours.html",{waitUntil:"domcontentloaded",timeout:30000});
+  await page.waitForFunction(
+    ()=>document.querySelector("#progressLabel")?.textContent?.includes("complete") &&
+      document.querySelector("#sceneTitle")?.textContent==="Rotterdam courtyard",
+    null,{timeout:60000}
+  );
+  assert.equal(await page.locator("#projectGeometryMount").isHidden(),true,
+    "Default SunHours must stay focused on sample geometry");
+
+  await page.goto(origin+"/demo/sunhours.html?project=1",{waitUntil:"domcontentloaded",timeout:30000});
   await page.waitForSelector("#projectGeometryMount .shared-project-card",{timeout:15000});
   await seedProject();
 
@@ -87,7 +96,7 @@ try{
   assert.ok(sunMean>0,"Uploaded project must produce numerical SunHours");
   await page.screenshot({path:"artifacts/project-shared-sunhours.png",fullPage:false});
 
-  await page.goto(origin+"/demo/wind.html",{waitUntil:"domcontentloaded",timeout:30000});
+  await page.goto(origin+"/demo/wind.html?project=1",{waitUntil:"domcontentloaded",timeout:30000});
   await page.waitForFunction(
     ()=>document.querySelector("#sceneTitle")?.textContent==="Shared browser cube" &&
       document.querySelector("#progressLabel")?.textContent?.includes("ready") &&
