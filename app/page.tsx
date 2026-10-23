@@ -95,10 +95,10 @@ export default async function Home() {
       <section className="live-labs-section shell">
         <div className="section-heading-row">
           <div>
-            <span className="section-kicker"><Radio size={14} /> Tested command labs</span>
-            <h2>Not mockups. Working previews.</h2>
+            <span className="section-kicker"><Radio size={14} /> Interactive command playgrounds</span>
+            <h2>Open a command. Start playing.</h2>
           </div>
-          <p>Real geometry and analysis kernels from the latest repository, running locally in your browser.</p>
+          <p>Every listed command has a focused browser playground built around simple geometry and real command logic. No model upload required.</p>
         </div>
         <div className="live-lab-grid">
           {liveDemos.map((demo) => {
@@ -200,7 +200,7 @@ export default async function Home() {
         <div className="roadmap-intro">
           <span className="eyebrow"><i /> BUILT IN SMALL, USEFUL STEPS</span>
           <h2>From registry<br />to design operating system.</h2>
-          <p>V1 stays focused: no browser CAD, no pretend installer. Each next layer builds on the same open package.</p>
+          <p>V1 stays focused: useful commands, understandable basic-shape playgrounds, and no upload requirement. Each next layer builds on the same open package.</p>
           <Link className="button button-light" href="/roadmap">See the roadmap <ArrowRight size={16} /></Link>
         </div>
         <ol className="roadmap-list">
