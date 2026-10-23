@@ -5,9 +5,8 @@
  */
 import {getScene, analyzeSunHours} from "./sunhours-engine.js?v=3";
 import {SunHoursViewer} from "./sunhours-viewer.js?v=13";
-import {analyzeProjectSunHours} from "./project-analysis.js?v=1";
-import {projectToViewerScene} from "./project-geometry.js?v=1";
-import {attachProjectPanel} from "./project-panel.js?v=1";
+const experimentalProjectMode=new URLSearchParams(location.search).get("project")==="1";
+let projectTools=null;
 
 const $=s=>document.querySelector(s);
 const form=$("#analysisForm");
@@ -127,7 +126,7 @@ async function runAnalysis(){
   try{
     const options=optionsFromForm();
     const r=project
-      ?await analyzeProjectSunHours(project,options,updateProgress)
+      ?await projectTools.analyzeProjectSunHours(project,options,updateProgress)
       :await analyzeSunHours(analysedScene,options,updateProgress);
     if(analysedScene===scene && !rerunRequested){
       result=r;
@@ -203,7 +202,7 @@ async function useProjectGeometry(nextProject,error){
   $("#sampleSceneField").classList.toggle("project-overridden",!!project);
 
   if(project){
-    scene=projectToViewerScene(project);
+    scene=projectTools.projectToViewerScene(project);
     viewer.setData(scene,null);
     $("#sceneTitle").textContent=project.name;
     $("#sceneSubtitle").textContent=
@@ -221,10 +220,31 @@ async function useProjectGeometry(nextProject,error){
   await runAnalysis();
 }
 
-attachProjectPanel({
-  mount:$("#projectGeometryMount"),
-  onProjectChanged:useProjectGeometry
-}).catch(error=>{
+async function initialisePreview(){
+  const mount=$("#projectGeometryMount");
+  if(!experimentalProjectMode){
+    if(mount)mount.hidden=true;
+    await runAnalysis();
+    return;
+  }
+
+  if(mount)mount.hidden=false;
+  const [analysisModule,geometryModule,panelModule]=await Promise.all([
+    import("./project-analysis.js?v=1"),
+    import("./project-geometry.js?v=1"),
+    import("./project-panel.js?v=1")
+  ]);
+  projectTools={
+    analyzeProjectSunHours:analysisModule.analyzeProjectSunHours,
+    projectToViewerScene:geometryModule.projectToViewerScene
+  };
+  await panelModule.attachProjectPanel({
+    mount,
+    onProjectChanged:useProjectGeometry
+  });
+}
+
+initialisePreview().catch(error=>{
   console.error(error);
   useProjectGeometry(null,error);
 });
