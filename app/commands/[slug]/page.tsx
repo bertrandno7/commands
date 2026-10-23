@@ -24,7 +24,6 @@ import {
   TerminalSquare,
 } from "lucide-react";
 import { CommandActions } from "@/components/command-actions";
-import { CommandArtwork } from "@/components/command-artwork";
 import { CategoryIcon } from "@/components/category-icon";
 import { CommandCard } from "@/components/command-card";
 import { LiveCommandDemo } from "@/components/live-command-demo";
@@ -92,8 +91,8 @@ export default async function CommandPage({ params }: { params: Promise<{ slug: 
       </header>
 
       <nav className="detail-tabs" aria-label="Command page sections">
-        <a href="#overview" className="active">Overview</a>
-        {liveDemo && <a href="#live-demo">Live demo</a>}
+        {liveDemo && <a href="#live-demo" className="active">Live demo</a>}
+        <a href="#overview">Overview</a>
         <a href="#inputs">Inputs &amp; outputs</a>
         <a href="#dependencies">Dependencies</a>
         <a href="#versions">Versions</a>
@@ -102,14 +101,7 @@ export default async function CommandPage({ params }: { params: Promise<{ slug: 
 
       <div className="command-detail-grid">
         <div className="detail-main">
-          <section className="detail-gallery" id="overview">
-            <CommandArtwork slug={command.slug} name={command.name} category={command.category} priority />
-            <div className="gallery-thumbs" aria-hidden="true">
-              <span className="active"><CommandArtwork slug={command.slug} name={command.name} category={command.category} /></span>
-              <span className="diagram-thumb"><Braces /></span>
-              <span className="diagram-thumb"><TerminalSquare /></span>
-            </div>
-          </section>
+          {liveDemo && <LiveCommandDemo demo={liveDemo} />}
 
           {command.status === "imported-draft" && (
             <aside className="import-notice">
@@ -118,9 +110,7 @@ export default async function CommandPage({ params }: { params: Promise<{ slug: 
             </aside>
           )}
 
-          {liveDemo && <LiveCommandDemo demo={liveDemo} />}
-
-          <article className="readme-section">
+          <article className="readme-section" id="overview">
             <div className="readme-heading"><span>README.md</span><a href={`/api/v1/commands/${command.slug}/manifest`}>View manifest <ExternalLink size={13} /></a></div>
             <h2>{command.name}</h2>
             <p className="readme-lead">{command.description}</p>
