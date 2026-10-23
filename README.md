@@ -25,18 +25,22 @@ The source snapshot did not include an explicit code license. Seed downloads the
 - ChatGPT sign-in for publishing and personal actions
 - Playwright browser verification
 
-## Shared Project Geometry
+## V1 browser playgrounds
 
-Browser-capable commands can reuse one local architectural model through **COMMANDS Project** instead of asking for a new upload per command.
+V1 prioritizes fast, reliable previews built from simple parametric geometry. Every listed command has a deterministic browser playground, so visitors can understand the command without preparing or uploading a production model.
 
-- \`/project\` stores the active project in browser IndexedDB; model bytes are not uploaded to COMMANDS.
-- V1 imports OBJ, STL, and uncompressed GLB, with metres, centimetres, millimetres, or feet as source units.
-- Files can be marked as **analysis geometry** or **context geometry**.
-- SunHours samples the uploaded analysis mesh and ray-tests it against analysis + context triangles.
-- WindScreen sections the same project 1.5 m above its base and rasterizes the closed section into the existing W001 LBM solver.
-- The importer/storage layer is shared. New commands add a geometry adapter rather than another uploader.
+SunHours and WindScreen use the same three basic massing presets: courtyard, tower + context, and street canyon. Other previews expose similarly focused boxes, grids, facades, voxels, stairs, or option sets appropriate to the command.
 
-This does **not** mean every browser preview automatically understands arbitrary geometry. SunHours and WindScreen are the first real consumers; other commands can adopt the same project contract as their geometry semantics are defined.
+### Experimental project geometry
+
+The local geometry importer is intentionally **parked for later**.
+
+- `/project` remains available as an experimental development route.
+- OBJ, STL, and uncompressed GLB parsing/storage code is retained.
+- Model bytes remain local in browser IndexedDB.
+- Command previews do **not** automatically read or override themselves with stored project geometry in V1.
+- The importer can be reintroduced later as an opt-in “Use my geometry” capability after the basic-shape playgrounds are proven.
+
 
 ## Run locally
 
